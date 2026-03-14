@@ -1,0 +1,31 @@
+{
+  "name": "erp-platform",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "lint": "eslint .",
+    "api:dev": "npm --workspace apps/api run start:dev",
+    "api:build": "npm --workspace apps/api run build",
+    "web:dev": "npm --workspace apps/web run dev",
+    "web:build": "npm --workspace apps/web run build",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "seed": "node scripts/seed.cjs || true",
+    "company:tools": "node scripts/company-tools.cjs"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.2.5",
+    "prisma": "^5.10.2",
+    "typescript": "^5.4.5",
+    "minimist": "^1.2.8"
+  }
+}

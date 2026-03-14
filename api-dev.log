@@ -1,0 +1,214 @@
+
+> erp-platform@0.1.0 api:dev
+> npm --workspace apps/api run start:dev
+
+
+> @erp/api@0.1.0 start:dev
+> ts-node --transpile-only src/main.ts
+
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCrmModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPayrollModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mNotificationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFilesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPostingModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTerminusModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHealthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOrgModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAccountingModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInventoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdminModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFixedAssetsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepreciationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoansModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTaxModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mImportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJournalsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSalesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPurchasesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} (version: 1) route[39m[38;5;3m +1ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users/:id, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users/:id, PATCH} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOrgController {/api/org} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/org/companies, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/org/companies, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/org/companies/:companyId, PATCH} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/org/companies/:companyId/branches, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/org/companies/:companyId/clone, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAccountingController {/api/accounting} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/accounting/accounts, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/accounting/accounts, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/accounting/journals, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/accounting/journals, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/accounting/vouchers, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/accounting/vouchers, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSalesController {/api/sales} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/customers, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/customers, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/invoices, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/invoices, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPurchasesController {/api/purchases} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/purchases/suppliers, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/purchases/suppliers, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/purchases/bills, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/purchases/bills, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mInventoryController {/api/inventory} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/products, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/products, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/warehouses, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/warehouses, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/stock-movements, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/stock-levels, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/stock-movements, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/trial-balance, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/account-statement-summary, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/account-statement, GET} (version: 1) route[39m[38;5;3m +1ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAdminController {/api/admin} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/permissions, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/roles, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/users/:userId/roles, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/fiscal-years, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/fiscal-years, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/fiscal-years/:fiscalYearId/close, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/fiscal-years/:fiscalYearId/lock, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/accounting-periods/:periodId, PATCH} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFixedAssetsController {/api/fixed-assets} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/fixed-assets/categories, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/fixed-assets/categories, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/fixed-assets/assets, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/fixed-assets/assets, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepreciationController {/api/depreciation} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/depreciation/policies, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/depreciation/policies, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/depreciation/runs, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoansController {/api/loans} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/loans, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/loans, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/loans/payments, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTaxController {/api/tax} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/tax/configs, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/tax/configs, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/tax/configs/:id, PATCH} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/tax/dashboard, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/tax/activity, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mImportsController {/api/imports} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/imports/chart-of-accounts, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/imports/customers, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/imports/suppliers, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/imports/products, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/imports/tax-configs, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mJournalsController {/api/journals} (version: 1):[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/metadata/options, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id, PATCH} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/validate, POST} (version: 1) route[39m[38;5;3m +1ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/submit, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/recall, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/approve, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/reject, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/post, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/reverse, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id/cancel, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/templates/all, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/templates, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/templates/:id/generate, POST} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/journals/:id, GET} (version: 1) route[39m[38;5;3m +0ms[39m
+[32m[Nest] 30940  - [39m14/03/2026, 04:17:55 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +0ms[39m
+API running on http://localhost:3000/api
+[31m[Nest] 30940  - [39m14/03/2026, 04:40:10 [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31m
+Invalid `tx.journalEntry.create()` invocation in
+C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:43
+
+  22 if (Math.abs(totalDebit - totalCredit) > 0.0001) throw new BadRequestException('Debits must equal credits');
+  23 
+  24 return this.prisma.$transaction(async (tx) => {
+→ 25   const entry = await tx.journalEntry.create(
+Unique constraint failed on the fields: (`reference`)[39m
+PrismaClientKnownRequestError: 
+Invalid `tx.journalEntry.create()` invocation in
+C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:43
+
+  22 if (Math.abs(totalDebit - totalCredit) > 0.0001) throw new BadRequestException('Debits must equal credits');
+  23 
+  24 return this.prisma.$transaction(async (tx) => {
+→ 25   const entry = await tx.journalEntry.create(
+Unique constraint failed on the fields: (`reference`)
+    at $n.handleRequestError (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:21
+    at async Proxy._transactionWithCallback (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async C:\Users\USER\Documents\FINOVA-ERP\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\USER\Documents\FINOVA-ERP\node_modules\@nestjs\core\router\router-proxy.js:9:17
+[31m[Nest] 30940  - [39m14/03/2026, 04:40:27 [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31m
+Invalid `tx.journalEntry.create()` invocation in
+C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:43
+
+  22 if (Math.abs(totalDebit - totalCredit) > 0.0001) throw new BadRequestException('Debits must equal credits');
+  23 
+  24 return this.prisma.$transaction(async (tx) => {
+→ 25   const entry = await tx.journalEntry.create(
+Unique constraint failed on the fields: (`reference`)[39m
+PrismaClientKnownRequestError: 
+Invalid `tx.journalEntry.create()` invocation in
+C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:43
+
+  22 if (Math.abs(totalDebit - totalCredit) > 0.0001) throw new BadRequestException('Debits must equal credits');
+  23 
+  24 return this.prisma.$transaction(async (tx) => {
+→ 25   const entry = await tx.journalEntry.create(
+Unique constraint failed on the fields: (`reference`)
+    at $n.handleRequestError (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:21
+    at async Proxy._transactionWithCallback (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async C:\Users\USER\Documents\FINOVA-ERP\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\USER\Documents\FINOVA-ERP\node_modules\@nestjs\core\router\router-proxy.js:9:17
+[31m[Nest] 30940  - [39m14/03/2026, 04:40:30 [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31m
+Invalid `tx.journalEntry.create()` invocation in
+C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:43
+
+  22 if (Math.abs(totalDebit - totalCredit) > 0.0001) throw new BadRequestException('Debits must equal credits');
+  23 
+  24 return this.prisma.$transaction(async (tx) => {
+→ 25   const entry = await tx.journalEntry.create(
+Unique constraint failed on the fields: (`reference`)[39m
+PrismaClientKnownRequestError: 
+Invalid `tx.journalEntry.create()` invocation in
+C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:43
+
+  22 if (Math.abs(totalDebit - totalCredit) > 0.0001) throw new BadRequestException('Debits must equal credits');
+  23 
+  24 return this.prisma.$transaction(async (tx) => {
+→ 25   const entry = await tx.journalEntry.create(
+Unique constraint failed on the fields: (`reference`)
+    at $n.handleRequestError (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async C:\Users\USER\Documents\FINOVA-ERP\apps\api\src\modules\accounting\accounting.service.ts:25:21
+    at async Proxy._transactionWithCallback (C:\Users\USER\Documents\FINOVA-ERP\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async C:\Users\USER\Documents\FINOVA-ERP\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\USER\Documents\FINOVA-ERP\node_modules\@nestjs\core\router\router-proxy.js:9:17

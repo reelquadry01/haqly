@@ -1,0 +1,24 @@
+# Node
+node_modules
+npm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Builds
+dist
+.turbo
+.next
+.cache
+
+# Env
+.env
+.env.*
+
+# Prisma
+prisma/dev.db
+prisma/*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db

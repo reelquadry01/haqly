@@ -1,0 +1,1704 @@
+// Prisma schema covering phase 1 core plus fixed assets and loans/treasury
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Common enums
+enum JournalType {
+  GENERAL
+  SALES
+  PURCHASE
+  CASH
+  BANK
+}
+
+enum VoucherType {
+  PAYMENT
+  RECEIPT
+  CONTRA
+}
+
+enum PaymentVoucherType {
+  VENDOR_PAYMENT
+  EXPENSE_PAYMENT
+  STAFF_REIMBURSEMENT
+  ADVANCE_PAYMENT
+  PREPAYMENT
+  REFUND
+  TAX_REMITTANCE
+  INTERCOMPANY_PAYMENT
+  BANK_TRANSFER
+  CASH_PAYMENT
+}
+
+enum PaymentVoucherSourceType {
+  MANUAL
+  VENDOR_BILL
+  EXPENSE_CLAIM
+  PAYROLL
+  TAX
+  SYSTEM
+}
+
+enum PaymentBeneficiaryType {
+  VENDOR
+  EMPLOYEE
+  CUSTOMER
+  TAX_AUTHORITY
+  BANK
+  OTHER
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CHEQUE
+  CASH
+  CARD
+  GATEWAY
+  WALLET
+}
+
+enum PaymentVoucherStatus {
+  DRAFT
+  PENDING_APPROVAL
+  PARTIALLY_APPROVED
+  APPROVED
+  REJECTED
+  CANCELLED
+  POSTED
+  PAID
+  FAILED_PAYMENT
+  REVERSED
+}
+
+enum PaymentWorkflowStatus {
+  AWAITING_SUBMISSION
+  AWAITING_LEVEL_1_APPROVAL
+  AWAITING_LEVEL_2_APPROVAL
+  AWAITING_FINAL_APPROVAL
+  APPROVED
+  REJECTED
+  RETURNED_FOR_CORRECTION
+}
+
+enum PaymentExecutionStatus {
+  NOT_PAID
+  PAYMENT_INITIATED
+  PAYMENT_PROCESSING
+  PAID
+  FAILED
+  REVERSED
+}
+
+enum PaymentLineType {
+  INVOICE_SETTLEMENT
+  EXPENSE
+  TAX
+  WITHHOLDING
+  ADVANCE
+  ADJUSTMENT
+}
+
+enum PaymentApprovalAction {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  RETURNED
+  RECALLED
+  DELEGATED
+  POSTED
+  PAID
+  CANCELLED
+}
+
+enum PaymentCommentType {
+  INTERNAL
+  APPROVAL
+  REJECTION
+  TREASURY
+}
+
+enum PaymentEventType {
+  INITIATED
+  PROCESSING
+  CONFIRMED
+  FAILED
+  RETRIED
+  REVERSED
+  MANUAL_MARKED_PAID
+  VERIFIED
+}
+
+enum PaymentTemplateKind {
+  STANDARD_CORPORATE
+  FINANCE_TREASURY
+  CLEAN_A4
+}
+
+enum CustomerReceiptStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+enum GLJournalType {
+  MANUAL
+  ADJUSTMENT
+  ACCRUAL
+  REVERSAL
+  OPENING_BALANCE
+  RECURRING
+  ALLOCATION
+  RECLASSIFICATION
+  SYSTEM
+}
+
+enum GLJournalSourceType {
+  MANUAL
+  SALES
+  PROCUREMENT
+  PAYROLL
+  ASSETS
+  INVENTORY
+  SYSTEM
+}
+
+enum GLSubledgerType {
+  CUSTOMER
+  VENDOR
+  EMPLOYEE
+  BANK
+  ASSET
+}
+
+enum GLJournalStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  POSTED
+  REVERSED
+  CANCELLED
+}
+
+enum GLApprovalAction {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  RECALLED
+  ESCALATED
+  DELEGATED
+  POSTED
+  REVERSED
+  CANCELLED
+}
+
+enum RecurringFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum AssetStatus {
+  ACTIVE
+  TRANSFERRED
+  DISPOSED
+  IMPAIRED
+}
+
+enum DepreciationMethod {
+  STRAIGHT_LINE
+  DECLINING_BALANCE
+  UNITS_OF_PRODUCTION
+}
+
+enum LoanType {
+  TERM
+  REVOLVING
+}
+
+enum ScheduleType {
+  ANNUITY
+  INTEREST_ONLY
+  BALLOON
+  CUSTOM
+}
+
+enum FinancialStatementCategory {
+  REVENUE
+  COST_OF_SALES
+  OTHER_INCOME
+  OPERATING_EXPENSE
+  DEPRECIATION_AND_AMORTIZATION
+  FINANCE_INCOME
+  FINANCE_COST
+  INCOME_TAX
+  OTHER_COMPREHENSIVE_INCOME
+  ASSET_CURRENT
+  INVENTORY
+  RECEIVABLE
+  CASH_AND_EQUIVALENT
+  ASSET_NONCURRENT
+  LIABILITY_CURRENT
+  LIABILITY_NONCURRENT
+  EQUITY_SHARE_CAPITAL
+  EQUITY_RETAINED_EARNINGS
+  EQUITY_RESERVE
+  DIVIDEND
+}
+
+/// System
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  passwordHash  String
+  firstName     String?
+  lastName      String?
+  isActive      Boolean        @default(true)
+  isLocked      Boolean        @default(false)
+  roles         UserRole[]
+  sessions      Session[]
+  auditLogs     AuditLog[]
+  postingAudits PostingAudit[]
+  refreshTokens RefreshToken[]
+  loginAttempts LoginAttempt[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  Notification  Notification[]
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  code        String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model UserRole {
+  userId Int
+  roleId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt], name: "idx_refresh_token_user_expiry")
+}
+
+model LoginAttempt {
+  id          Int      @id @default(autoincrement())
+  userId       Int?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress    String
+  attemptedAt  DateTime @default(now())
+
+  @@index([userId, attemptedAt], name: "idx_login_attempt_user_time")
+  @@index([ipAddress, attemptedAt], name: "idx_login_attempt_ip_time")
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role       String?
+  action     String
+  resourceId String?
+  entity     String?
+  entityId   String?
+  ipAddress  String?
+  meta       Json?
+  timestamp  DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([userId, timestamp], name: "idx_audit_log_user_time")
+  @@index([action, timestamp], name: "idx_audit_log_action_time")
+}
+
+/// Organization
+model Company {
+  id                        Int                          @id @default(autoincrement())
+  name                      String
+  legalName                 String?
+  code                      String?                      @unique
+  registrationNumber        String?
+  taxId                     String?
+  email                     String?
+  phone                     String?
+  addressLine1              String?
+  addressLine2              String?
+  city                      String?
+  state                     String?
+  country                   String?
+  logoUrl                   String?
+  currencyId                Int?
+  timezone                  String?
+  fiscalYearStartMonth      Int?                         @default(1)
+  isActive                  Boolean                      @default(true)
+  useBranches               Boolean                      @default(true)
+  useInventory              Boolean                      @default(true)
+  usePayroll                Boolean                      @default(false)
+  useDepartments            Boolean                      @default(true)
+  branches                  Branch[]
+  departments               Department[]
+  sequences                 NumberingSequence[]
+  accountingPeriods         AccountingPeriod[]
+  fiscalYears               FiscalYear[]
+  costCenters               CostCenter[]
+  projects                  Project[]
+  postingRules              PostingRule[]
+  postingAudits             PostingAudit[]
+  glJournals                GLJournalHeader[]
+  recurringJournalTemplates GLRecurringJournalTemplate[]
+  paymentVoucherHeaders     APPaymentVoucherHeader[]
+  paymentTemplates          APPaymentTemplate[]
+  customerReceipts          CustomerReceiptHeader[]
+  customers                 Customer[]
+  suppliers                 Supplier[]
+  products                  Product[]
+  salesInvoices             SalesInvoice[]
+  purchaseBills             PurchaseBill[]
+  bankAccounts              BankAccount[]
+  createdAt                 DateTime                     @default(now())
+  updatedAt                 DateTime                     @updatedAt
+  currency                  Currency?                    @relation(fields: [currencyId], references: [id])
+  TaxConfig                 TaxConfig[]
+}
+
+model Branch {
+  id                         Int                              @id @default(autoincrement())
+  name                       String
+  code                       String                           @unique
+  companyId                  Int
+  company                    Company                          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  warehouses                 Warehouse[]
+  createdAt                  DateTime                         @default(now())
+  updatedAt                  DateTime                         @updatedAt
+  JournalLine                JournalLine[]
+  Asset                      Asset[]
+  PostingRule                PostingRule[]
+  PostingAudit               PostingAudit[]
+  glJournals                 GLJournalHeader[]
+  glJournalLines             GLJournalLine[]
+  recurringTemplateLines     GLRecurringJournalTemplateLine[]
+  GLRecurringJournalTemplate GLRecurringJournalTemplate[]
+  paymentVoucherHeaders      APPaymentVoucherHeader[]
+  paymentVoucherLines        APPaymentVoucherLine[]
+  paymentTemplates           APPaymentTemplate[]
+  customerReceipts           CustomerReceiptHeader[]
+  bankAccounts               BankAccount[]
+}
+
+model Department {
+  id                        Int                              @id @default(autoincrement())
+  name                      String
+  companyId                 Int
+  company                   Company                          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt                 DateTime                         @default(now())
+  updatedAt                 DateTime                         @updatedAt
+  postingRules              PostingRule[]
+  glJournals                GLJournalHeader[]
+  glJournalLines            GLJournalLine[]
+  recurringJournalTemplates GLRecurringJournalTemplate[]
+  recurringTemplateLines    GLRecurringJournalTemplateLine[]
+  paymentVoucherHeaders     APPaymentVoucherHeader[]
+  paymentVoucherLines       APPaymentVoucherLine[]
+}
+
+model FiscalYear {
+  id         Int                @id @default(autoincrement())
+  companyId  Int
+  name       String
+  startDate  DateTime
+  endDate    DateTime
+  status     String             @default("OPEN")
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  company    Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  periods    AccountingPeriod[]
+  glJournals GLJournalHeader[]
+  paymentVoucherHeaders APPaymentVoucherHeader[]
+
+  @@unique([companyId, name])
+}
+
+model CostCenter {
+  id                        Int                              @id @default(autoincrement())
+  companyId                 Int
+  code                      String
+  name                      String
+  isActive                  Boolean                          @default(true)
+  createdAt                 DateTime                         @default(now())
+  updatedAt                 DateTime                         @updatedAt
+  company                   Company                          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  glJournals                GLJournalHeader[]
+  glJournalLines            GLJournalLine[]
+  recurringJournalTemplates GLRecurringJournalTemplate[]
+  recurringTemplateLines    GLRecurringJournalTemplateLine[]
+  paymentVoucherHeaders     APPaymentVoucherHeader[]
+  paymentVoucherLines       APPaymentVoucherLine[]
+
+  @@unique([companyId, code])
+}
+
+model Project {
+  id                        Int                              @id @default(autoincrement())
+  companyId                 Int
+  code                      String
+  name                      String
+  isActive                  Boolean                          @default(true)
+  createdAt                 DateTime                         @default(now())
+  updatedAt                 DateTime                         @updatedAt
+  company                   Company                          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  glJournals                GLJournalHeader[]
+  glJournalLines            GLJournalLine[]
+  recurringJournalTemplates GLRecurringJournalTemplate[]
+  recurringTemplateLines    GLRecurringJournalTemplateLine[]
+  paymentVoucherHeaders     APPaymentVoucherHeader[]
+  paymentVoucherLines       APPaymentVoucherLine[]
+
+  @@unique([companyId, code])
+}
+
+model Currency {
+  id          Int           @id @default(autoincrement())
+  code        String        @unique
+  name        String
+  symbol      String?
+  createdAt   DateTime      @default(now())
+  Company     Company[]
+  BankAccount BankAccount[]
+  Loan        Loan[]
+}
+
+model TaxConfig {
+  id                     Int                              @id @default(autoincrement())
+  code                   String
+  name                   String
+  taxType                String                           @default("VAT")
+  rate                   Decimal                          @db.Decimal(10, 4)
+  isInclusive            Boolean                          @default(false)
+  recoverable            Boolean                          @default(false)
+  filingFrequency        String                           @default("MONTHLY")
+  companyId              Int
+  outputAccountId        Int?
+  inputAccountId         Int?
+  liabilityAccountId     Int?
+  company                Company                          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  outputAccount          Account?                         @relation("TaxConfigOutputAccount", fields: [outputAccountId], references: [id])
+  inputAccount           Account?                         @relation("TaxConfigInputAccount", fields: [inputAccountId], references: [id])
+  liabilityAccount       Account?                         @relation("TaxConfigLiabilityAccount", fields: [liabilityAccountId], references: [id])
+  glJournalLines         GLJournalLine[]
+  recurringTemplateLines GLRecurringJournalTemplateLine[]
+  paymentVoucherTaxLines APPaymentVoucherLine[]          @relation("PaymentVoucherTaxCode")
+  paymentVoucherWithholdingLines APPaymentVoucherLine[]  @relation("PaymentVoucherWithholdingTaxCode")
+  createdAt              DateTime                         @default(now())
+  updatedAt              DateTime                         @updatedAt
+
+  @@unique([companyId, code])
+}
+
+model NumberingSequence {
+  id         Int      @id @default(autoincrement())
+  name       String
+  prefix     String?
+  nextNumber Int      @default(1)
+  companyId  Int
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+/// Accounting
+model Account {
+  id                              Int                              @id @default(autoincrement())
+  code                            String                           @unique
+  name                            String
+  type                            String // e.g., ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+  financialStatementCategory      FinancialStatementCategory?
+  description                     String?
+  parentId                        Int?
+  parent                          Account?                         @relation("AccountToAccount", fields: [parentId], references: [id])
+  children                        Account[]                        @relation("AccountToAccount")
+  isActive                        Boolean                          @default(true)
+  allowsPosting                   Boolean                          @default(true)
+  allowsManualPosting             Boolean                          @default(true)
+  isControlAccount                Boolean                          @default(false)
+  controlSource                   String?
+  requiresSubledger               Boolean                          @default(false)
+  requiresDepartment              Boolean                          @default(false)
+  requiresCostCenter              Boolean                          @default(false)
+  requiresProject                 Boolean                          @default(false)
+  requiresTax                     Boolean                          @default(false)
+  createdAt                       DateTime                         @default(now())
+  updatedAt                       DateTime                         @updatedAt
+  JournalLine                     JournalLine[]
+  glJournalLines                  GLJournalLine[]
+  recurringTemplateLines          GLRecurringJournalTemplateLine[]
+  PostingRuleDebitAccounts        PostingRule[]                    @relation("PostingRuleDebitAccount")
+  PostingRuleCreditAccounts       PostingRule[]                    @relation("PostingRuleCreditAccount")
+  PostingRuleTaxAccounts          PostingRule[]                    @relation("PostingRuleTaxAccount")
+  PostingRuleRoundingAccounts     PostingRule[]                    @relation("PostingRuleRoundingAccount")
+  PostingRuleExchangeGainAccounts PostingRule[]                    @relation("PostingRuleExchangeGainAccount")
+  PostingRuleExchangeLossAccounts PostingRule[]                    @relation("PostingRuleExchangeLossAccount")
+  PostingRuleSuspenseAccounts     PostingRule[]                    @relation("PostingRuleSuspenseAccount")
+  TaxConfigOutputAccounts         TaxConfig[]                      @relation("TaxConfigOutputAccount")
+  TaxConfigInputAccounts          TaxConfig[]                      @relation("TaxConfigInputAccount")
+  TaxConfigLiabilityAccounts      TaxConfig[]                      @relation("TaxConfigLiabilityAccount")
+  paymentVoucherPayableAccounts   APPaymentVoucherHeader[]         @relation("PaymentVoucherPayableAccount")
+  paymentVoucherCashAccounts      APPaymentVoucherHeader[]         @relation("PaymentVoucherCashAccount")
+  paymentVoucherLineAccounts      APPaymentVoucherLine[]
+  paymentTemplatesDefaultAccounts APPaymentTemplate[]              @relation("PaymentTemplateDefaultAccount")
+  bankAccountGlAccounts           BankAccount[]                    @relation("BankAccountGLAccount")
+  customerReceiptCashAccounts     CustomerReceiptHeader[]          @relation("CustomerReceiptCashAccount")
+  customerReceiptReceivableAccounts CustomerReceiptHeader[]        @relation("CustomerReceiptReceivableAccount")
+}
+
+model JournalEntry {
+  id              Int              @id @default(autoincrement())
+  reference       String           @unique
+  type            JournalType      @default(GENERAL)
+  description     String?
+  date            DateTime
+  lines           JournalLine[]
+  createdAt       DateTime         @default(now())
+  createdBy       Int?
+  updatedAt       DateTime         @updatedAt
+  Voucher         Voucher[]
+  postingAudit    PostingAudit?
+  glJournalHeader GLJournalHeader?
+  paymentVouchers APPaymentVoucherHeader[]
+  customerReceipts CustomerReceiptHeader[]
+}
+
+model JournalLine {
+  id        Int          @id @default(autoincrement())
+  entryId   Int
+  accountId Int
+  branchId  Int?
+  debit     Decimal      @default(0) @db.Decimal(18, 2)
+  credit    Decimal      @default(0) @db.Decimal(18, 2)
+  memo      String?
+  entry     JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  account   Account      @relation(fields: [accountId], references: [id])
+  branch    Branch?      @relation(fields: [branchId], references: [id])
+
+  @@index([entryId], name: "idx_journal_line_entry")
+}
+
+model Voucher {
+  id        Int           @id @default(autoincrement())
+  type      VoucherType
+  reference String        @unique
+  amount    Decimal       @db.Decimal(18, 2)
+  date      DateTime
+  payee     String?
+  memo      String?
+  journalId Int?
+  journal   JournalEntry? @relation(fields: [journalId], references: [id])
+  createdAt DateTime      @default(now())
+}
+
+model AccountingPeriod {
+  id           Int               @id @default(autoincrement())
+  name         String
+  companyId    Int?
+  fiscalYearId Int?
+  startDate    DateTime
+  endDate      DateTime
+  status       String            @default("OPEN")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  company      Company?          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  fiscalYear   FiscalYear?       @relation(fields: [fiscalYearId], references: [id], onDelete: SetNull)
+  glJournals   GLJournalHeader[]
+  paymentVoucherHeaders APPaymentVoucherHeader[]
+
+  @@index([companyId, startDate, endDate], name: "idx_accounting_period_company_dates")
+}
+
+model GLJournalHeader {
+  id                    Int                         @id @default(autoincrement())
+  journalNumber         String                      @unique
+  journalType           GLJournalType
+  sourceType            GLJournalSourceType         @default(MANUAL)
+  sourceModule          String?
+  sourceDocumentId      String?
+  sourceDocumentNumber  String?
+  legalEntityId         Int
+  branchId              Int
+  departmentId          Int?
+  costCenterId          Int?
+  projectId             Int?
+  journalDate           DateTime
+  postingDate           DateTime
+  accountingPeriodId    Int
+  fiscalYearId          Int?
+  currencyCode          String
+  exchangeRate          Decimal?                    @db.Decimal(18, 6)
+  referenceNumber       String?
+  externalReference     String?
+  narration             String
+  description           String?
+  attachmentCount       Int                         @default(0)
+  status                GLJournalStatus             @default(DRAFT)
+  workflowStatus        String                      @default("DRAFT")
+  approvalLevel         Int                         @default(0)
+  createdBy             Int?
+  createdAt             DateTime                    @default(now())
+  updatedBy             Int?
+  updatedAt             DateTime                    @updatedAt
+  submittedBy           Int?
+  submittedAt           DateTime?
+  approvedBy            Int?
+  approvedAt            DateTime?
+  postedBy              Int?
+  postedAt              DateTime?
+  reversedBy            Int?
+  reversedAt            DateTime?
+  reversalOfJournalId   Int?
+  reversalReason        String?
+  isSystemGenerated     Boolean                     @default(false)
+  isAutoReversing       Boolean                     @default(false)
+  autoReverseDate       DateTime?
+  isRecurring           Boolean                     @default(false)
+  recurringTemplateId   Int?
+  isIntercompany        Boolean                     @default(false)
+  intercompanyReference String?
+  idempotencyKey        String?                     @unique
+  totalDebit            Decimal                     @default(0) @db.Decimal(18, 2)
+  totalCredit           Decimal                     @default(0) @db.Decimal(18, 2)
+  postedJournalEntryId  Int?                        @unique
+  legalEntity           Company                     @relation(fields: [legalEntityId], references: [id], onDelete: Restrict)
+  branch                Branch                      @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  department            Department?                 @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  costCenter            CostCenter?                 @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  project               Project?                    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  accountingPeriod      AccountingPeriod            @relation(fields: [accountingPeriodId], references: [id], onDelete: Restrict)
+  fiscalYear            FiscalYear?                 @relation(fields: [fiscalYearId], references: [id], onDelete: SetNull)
+  reversalOfJournal     GLJournalHeader?            @relation("GLJournalReversal", fields: [reversalOfJournalId], references: [id], onDelete: SetNull)
+  reversalJournals      GLJournalHeader[]           @relation("GLJournalReversal")
+  recurringTemplate     GLRecurringJournalTemplate? @relation(fields: [recurringTemplateId], references: [id], onDelete: SetNull)
+  postedJournalEntry    JournalEntry?               @relation(fields: [postedJournalEntryId], references: [id], onDelete: SetNull)
+  lines                 GLJournalLine[]
+  attachments           GLJournalAttachment[]
+  approvalHistory       GLJournalApprovalHistory[]
+  auditLogs             GLJournalAuditLog[]
+  statusHistory         GLJournalStatusHistory[]
+
+  @@index([legalEntityId, branchId, journalDate], name: "idx_gl_journal_scope_dates")
+  @@index([status, journalType, sourceType], name: "idx_gl_journal_status_type")
+  @@index([sourceModule, sourceDocumentId], name: "idx_gl_journal_source")
+}
+
+model GLJournalLine {
+  id                      Int              @id @default(autoincrement())
+  journalId               Int
+  lineNumber              Int
+  accountId               Int
+  accountCode             String
+  accountName             String
+  accountType             String
+  subledgerType           GLSubledgerType?
+  subledgerId             String?
+  debitAmount             Decimal          @default(0) @db.Decimal(18, 2)
+  creditAmount            Decimal          @default(0) @db.Decimal(18, 2)
+  baseCurrencyDebit       Decimal?         @db.Decimal(18, 2)
+  baseCurrencyCredit      Decimal?         @db.Decimal(18, 2)
+  transactionCurrencyCode String
+  exchangeRate            Decimal?         @db.Decimal(18, 6)
+  taxCodeId               Int?
+  taxAmount               Decimal?         @db.Decimal(18, 2)
+  branchId                Int?
+  departmentId            Int?
+  costCenterId            Int?
+  projectId               Int?
+  productId               Int?
+  itemId                  String?
+  warehouseId             Int?
+  quantity                Decimal?         @db.Decimal(18, 3)
+  unitOfMeasure           String?
+  lineNarration           String?
+  reference1              String?
+  reference2              String?
+  dueDate                 DateTime?
+  partnerName             String?
+  partnerCode             String?
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+  journal                 GLJournalHeader  @relation(fields: [journalId], references: [id], onDelete: Cascade)
+  account                 Account          @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  taxCode                 TaxConfig?       @relation(fields: [taxCodeId], references: [id], onDelete: SetNull)
+  branch                  Branch?          @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department              Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  costCenter              CostCenter?      @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  project                 Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  product                 Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+  warehouse               Warehouse?       @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+
+  @@unique([journalId, lineNumber])
+  @@index([accountId], name: "idx_gl_journal_line_account")
+  @@index([branchId, departmentId, costCenterId, projectId], name: "idx_gl_journal_line_dimensions")
+}
+
+model GLJournalAttachment {
+  id         Int             @id @default(autoincrement())
+  journalId  Int
+  fileName   String
+  fileUrl    String
+  mimeType   String?
+  uploadedBy Int?
+  uploadedAt DateTime        @default(now())
+  journal    GLJournalHeader @relation(fields: [journalId], references: [id], onDelete: Cascade)
+}
+
+model GLJournalApprovalHistory {
+  id              Int              @id @default(autoincrement())
+  journalId       Int
+  action          GLApprovalAction
+  approvalLevel   Int              @default(0)
+  actorUserId     Int?
+  actorName       String?
+  comments        String?
+  rejectionReason String?
+  delegatedTo     String?
+  actedAt         DateTime         @default(now())
+  journal         GLJournalHeader  @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@index([journalId, actedAt], name: "idx_gl_journal_approval_history")
+}
+
+model GLJournalAuditLog {
+  id          Int             @id @default(autoincrement())
+  journalId   Int
+  action      String
+  actorUserId Int?
+  actorName   String?
+  oldValues   Json?
+  newValues   Json?
+  ipAddress   String?
+  deviceInfo  String?
+  createdAt   DateTime        @default(now())
+  journal     GLJournalHeader @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@index([journalId, createdAt], name: "idx_gl_journal_audit_log")
+}
+
+model GLJournalStatusHistory {
+  id         Int              @id @default(autoincrement())
+  journalId  Int
+  fromStatus GLJournalStatus?
+  toStatus   GLJournalStatus
+  changedBy  Int?
+  reason     String?
+  changedAt  DateTime         @default(now())
+  journal    GLJournalHeader  @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@index([journalId, changedAt], name: "idx_gl_journal_status_history")
+}
+
+model GLRecurringJournalTemplate {
+  id                Int                              @id @default(autoincrement())
+  templateName      String
+  journalType       GLJournalType
+  frequency         RecurringFrequency
+  legalEntityId     Int
+  branchId          Int
+  departmentId      Int?
+  costCenterId      Int?
+  projectId         Int?
+  currencyCode      String
+  startDate         DateTime
+  endDate           DateTime?
+  narrationTemplate String
+  description       String?
+  nextRunDate       DateTime?
+  isActive          Boolean                          @default(true)
+  createdBy         Int?
+  createdAt         DateTime                         @default(now())
+  updatedAt         DateTime                         @updatedAt
+  legalEntity       Company                          @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  branch            Branch                           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  department        Department?                      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  costCenter        CostCenter?                      @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  project           Project?                         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  lines             GLRecurringJournalTemplateLine[]
+  generatedJournals GLJournalHeader[]
+
+  @@index([legalEntityId, branchId, isActive], name: "idx_gl_recurring_template_scope")
+}
+
+model GLRecurringJournalTemplateLine {
+  id                      Int                        @id @default(autoincrement())
+  templateId              Int
+  lineNumber              Int
+  accountId               Int
+  accountCode             String
+  accountName             String
+  accountType             String
+  subledgerType           GLSubledgerType?
+  subledgerId             String?
+  debitAmount             Decimal                    @default(0) @db.Decimal(18, 2)
+  creditAmount            Decimal                    @default(0) @db.Decimal(18, 2)
+  transactionCurrencyCode String
+  taxCodeId               Int?
+  branchId                Int?
+  departmentId            Int?
+  costCenterId            Int?
+  projectId               Int?
+  productId               Int?
+  warehouseId             Int?
+  quantity                Decimal?                   @db.Decimal(18, 3)
+  unitOfMeasure           String?
+  lineNarration           String?
+  dueDate                 DateTime?
+  partnerName             String?
+  partnerCode             String?
+  template                GLRecurringJournalTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  account                 Account                    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  taxCode                 TaxConfig?                 @relation(fields: [taxCodeId], references: [id], onDelete: SetNull)
+  branch                  Branch?                    @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department              Department?                @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  costCenter              CostCenter?                @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  project                 Project?                   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  product                 Product?                   @relation(fields: [productId], references: [id], onDelete: SetNull)
+  warehouse               Warehouse?                 @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+
+  @@unique([templateId, lineNumber])
+}
+
+model PostingRule {
+  id                         Int              @id @default(autoincrement())
+  module                     String
+  transactionType            String
+  transactionSubtype         String?
+  legalEntityId              Int?
+  branchId                   Int?
+  departmentId               Int?
+  productCategoryId          Int?
+  customerGroup              String?
+  vendorGroup                String?
+  taxCode                    String?
+  currencyCode               String?
+  conditionExpression        String?
+  debitAccountId             Int
+  creditAccountId            Int
+  taxAccountId               Int?
+  roundingAccountId          Int?
+  exchangeGainAccountId      Int?
+  exchangeLossAccountId      Int?
+  suspenseAccountId          Int?
+  postingDescriptionTemplate String
+  requiresSubledger          Boolean          @default(false)
+  requiresCostCenter         Boolean          @default(false)
+  requiresProject            Boolean          @default(false)
+  requiresBranch             Boolean          @default(false)
+  requiresTax                Boolean          @default(false)
+  effectiveStartDate         DateTime
+  effectiveEndDate           DateTime?
+  status                     String           @default("ACTIVE")
+  createdAt                  DateTime         @default(now())
+  updatedAt                  DateTime         @updatedAt
+  legalEntity                Company?         @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  branch                     Branch?          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  debitAccount               Account          @relation("PostingRuleDebitAccount", fields: [debitAccountId], references: [id])
+  creditAccount              Account          @relation("PostingRuleCreditAccount", fields: [creditAccountId], references: [id])
+  taxAccount                 Account?         @relation("PostingRuleTaxAccount", fields: [taxAccountId], references: [id])
+  roundingAccount            Account?         @relation("PostingRuleRoundingAccount", fields: [roundingAccountId], references: [id])
+  exchangeGainAccount        Account?         @relation("PostingRuleExchangeGainAccount", fields: [exchangeGainAccountId], references: [id])
+  exchangeLossAccount        Account?         @relation("PostingRuleExchangeLossAccount", fields: [exchangeLossAccountId], references: [id])
+  suspenseAccount            Account?         @relation("PostingRuleSuspenseAccount", fields: [suspenseAccountId], references: [id])
+  department                 Department?      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  productCategory            ProductCategory? @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  audits                     PostingAudit[]
+
+  @@index([module, transactionType, transactionSubtype, status], name: "idx_posting_rule_event")
+  @@index([legalEntityId, branchId, departmentId], name: "idx_posting_rule_scope")
+  @@index([productCategoryId, customerGroup, vendorGroup, taxCode], name: "idx_posting_rule_dimensions")
+}
+
+model PostingAudit {
+  id                   Int            @id @default(autoincrement())
+  journalEntryId       Int?           @unique
+  postingRuleId        Int?
+  sourceModule         String
+  sourceTable          String
+  sourceDocumentId     String
+  sourceDocumentNumber String
+  referenceId          String?
+  partyName            String?
+  triggeringEvent      String
+  userId               Int?
+  approvalReference    String?
+  postingTimestamp     DateTime       @default(now())
+  period               String?
+  branchId             Int?
+  legalEntityId        Int?
+  departmentId         Int?
+  costCenterCode       String?
+  projectCode          String?
+  taxCode              String?
+  currencyCode         String?
+  narration            String?
+  correlationId        String
+  idempotencyKey       String         @unique
+  reversalOfAuditId    Int?
+  ruleSnapshot         Json?
+  createdAt            DateTime       @default(now())
+  journalEntry         JournalEntry?  @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  postingRule          PostingRule?   @relation(fields: [postingRuleId], references: [id], onDelete: SetNull)
+  user                 User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  branch               Branch?        @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  legalEntity          Company?       @relation(fields: [legalEntityId], references: [id], onDelete: SetNull)
+  reversalOf           PostingAudit?  @relation("PostingAuditReversal", fields: [reversalOfAuditId], references: [id], onDelete: SetNull)
+  reversals            PostingAudit[] @relation("PostingAuditReversal")
+
+  @@index([sourceModule, sourceTable, sourceDocumentId], name: "idx_posting_audit_source")
+  @@index([postingTimestamp], name: "idx_posting_audit_timestamp")
+}
+
+model BankAccount {
+  id                     Int                     @id @default(autoincrement())
+  name                   String
+  accountName            String?
+  number                 String?
+  bankName               String?
+  companyId              Int?
+  branchId               Int?
+  currencyId             Int?
+  glAccountId            Int?
+  providerName           String?
+  providerCode           String?
+  isActive               Boolean                 @default(true)
+  gatewayConfig          Json?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  currency               Currency?               @relation(fields: [currencyId], references: [id])
+  company                Company?                @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  branch                 Branch?                 @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  glAccount              Account?                @relation("BankAccountGLAccount", fields: [glAccountId], references: [id], onDelete: SetNull)
+  paymentVoucherHeaders  APPaymentVoucherHeader[]
+  paymentGatewayLogs     APPaymentGatewayLog[]
+  customerReceipts       CustomerReceiptHeader[]
+}
+
+/// Sales & Purchases (simplified first pass)
+model Customer {
+  id               Int            @id @default(autoincrement())
+  companyId        Int?
+  name             String
+  email            String?
+  phone            String?
+  customerType     String         @default("BUSINESS")
+  onboardingStatus String         @default("PENDING")
+  contactPerson    String?
+  industry         String?
+  taxId            String?
+  creditLimit      Decimal?       @db.Decimal(18, 2)
+  addresses        Address[]
+  invoices         SalesInvoice[]
+  receipts         CustomerReceiptHeader[]
+  company          Company?       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([companyId, name], name: "idx_customer_company_name")
+  @@unique([companyId, email], map: "uq_customer_company_email")
+}
+
+model Supplier {
+  id        Int            @id @default(autoincrement())
+  companyId Int?
+  name      String
+  email     String?
+  phone     String?
+  addresses Address[]
+  bills     PurchaseBill[]
+  paymentVoucherHeaders APPaymentVoucherHeader[]
+  company   Company?       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([companyId, name], name: "idx_supplier_company_name")
+  @@unique([companyId, email], map: "uq_supplier_company_email")
+}
+
+model APPaymentVoucherHeader {
+  id                          Int                     @id @default(autoincrement())
+  voucherNumber               String                  @unique
+  voucherType                 PaymentVoucherType
+  sourceType                  PaymentVoucherSourceType @default(MANUAL)
+  sourceModule                String?
+  sourceDocumentId            String?
+  sourceDocumentNumber        String?
+  legalEntityId               Int
+  branchId                    Int
+  departmentId                Int?
+  costCenterId                Int?
+  projectId                   Int?
+  beneficiaryType             PaymentBeneficiaryType
+  beneficiaryId               String?
+  beneficiaryName             String
+  beneficiaryCode             String?
+  supplierId                  Int?
+  payableAccountId            Int?
+  bankAccountId               Int?
+  cashAccountId               Int?
+  paymentMethod               PaymentMethod
+  paymentChannel              String?
+  currencyCode                String
+  exchangeRate                Decimal?               @db.Decimal(18, 6)
+  voucherDate                 DateTime
+  requestedPaymentDate        DateTime
+  postingDate                 DateTime
+  accountingPeriodId          Int
+  fiscalYearId                Int?
+  referenceNumber             String?
+  externalReference           String?
+  invoiceReference            String?
+  narration                   String
+  purposeOfPayment            String
+  totalAmount                 Decimal                @default(0) @db.Decimal(18, 2)
+  taxAmount                   Decimal?               @db.Decimal(18, 2)
+  withholdingTaxAmount        Decimal?               @db.Decimal(18, 2)
+  netPaymentAmount            Decimal                @default(0) @db.Decimal(18, 2)
+  status                      PaymentVoucherStatus   @default(DRAFT)
+  workflowStatus              PaymentWorkflowStatus  @default(AWAITING_SUBMISSION)
+  paymentStatus               PaymentExecutionStatus @default(NOT_PAID)
+  approvalLevel               Int                    @default(0)
+  currentApproverId           Int?
+  finalApproverId             Int?
+  requiresAttachment          Boolean                @default(false)
+  attachmentCount             Int                    @default(0)
+  commentsCount               Int                    @default(0)
+  createdBy                   Int?
+  createdAt                   DateTime               @default(now())
+  updatedBy                   Int?
+  updatedAt                   DateTime               @updatedAt
+  submittedBy                 Int?
+  submittedAt                 DateTime?
+  approvedBy                  Int?
+  approvedAt                  DateTime?
+  rejectedBy                  Int?
+  rejectedAt                  DateTime?
+  rejectedReason              String?
+  postedBy                    Int?
+  postedAt                    DateTime?
+  paidBy                      Int?
+  paidAt                      DateTime?
+  cancelledBy                 Int?
+  cancelledAt                 DateTime?
+  isSystemGenerated           Boolean                @default(false)
+  isPostedToGL                Boolean                @default(false)
+  glJournalId                 Int?                   @unique
+  templateId                  Int?
+  gatewayTransactionReference String?
+  bankPaymentReference        String?
+  idempotencyKey              String?                @unique
+  approvalChain               Json?
+  paymentMetadata             Json?
+  legalEntity                 Company                @relation(fields: [legalEntityId], references: [id], onDelete: Restrict)
+  branch                      Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  department                  Department?            @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  costCenter                  CostCenter?            @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  project                     Project?               @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  supplier                    Supplier?              @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  payableAccount              Account?               @relation("PaymentVoucherPayableAccount", fields: [payableAccountId], references: [id], onDelete: SetNull)
+  bankAccount                 BankAccount?           @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  cashAccount                 Account?               @relation("PaymentVoucherCashAccount", fields: [cashAccountId], references: [id], onDelete: SetNull)
+  accountingPeriod            AccountingPeriod       @relation(fields: [accountingPeriodId], references: [id], onDelete: Restrict)
+  fiscalYear                  FiscalYear?            @relation(fields: [fiscalYearId], references: [id], onDelete: SetNull)
+  glJournal                   JournalEntry?          @relation(fields: [glJournalId], references: [id], onDelete: SetNull)
+  template                    APPaymentTemplate?     @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  lines                       APPaymentVoucherLine[]
+  attachments                 APPaymentVoucherAttachment[]
+  comments                    APPaymentVoucherComment[]
+  approvalHistory             APPaymentVoucherApprovalHistory[]
+  auditLogs                   APPaymentVoucherAuditLog[]
+  statusHistory               APPaymentVoucherStatusHistory[]
+  paymentEvents               APPaymentVoucherPaymentEvent[]
+  gatewayLogs                 APPaymentGatewayLog[]
+
+  @@index([legalEntityId, branchId, voucherDate], name: "idx_ap_payment_voucher_scope_dates")
+  @@index([status, workflowStatus, paymentStatus], name: "idx_ap_payment_voucher_status")
+  @@index([beneficiaryType, beneficiaryId], name: "idx_ap_payment_voucher_beneficiary")
+  @@index([sourceModule, sourceDocumentId], name: "idx_ap_payment_voucher_source")
+}
+
+model APPaymentVoucherLine {
+  id                        Int                   @id @default(autoincrement())
+  paymentVoucherId          Int
+  lineNumber                Int
+  lineType                  PaymentLineType
+  accountId                 Int
+  accountCode               String
+  accountName               String
+  subledgerType             String?
+  subledgerId               String?
+  sourceInvoiceId           String?
+  sourceInvoiceNumber       String?
+  sourceExpenseClaimId      String?
+  description               String
+  grossAmount               Decimal               @default(0) @db.Decimal(18, 2)
+  taxCodeId                 Int?
+  taxAmount                 Decimal?              @db.Decimal(18, 2)
+  withholdingTaxCodeId      Int?
+  withholdingTaxAmount      Decimal?              @db.Decimal(18, 2)
+  netAmount                 Decimal               @default(0) @db.Decimal(18, 2)
+  branchId                  Int?
+  departmentId              Int?
+  costCenterId              Int?
+  projectId                 Int?
+  dueDate                   DateTime?
+  lineStatus                String                @default("OPEN")
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
+  paymentVoucher            APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+  account                   Account               @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  taxCode                   TaxConfig?            @relation("PaymentVoucherTaxCode", fields: [taxCodeId], references: [id], onDelete: SetNull)
+  withholdingTaxCode        TaxConfig?            @relation("PaymentVoucherWithholdingTaxCode", fields: [withholdingTaxCodeId], references: [id], onDelete: SetNull)
+  branch                    Branch?               @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department                Department?           @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  costCenter                CostCenter?           @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  project                   Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@unique([paymentVoucherId, lineNumber])
+  @@index([accountId], name: "idx_ap_payment_voucher_line_account")
+}
+
+model APPaymentVoucherAttachment {
+  id                Int                    @id @default(autoincrement())
+  paymentVoucherId   Int
+  fileName           String
+  fileUrl            String
+  mimeType           String?
+  uploadedBy         Int?
+  uploadedAt         DateTime               @default(now())
+  paymentVoucher     APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+
+  @@index([paymentVoucherId, uploadedAt], name: "idx_ap_payment_voucher_attachment")
+}
+
+model APPaymentVoucherComment {
+  id                Int                    @id @default(autoincrement())
+  paymentVoucherId   Int
+  commentType        PaymentCommentType    @default(INTERNAL)
+  body               String
+  authorUserId       Int?
+  authorName         String?
+  taggedUsers        Json?
+  createdAt          DateTime               @default(now())
+  paymentVoucher     APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+
+  @@index([paymentVoucherId, createdAt], name: "idx_ap_payment_voucher_comment")
+}
+
+model APPaymentVoucherApprovalHistory {
+  id                Int                    @id @default(autoincrement())
+  paymentVoucherId   Int
+  action             PaymentApprovalAction
+  approvalLevel      Int                    @default(0)
+  actorUserId        Int?
+  actorName          String?
+  comments           String?
+  rejectionReason    String?
+  delegatedTo        String?
+  assignedRole       String?
+  assignedUserId     Int?
+  actedAt            DateTime               @default(now())
+  paymentVoucher     APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+
+  @@index([paymentVoucherId, actedAt], name: "idx_ap_payment_voucher_approval_history")
+}
+
+model APPaymentVoucherAuditLog {
+  id                Int                    @id @default(autoincrement())
+  paymentVoucherId   Int
+  action             String
+  actorUserId        Int?
+  actorName          String?
+  oldValues          Json?
+  newValues          Json?
+  ipAddress          String?
+  deviceInfo         String?
+  createdAt          DateTime               @default(now())
+  paymentVoucher     APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+
+  @@index([paymentVoucherId, createdAt], name: "idx_ap_payment_voucher_audit_log")
+}
+
+model APPaymentVoucherStatusHistory {
+  id                Int                    @id @default(autoincrement())
+  paymentVoucherId   Int
+  fromStatus         PaymentVoucherStatus?
+  toStatus           PaymentVoucherStatus
+  fromWorkflowStatus PaymentWorkflowStatus?
+  toWorkflowStatus   PaymentWorkflowStatus?
+  fromPaymentStatus  PaymentExecutionStatus?
+  toPaymentStatus    PaymentExecutionStatus?
+  changedBy          Int?
+  reason             String?
+  changedAt          DateTime               @default(now())
+  paymentVoucher     APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+
+  @@index([paymentVoucherId, changedAt], name: "idx_ap_payment_voucher_status_history")
+}
+
+model APPaymentVoucherPaymentEvent {
+  id                    Int                    @id @default(autoincrement())
+  paymentVoucherId      Int
+  eventType             PaymentEventType
+  paymentChannel        String?
+  providerName          String?
+  providerReference     String?
+  providerStatus        String?
+  providerMessage       String?
+  initiatedAt           DateTime?
+  confirmedAt           DateTime?
+  failureReason         String?
+  bankReference         String?
+  proofFileUrl          String?
+  rawResponseJson       Json?
+  createdBy             Int?
+  createdAt             DateTime               @default(now())
+  paymentVoucher        APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+
+  @@index([paymentVoucherId, createdAt], name: "idx_ap_payment_voucher_payment_event")
+}
+
+model APPaymentTemplate {
+  id                    Int                  @id @default(autoincrement())
+  name                  String
+  voucherType           PaymentVoucherType
+  templateKind          PaymentTemplateKind  @default(STANDARD_CORPORATE)
+  legalEntityId         Int?
+  branchId              Int?
+  paymentMethod         PaymentMethod?
+  minAmount             Decimal?             @db.Decimal(18, 2)
+  maxAmount             Decimal?             @db.Decimal(18, 2)
+  requiresAttachment    Boolean              @default(false)
+  allowRecall           Boolean              @default(true)
+  postAfterFinalApproval Boolean             @default(true)
+  allowPaymentExecution Boolean              @default(true)
+  enableGateway         Boolean              @default(false)
+  defaultAccountId      Int?
+  defaultNarration      String?
+  purposeTemplate       String?
+  approvalMatrix        Json?
+  isActive              Boolean              @default(true)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  legalEntity           Company?             @relation(fields: [legalEntityId], references: [id], onDelete: SetNull)
+  branch                Branch?              @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  defaultAccount        Account?             @relation("PaymentTemplateDefaultAccount", fields: [defaultAccountId], references: [id], onDelete: SetNull)
+  vouchers              APPaymentVoucherHeader[]
+
+  @@index([voucherType, paymentMethod, isActive], name: "idx_ap_payment_template_match")
+}
+
+model APPaymentGatewayLog {
+  id                Int                    @id @default(autoincrement())
+  paymentVoucherId   Int
+  bankAccountId      Int?
+  providerName       String
+  action             String
+  requestPayload     Json?
+  responsePayload    Json?
+  providerStatus     String?
+  providerMessage    String?
+  createdAt          DateTime               @default(now())
+  paymentVoucher     APPaymentVoucherHeader @relation(fields: [paymentVoucherId], references: [id], onDelete: Cascade)
+  bankAccount        BankAccount?           @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+
+  @@index([paymentVoucherId, createdAt], name: "idx_ap_payment_gateway_log")
+}
+
+model Address {
+  id         Int       @id @default(autoincrement())
+  line1      String
+  line2      String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
+  customerId Int?
+  supplierId Int?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  supplier   Supplier? @relation(fields: [supplierId], references: [id])
+}
+
+model Product {
+  id                     Int                              @id @default(autoincrement())
+  companyId              Int?
+  name                   String
+  sku                    String
+  categoryId             Int?
+  uomId                  Int?
+  isActive               Boolean                          @default(true)
+  salesItems             SalesInvoiceItem[]
+  purchaseItems          PurchaseBillItem[]
+  stockMoves             StockMovement[]
+  createdAt              DateTime                         @default(now())
+  updatedAt              DateTime                         @updatedAt
+  company                Company?                         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category               ProductCategory?                 @relation(fields: [categoryId], references: [id])
+  uom                    UnitOfMeasure?                   @relation(fields: [uomId], references: [id])
+  glJournalLines         GLJournalLine[]
+  recurringTemplateLines GLRecurringJournalTemplateLine[]
+
+  @@unique([companyId, sku])
+  @@index([companyId, name], name: "idx_product_company_name")
+}
+
+model ProductCategory {
+  id           Int           @id @default(autoincrement())
+  name         String
+  products     Product[]
+  postingRules PostingRule[]
+}
+
+model UnitOfMeasure {
+  id       Int       @id @default(autoincrement())
+  name     String
+  symbol   String?
+  products Product[]
+}
+
+model Warehouse {
+  id                     Int                              @id @default(autoincrement())
+  name                   String
+  branchId               Int
+  branch                 Branch                           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stockMoves             StockMovement[]
+  glJournalLines         GLJournalLine[]
+  recurringTemplateLines GLRecurringJournalTemplateLine[]
+}
+
+model StockMovement {
+  id          Int       @id @default(autoincrement())
+  productId   Int
+  warehouseId Int
+  quantity    Decimal   @db.Decimal(18, 3)
+  direction   String // IN, OUT, TRANSFER
+  reference   String?
+  createdAt   DateTime  @default(now())
+  product     Product   @relation(fields: [productId], references: [id])
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+}
+
+model SalesInvoice {
+  id           Int                  @id @default(autoincrement())
+  number       String               @unique
+  legalEntityId Int?
+  customerId   Int
+  date         DateTime
+  dueDate      DateTime?
+  status       String
+  total        Decimal              @db.Decimal(18, 2)
+  items        SalesInvoiceItem[]
+  receiptLines CustomerReceiptLine[]
+  legalEntity Company?             @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  customer     Customer            @relation(fields: [customerId], references: [id])
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([legalEntityId, date], name: "idx_sales_invoice_company_date")
+}
+
+model CustomerReceiptHeader {
+  id                  Int                   @id @default(autoincrement())
+  receiptNumber       String                @unique
+  legalEntityId       Int
+  branchId            Int
+  customerId          Int
+  bankAccountId       Int?
+  cashAccountId       Int?
+  receivableAccountId Int
+  paymentMethod       PaymentMethod
+  paymentDate         DateTime
+  postingDate         DateTime
+  currencyCode        String
+  exchangeRate        Decimal?              @db.Decimal(18, 6)
+  amount              Decimal               @db.Decimal(18, 2)
+  bankReference       String?
+  externalReference   String?
+  narration           String
+  remarks             String?
+  status              CustomerReceiptStatus @default(DRAFT)
+  attachmentCount     Int                   @default(0)
+  createdBy           Int?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  postedBy            Int?
+  postedAt            DateTime?
+  glJournalId         Int?
+  legalEntity         Company               @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  branch              Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer            Customer              @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  bankAccount         BankAccount?          @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  cashAccount         Account?              @relation("CustomerReceiptCashAccount", fields: [cashAccountId], references: [id], onDelete: SetNull)
+  receivableAccount   Account               @relation("CustomerReceiptReceivableAccount", fields: [receivableAccountId], references: [id], onDelete: Restrict)
+  glJournal           JournalEntry?         @relation(fields: [glJournalId], references: [id], onDelete: SetNull)
+  lines               CustomerReceiptLine[]
+
+  @@index([legalEntityId, branchId, paymentDate], name: "idx_customer_receipt_scope_date")
+  @@index([customerId, status], name: "idx_customer_receipt_customer_status")
+}
+
+model CustomerReceiptLine {
+  id          Int                  @id @default(autoincrement())
+  receiptId   Int
+  lineNumber  Int
+  invoiceId   Int?
+  description String
+  appliedAmount Decimal            @db.Decimal(18, 2)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  receipt     CustomerReceiptHeader @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  invoice     SalesInvoice?        @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@unique([receiptId, lineNumber])
+  @@index([invoiceId], name: "idx_customer_receipt_line_invoice")
+}
+
+model SalesInvoiceItem {
+  id        Int          @id @default(autoincrement())
+  invoiceId Int
+  productId Int
+  quantity  Decimal      @db.Decimal(18, 3)
+  unitPrice Decimal      @db.Decimal(18, 2)
+  taxRate   Decimal?     @db.Decimal(10, 4)
+  invoice   SalesInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product   Product      @relation(fields: [productId], references: [id])
+}
+
+model PurchaseBill {
+  id           Int                @id @default(autoincrement())
+  number       String             @unique
+  legalEntityId Int?
+  supplierId   Int
+  date         DateTime
+  dueDate      DateTime?
+  status       String
+  total        Decimal            @db.Decimal(18, 2)
+  items        PurchaseBillItem[]
+  legalEntity  Company?           @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  supplier     Supplier           @relation(fields: [supplierId], references: [id])
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([legalEntityId, date], name: "idx_purchase_bill_company_date")
+}
+
+model PurchaseBillItem {
+  id        Int          @id @default(autoincrement())
+  billId    Int
+  productId Int
+  quantity  Decimal      @db.Decimal(18, 3)
+  unitCost  Decimal      @db.Decimal(18, 2)
+  taxRate   Decimal?     @db.Decimal(10, 4)
+  bill      PurchaseBill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  product   Product      @relation(fields: [productId], references: [id])
+}
+
+/// Fixed Assets & Depreciation
+model AssetCategory {
+  id                  Int                @id @default(autoincrement())
+  name                String
+  usefulLifeMonths    Int
+  residualRate        Decimal            @default(0) @db.Decimal(5, 2)
+  depreciationMethod  DepreciationMethod @default(STRAIGHT_LINE)
+  glAssetAccountId    Int?
+  glAccumDepAccountId Int?
+  glExpenseAccountId  Int?
+  assets              Asset[]
+}
+
+model Asset {
+  id                Int                @id @default(autoincrement())
+  tag               String             @unique
+  name              String
+  categoryId        Int
+  branchId          Int?
+  acquisitionDate   DateTime
+  acquisitionCost   Decimal            @db.Decimal(18, 2)
+  residualValue     Decimal            @default(0) @db.Decimal(18, 2)
+  status            AssetStatus        @default(ACTIVE)
+  depreciationStart DateTime?
+  disposalDate      DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  category          AssetCategory      @relation(fields: [categoryId], references: [id])
+  branch            Branch?            @relation(fields: [branchId], references: [id])
+  depreciationLines DepreciationLine[]
+}
+
+model DepreciationPolicy {
+  id        Int                @id @default(autoincrement())
+  name      String
+  method    DepreciationMethod
+  prorate   Boolean            @default(true)
+  midMonth  Boolean            @default(false)
+  companyId Int?
+  createdAt DateTime           @default(now())
+}
+
+model DepreciationRun {
+  id          Int                @id @default(autoincrement())
+  periodStart DateTime
+  periodEnd   DateTime
+  book        String             @default("book")
+  status      String             @default("POSTED") // PENDING, POSTED, ROLLED_BACK
+  createdAt   DateTime           @default(now())
+  lines       DepreciationLine[]
+}
+
+model DepreciationLine {
+  id          Int             @id @default(autoincrement())
+  runId       Int
+  assetId     Int
+  amount      Decimal         @db.Decimal(18, 2)
+  accumulated Decimal         @db.Decimal(18, 2)
+  periodStart DateTime
+  periodEnd   DateTime
+  run         DepreciationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  asset       Asset           @relation(fields: [assetId], references: [id])
+
+  @@index([assetId], name: "idx_depr_line_asset")
+}
+
+/// Loans & Treasury
+model Loan {
+  id           Int            @id @default(autoincrement())
+  code         String         @unique
+  lender       String
+  type         LoanType       @default(TERM)
+  principal    Decimal        @db.Decimal(18, 2)
+  currencyId   Int?
+  startDate    DateTime
+  endDate      DateTime?
+  rateType     String // FIXED, VARIABLE
+  baseRate     Decimal?       @db.Decimal(9, 4)
+  spread       Decimal?       @db.Decimal(9, 4)
+  scheduleType ScheduleType   @default(ANNUITY)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  currency     Currency?      @relation(fields: [currencyId], references: [id])
+  rates        LoanRate[]
+  schedules    LoanSchedule[]
+  payments     LoanPayment[]
+}
+
+model LoanRate {
+  id        Int      @id @default(autoincrement())
+  loanId    Int
+  effective DateTime
+  rate      Decimal  @db.Decimal(9, 4)
+  loan      Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+}
+
+model LoanSchedule {
+  id           Int           @id @default(autoincrement())
+  loanId       Int
+  installment  Int
+  dueDate      DateTime
+  principalDue Decimal       @db.Decimal(18, 2)
+  interestDue  Decimal       @db.Decimal(18, 2)
+  feesDue      Decimal       @default(0) @db.Decimal(18, 2)
+  status       String        @default("PENDING")
+  loan         Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  payments     LoanPayment[]
+
+  @@index([loanId], name: "idx_loan_schedule_loan")
+}
+
+model LoanPayment {
+  id            Int           @id @default(autoincrement())
+  loanId        Int
+  scheduleId    Int?
+  paymentDate   DateTime
+  principalPaid Decimal       @default(0) @db.Decimal(18, 2)
+  interestPaid  Decimal       @default(0) @db.Decimal(18, 2)
+  feesPaid      Decimal       @default(0) @db.Decimal(18, 2)
+  memo          String?
+  loan          Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  schedule      LoanSchedule? @relation(fields: [scheduleId], references: [id])
+}
+
+/// Notifications & Files
+model NotificationTemplate {
+  id           Int            @id @default(autoincrement())
+  code         String         @unique
+  subject      String
+  body         String
+  channel      String // EMAIL, SMS, IN_APP
+  createdAt    DateTime       @default(now())
+  Notification Notification[]
+}
+
+model Notification {
+  id         Int                   @id @default(autoincrement())
+  userId     Int?
+  templateId Int?
+  channel    String
+  payload    Json?
+  status     String                @default("PENDING")
+  createdAt  DateTime              @default(now())
+  sentAt     DateTime?
+  user       User?                 @relation(fields: [userId], references: [id])
+  template   NotificationTemplate? @relation(fields: [templateId], references: [id])
+}
+
+model FileAttachment {
+  id        Int      @id @default(autoincrement())
+  bucket    String
+  key       String
+  filename  String
+  mimeType  String?
+  size      Int?
+  entity    String?
+  entityId  String?
+  createdAt DateTime @default(now())
+}

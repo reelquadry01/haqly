@@ -1,0 +1,1391 @@
+
+> erp-platform@0.1.0 web:dev
+> npm --workspace apps/web run dev
+
+
+> @erp/web@0.1.0 dev
+> next dev -p 3001
+
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.199:3001
+
+ ✓ Starting...
+ ✓ Ready in 5.2s
+ ○ Compiling / ...
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2877:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ GET / 200 in 263ms
+ GET / 200 in 163ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2877:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ✓ Compiled /dashboard in 2.3s (735 modules)
+ GET /dashboard 200 in 2730ms
+ ○ Compiling /supply-chain ...
+ ✓ Compiled /supply-chain in 5.8s (1228 modules)
+ GET /supply-chain 200 in 6215ms
+ ○ Compiling /crm ...
+ ✓ Compiled /crm in 1215ms (1237 modules)
+ GET /crm 200 in 1471ms
+ ○ Compiling /administration ...
+ ✓ Compiled /administration in 1137ms (1258 modules)
+ GET /administration 200 in 1371ms
+ GET /administration?view=Workflow+%26+Approval 200 in 68ms
+ GET /administration?view=Security+%26+Audit 200 in 67ms
+ ○ Compiling /finance ...
+ ✓ Compiled /finance in 1193ms (1259 modules)
+ GET /finance 200 in 1345ms
+ ○ Compiling /journal-entries ...
+ ✓ Compiled /journal-entries in 1317ms (1280 modules)
+ GET /journal-entries 200 in 1480ms
+ ✓ Compiled /crm in 484ms (743 modules)
+ GET /crm 200 in 686ms
+ ✓ Compiled /administration in 499ms (742 modules)
+ GET /administration 200 in 736ms
+ GET /crm 200 in 79ms
+ ○ Compiling /finance ...
+ ✓ Compiled /finance in 623ms (729 modules)
+ GET /finance 200 in 838ms
+ GET /finance?view=Bank+%26+Cash 200 in 62ms
+ ○ Compiling /procurement ...
+ ✓ Compiled /procurement in 1116ms (1263 modules)
+ GET /procurement 200 in 1305ms
+ ✓ Compiled /crm in 459ms (740 modules)
+ GET /crm 200 in 666ms
+ GET /crm?view=Pipeline 200 in 50ms
+ GET / 200 in 70ms
+ GET /dashboard 200 in 80ms
+ GET /finance 200 in 80ms
+ ○ Compiling /fixed-assets ...
+ ✓ Compiled /fixed-assets in 2.2s (1265 modules)
+ GET /fixed-assets 200 in 2618ms
+ GET /fixed-assets 200 in 69ms
+ GET /fixed-assets?view=Depreciation+Schedule 200 in 88ms
+ ✓ Compiled in 1715ms (1265 modules)
+ GET /finance?view=Dashboard 200 in 301ms
+ ○ Compiling /administration ...
+ ✓ Compiled /administration in 2.8s (746 modules)
+ GET /administration 200 in 3202ms
+ GET /dashboard 200 in 131ms
+ GET /finance 200 in 62ms
+ ○ Compiling /crm ...
+ ✓ Compiled /crm in 814ms (730 modules)
+ GET /crm 200 in 1153ms
+ GET /crm?view=Customers 200 in 61ms
+ ✓ Compiled in 4s (1261 modules)
+ ○ Compiling /sales ...
+ ✓ Compiled /sales in 1006ms (1276 modules)
+ GET /sales 200 in 1271ms
+ ✓ Compiled in 840ms (1276 modules)
+ ✓ Compiled in 619ms (1276 modules)
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ○ Compiling /sales ...
+ GET /sales 200 in 667ms
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⚠ ./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+
+./app/crm/page.tsx
+Attempted import error: 'updateSalesCustomer' is not exported from '../../lib/api' (imported as 'updateSalesCustomer').
+
+Import trace for requested module:
+./app/crm/page.tsx
+ ⨯ ./lib/api.ts
+Error:   [31mx[0m Expected ',', got '{'
+      ,-[[36;1;4mC:\Users\USER\Documents\FINOVA-ERP\apps\web\lib\api.ts[0m:1153:1]
+ [2m1150[0m |     country?: string;
+ [2m1151[0m |   },
+ [2m1152[0m | ) {
+ [2m1153[0m |   const response = await fetch(${apiBaseUrl}/sales/customers/, {
+      : [35;1m                                ^[0m
+ [2m1154[0m |     method: "PATCH",
+ [2m1155[0m |     headers: {
+ [2m1156[0m |       "Content-Type": "application/json",
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/api.ts
+./components/login-screen.tsx
+ ✓ Compiled /sales in 1055ms (1261 modules)
+ ✓ Compiled in 2.6s (1261 modules)
+ GET / 200 in 424ms
+ GET /dashboard 200 in 132ms
+ ○ Compiling /administration ...
+ ✓ Compiled /administration in 1716ms (736 modules)
+ GET /administration 200 in 3120ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /administration 200 in 209ms
+ GET /administration?view=System+Settings 200 in 63ms
+ GET /dashboard 200 in 152ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ○ Compiling /crm ...
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /crm 200 in 1113ms
+ GET /crm 200 in 119ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /procurement 200 in 952ms
+ GET /procurement 200 in 94ms
+ GET /procurement?view=RFQs 200 in 120ms
+ GET /supply-chain 200 in 51ms
+ GET /administration 200 in 64ms
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ GET /administration?view=Notifications 200 in 66ms
+ GET /crm 200 in 96ms
+ GET /procurement 200 in 72ms
+ ✓ Compiled /procurement in 2.4s (1272 modules)
+ ○ Compiling /financial-management ...
+ ✓ Compiled /financial-management in 1056ms (1279 modules)
+ GET /financial-management 200 in 1378ms
+ ○ Compiling /finance ...
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /finance 200 in 2038ms
+ GET /finance 200 in 84ms
+ GET /finance 200 in 58ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2895:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /sales 200 in 2045ms
+ GET /sales 200 in 140ms
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2912:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /sales 200 in 499ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2912:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /sales 200 in 473ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2912:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2912:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /dashboard 200 in 2287ms
+ GET /dashboard 200 in 97ms
+ GET /finance 200 in 165ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2912:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ✓ Compiled /reports in 3.2s (1290 modules)
+ GET /reports 200 in 4686ms
+ GET /sales 200 in 141ms
+ ○ Compiling /journal-entries ...
+ ✓ Compiled /journal-entries in 1185ms (755 modules)
+ GET /journal-entries 200 in 1951ms
+ GET /sales 200 in 827ms
+ GET /dashboard 200 in 126ms
+ GET /finance 200 in 76ms
+ GET /sales 200 in 84ms
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ GET /dashboard 200 in 121ms
+ GET /finance 200 in 99ms
+ GET /dashboard 200 in 73ms
+ GET /finance 200 in 54ms
+ GET /financial-management 200 in 76ms
+ ○ Compiling /crm ...
+ ✓ Compiled /crm in 1011ms (738 modules)
+ GET /crm 200 in 1412ms
+ GET /crm?view=Customers 200 in 62ms
+ GET /crm?view=Interactions 200 in 57ms
+ ✓ Compiled in 3.8s (1279 modules)
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2948:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ GET /crm?view=Interactions 200 in 287ms
+ ✓ Compiled in 2s (1279 modules)
+ ✓ Compiled in 947ms (1279 modules)
+ ✓ Compiled in 942ms (546 modules)
+ ✓ Compiled in 1701ms (1279 modules)
+ ○ Compiling /administration ...
+ ✓ Compiled /administration in 2.2s (745 modules)
+ GET /administration 200 in 2635ms
+ GET /administration 200 in 133ms
+ GET /crm 200 in 82ms
+ GET /crm?view=Customers 200 in 73ms
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ GET /crm?view=Interactions 200 in 72ms
+ GET /sales 200 in 133ms
+ GET /finance 200 in 73ms
+ GET /crm 200 in 130ms
+ GET /sales 200 in 116ms
+ GET /crm 200 in 108ms
+ ○ Compiling /procurement ...
+ ✓ Compiled /procurement in 3.6s (745 modules)
+ GET /procurement 200 in 4083ms
+ GET /procurement 200 in 152ms
+ GET /crm 200 in 95ms
+ ✓ Compiled in 3.2s (1286 modules)
+ ✓ Compiled in 734ms (546 modules)
+ GET /crm?view=Customers 200 in 912ms
+ GET /dashboard 200 in 948ms
+ GET /sales 200 in 88ms
+ GET /crm 200 in 69ms
+ ○ Compiling /journal-entries ...
+ ✓ Compiled /journal-entries in 3.3s (752 modules)
+ GET /journal-entries 200 in 3999ms
+ GET /journal-entries 200 in 135ms
+ ✓ Compiled in 2.3s (1298 modules)
+ GET /administration 200 in 412ms
+ ○ Compiling /loans ...
+ ✓ Compiled /loans in 1078ms (1305 modules)
+ GET /loans 200 in 1280ms
+ GET /loans?view=Amortization+Schedule 200 in 86ms
+ ✓ Compiled in 327ms (548 modules)
+ GET /sales 200 in 167ms
+ GET /procurement 200 in 115ms
+ ✓ Compiled in 1135ms (548 modules)
+ ✓ Compiled in 2.1s (548 modules)
+ ✓ Compiled in 326ms (548 modules)
+ ✓ Compiled in 6s (1288 modules)
+ ✓ Compiled in 423ms (548 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 2.8s (1289 modules)
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\vendor-chunks\lucide-react.js'
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\_not-found\page.js:291:47)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\_not-found\page.js:294:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\vendor-chunks\\lucide-react.js'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 10s (1641 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET /crm 500 in 26876ms
+ GET /crm 500 in 470ms
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\vendor-chunks\lucide-react.js'
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:509:47)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:512:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\vendor-chunks\\lucide-react.js',
+  page: '/crm'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\vendor-chunks\lucide-react.js'
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:509:47)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:512:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\vendor-chunks\\lucide-react.js',
+  page: '/crm'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET /crm 500 in 1229ms
+ GET /crm 500 in 548ms
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\vendor-chunks\lucide-react.js'
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:509:47)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:512:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\vendor-chunks\\lucide-react.js',
+  page: '/crm'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\vendor-chunks\lucide-react.js'
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:509:47)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:512:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\vendor-chunks\\lucide-react.js',
+  page: '/crm'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET /crm 500 in 1087ms
+ GET /crm 500 in 464ms
+ ⨯ Error: Cannot find module './620.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:2:8249)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:2:8315) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/crm'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+Error: Cannot find module './620.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:2:8249)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\crm\page.js:2:8315) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/crm'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET /crm 500 in 1051ms
+ GET /crm 500 in 462ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2950:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2952:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2952:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ○ Compiling / ...
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(2957:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ✓ Compiled /_error in 2.3s (1651 modules)
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 6340ms
+ GET / 500 in 100ms
+ ✓ Compiled in 1934ms (1544 modules)
+ ✓ Compiled in 1029ms (1544 modules)
+ ✓ Compiled in 2.2s (1548 modules)
+ ✓ Compiled in 1939ms (1550 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 1369ms (853 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 3.7s (1657 modules)
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 6817ms
+ GET / 500 in 137ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 1174ms
+ GET / 500 in 89ms
+ ✓ Compiled in 2.2s (1657 modules)
+ ✓ Compiled in 2s (1657 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\page.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\page.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 2350ms
+ GET / 500 in 169ms
+ ✓ Compiled in 731ms (710 modules)
+ ✓ Compiled in 3.3s (1664 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\page.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\app\page.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 1518ms
+ GET / 500 in 102ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(3002:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(3002:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ○ Compiling / ...
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(3002:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(3002:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ✓ Compiled /_error in 1568ms (1664 modules)
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 4956ms
+ GET / 500 in 131ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\webpack-runtime.js
+- C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\require.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\load-components.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\utils.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\options.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\swc\index.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\config.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\next.js
+- C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 1443ms
+ GET / 500 in 90ms
+ ⚠ ./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Warning
+
+(3002:3) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+ ✓ Compiled in 5s (1570 modules)
+ ✓ Compiled in 2.4s (1570 modules)
+ ✓ Compiled in 1714ms (1570 modules)
+ ✓ Compiled in 431ms (717 modules)
+ ✓ Compiled in 4.3s (1570 modules)
+ ✓ Compiled in 351ms (717 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\USER\Documents\FINOVA-ERP\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\USER\Documents\FINOVA-ERP\apps\web\app\globals.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 1 items } -> webpack/lib/ModuleWarning -> Warning
+ ○ Compiling / ...
+ ✓ Compiled / in 2s (863 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\next-font-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\next-font-manifest.json',
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.9s (1676 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\next-font-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\next-font-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 5388ms
+ GET / 500 in 123ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 1280ms
+ GET / 500 in 85ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/procurement'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/sales'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/procurement'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/sales'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET /procurement 500 in 2569ms
+ GET /procurement 500 in 147ms
+ GET /sales 500 in 2549ms
+ GET /sales 500 in 147ms
+ ○ Compiling /finance ...
+ ✓ Compiled /finance in 5.7s (953 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/finance'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/finance'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ ○ Compiling / ...
+ ✓ Compiled / in 3.5s (958 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Documents\FINOVA-ERP\apps\web\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Documents\\FINOVA-ERP\\apps\\web\\.next\\routes-manifest.json'
+}
+ GET / 500 in 5777ms
+ GET / 500 in 130ms
