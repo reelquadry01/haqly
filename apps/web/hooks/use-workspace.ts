@@ -4,25 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { getCompanies, type CompanyRecord } from "../lib/api";
 import { readSession, writeSession, type StoredSession } from "../lib/session";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
-
-// Attempt a silent token refresh using the httpOnly refresh cookie.
-// Returns the new access token string on success, or null on failure.
-async function tryRefreshToken(): Promise<string | null> {
-  try {
-    const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!response.ok) return null;
-    const data = await response.json() as { token?: string };
-    return data.token ?? null;
-  } catch {
-    return null;
-  }
-}
-
 export function useWorkspace() {
   const [session, setSession] = useState<StoredSession | null>(null);
   const [companies, setCompanies] = useState<CompanyRecord[]>([]);
@@ -30,10 +11,10 @@ export function useWorkspace() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const storedSession = readSession();
-    setSession(storedSession);
+    const nextSession = readSession();
+    setSession(nextSession);
 
-    if (!storedSession.token) {
+    if (!nextSession.token) {
       setLoading(false);
       return;
     }
@@ -43,57 +24,53 @@ export function useWorkspace() {
     async function load() {
       setLoading(true);
       setError("");
-
       try {
-        // Step 1: Always attempt silent refresh first.
-        // The in-memory access token is lost on every page reload.
-        // The httpOnly refresh cookie survives and gives us a fresh token.
-        let activeToken = storedSession.token;
-        const refreshed = await tryRefreshToken();
-        if (refreshed) {
-          activeToken = refreshed;
-          // Persist fresh token back to session so all subsequent API calls use it
-          writeSession({ ...storedSession, token: refreshed });
-          if (!cancelled) {
-            setSession((current) => current ? { ...current, token: refreshed } : current);
-          }
+        // Always attempt a silent refresh first — the in-memory access token
+        // is lost on page reload, so we need a fresh one from the refresh cookie
+        let activeToken = nextSession.token;
+        try {
+          const refreshed = await silentRefresh();
+          if (refreshed) activeToken = refreshed;
+        } catch {
+          // silentRefresh failed — proceed with stored token, will 401 if expired
         }
-
-        // Step 2: Load companies with the fresh (or fallback) token
         const records = await getCompanies(activeToken);
-        if (cancelled) return;
-
+        if (cancelled) {
+          return;
+        }
         setCompanies(records);
 
-        const selectedCompany =
-          records.find((company) => company.id === storedSession.companyId) ?? records[0];
+        const selectedCompany = records.find((company) => company.id === nextSession.companyId) ?? records[0];
         const selectedBranch =
-          selectedCompany?.branches.find((branch) => branch.id === storedSession.branchId) ??
-          selectedCompany?.branches[0];
+          selectedCompany?.branches.find((branch) => branch.id === nextSession.branchId) ?? selectedCompany?.branches[0];
 
         if (selectedCompany) {
-          const updatedSession: StoredSession = {
-            ...storedSession,
-            token: activeToken,
+          const updatedSession = {
+            ...nextSession,
             companyId: selectedCompany.id,
             companyName: selectedCompany.name,
             branchId: selectedBranch?.id ?? null,
             branchName: selectedBranch?.name ?? "All branches",
           };
           writeSession(updatedSession);
-          if (!cancelled) setSession(updatedSession);
+          setSession(updatedSession);
         }
       } catch (loadError) {
         if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : "Could not load workspace.");
+          setError(loadError instanceof Error ? loadError.message : "Could not load companies.");
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     void load();
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const activeCompany = useMemo(() => {
@@ -105,7 +82,10 @@ export function useWorkspace() {
   }, [activeCompany, session?.branchId]);
 
   function updateSession(patch: Partial<StoredSession>) {
-    if (!session) return;
+    if (!session) {
+      return;
+    }
+
     const next = { ...session, ...patch };
     writeSession(next);
     setSession(next);
@@ -113,7 +93,10 @@ export function useWorkspace() {
 
   function setCompany(companyId: number) {
     const company = companies.find((entry) => entry.id === companyId);
-    if (!company || !session) return;
+    if (!company || !session) {
+      return;
+    }
+
     updateSession({
       companyId: company.id,
       companyName: company.name,
@@ -124,7 +107,10 @@ export function useWorkspace() {
 
   function setBranch(branchId: number) {
     const branch = activeCompany?.branches.find((entry) => entry.id === branchId);
-    if (!branch) return;
+    if (!branch) {
+      return;
+    }
+
     updateSession({ branchId: branch.id, branchName: branch.name });
   }
 
@@ -143,7 +129,9 @@ export function useWorkspace() {
     setBranch,
     setPeriod,
     refreshCompanies: async () => {
-      if (!session?.token) return;
+      if (!session?.token) {
+        return;
+      }
       const records = await getCompanies(session.token);
       setCompanies(records);
     },
