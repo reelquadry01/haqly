@@ -5182,3 +5182,26 @@ body {
   flex-direction: column !important;
   gap: 6px !important;
 }
+/* ── User Management Modal ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.55);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-card {
+  width: min(480px, 92vw);
+  padding: 28px;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(10, 20, 40, 0.22);
+}
+
+.modal-card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}

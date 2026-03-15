@@ -104,7 +104,10 @@ export default function AdministrationPage() {
   const [logoUrl, setLogoUrl] = useState("");
   const [state, setState] = useState<AdminState>(() => createDefaultAdminState());
   const [savingUser, setSavingUser] = useState(false);
-  const [userDraft, setUserDraft] = useState({ firstName: "", lastName: "", email: "", password: makePassword(), role: "Admin" });
+  const [userDraft, setUserDraft] = useState({ firstName: "", lastName: "", email: "", password: makePassword(), role: "Admin" })
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [resetPasswordDraft, setResetPasswordDraft] = useState({ userId: 0, userName: "", newPassword: makePassword() });
+  const [showResetModal, setShowResetModal] = useState(false);;
   const [roleDraft, setRoleDraft] = useState({ name: "", description: "", permissions: ["users:view", "org:view"] as string[] });
   const [permissionDraft, setPermissionDraft] = useState({ code: "", description: "" });
   const [approvalDraft, setApprovalDraft] = useState({ module: "Procurement", transaction: "Purchase Order", approvers: "HOD > Procurement Head", range: "0 - 500,000" });
@@ -415,6 +418,73 @@ export default function AdministrationPage() {
     }
   }
 
+
+  async function handleUpdateUser() {
+    if (!session?.token || !editingUserId) return;
+    setSavingUser(true);
+    try {
+      await updateUser(session.token, editingUserId, {
+        firstName: userDraft.firstName.trim() || undefined,
+        lastName: userDraft.lastName.trim() || undefined,
+        email: userDraft.email.trim() || undefined,
+      });
+      if (userDraft.role) {
+        await assignAdminRoles(session.token, editingUserId, [userDraft.role]);
+      }
+      await loadUserDirectory(session.token);
+      setEditingUserId(null);
+      setUserDraft({ firstName: "", lastName: "", email: "", password: makePassword(), role: "Admin" });
+      setMessage("User updated and directory refreshed.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not update user.");
+    } finally {
+      setSavingUser(false);
+    }
+  }
+
+  async function handleResetPassword() {
+    if (!session?.token || !resetPasswordDraft.userId) return;
+    setSavingUser(true);
+    try {
+      const result = await resetUserPassword(session.token, resetPasswordDraft.userId, resetPasswordDraft.newPassword);
+      setShowResetModal(false);
+      setResetPasswordDraft({ userId: 0, userName: "", newPassword: makePassword() });
+      setMessage(result.message ?? `Password reset for ${resetPasswordDraft.userName}. All sessions revoked.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not reset password.");
+    } finally {
+      setSavingUser(false);
+    }
+  }
+
+  async function handleDeleteUser(userId: number, userName: string) {
+    if (!session?.token) return;
+    if (!window.confirm(`Remove ${userName} from the system? This will deactivate their account and revoke all sessions.`)) return;
+    setSavingUser(true);
+    try {
+      await deleteUser(session.token, userId);
+      await loadUserDirectory(session.token);
+      setMessage(`${userName} has been removed from the active directory.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not delete user.");
+    } finally {
+      setSavingUser(false);
+    }
+  }
+
+  function beginEditUser(row: { backendId: number; name: string; email: string; status: string }) {
+    const user = users.find((u) => u.id === row.backendId);
+    setEditingUserId(row.backendId);
+    setUserDraft({
+      firstName: user?.firstName ?? row.name.split(" ")[0] ?? "",
+      lastName: user?.lastName ?? row.name.split(" ").slice(1).join(" ") ?? "",
+      email: user?.email ?? row.email,
+      password: makePassword(),
+      role: "Admin",
+    });
+    document.getElementById("admin-user-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setMessage(`Editing ${row.name}. Update the fields below and click Save changes.`);
+  }
   async function toggleUser(userId: number, active: boolean) {
     if (!session?.token) return;
     const target = users.find((user) => user.id === userId);
@@ -692,10 +762,10 @@ export default function AdministrationPage() {
       <section className="content-grid split-65">
         <SectionCard title="User management" eyebrow="Live access directory">
           <div id="admin-users-section" />
-          <DataTable title="Users" tableId="admin-users-live" exportFileName="admin-users" rows={userRows} searchValue={(row) => `${row.name} ${row.email} ${row.status}`} filters={[{ key: "active", label: "Active", predicate: (row) => row.status === "Approved" }, { key: "inactive", label: "Inactive", predicate: (row) => row.status === "Archived" }]} advancedFilters={[{ key: "userName", label: "User name", type: "text", getValue: (row) => row.name }, { key: "email", label: "Email", type: "text", getValue: (row) => row.email }, { key: "status", label: "Status", type: "select", getValue: (row) => row.status, options: [{ value: "Approved", label: "Active" }, { value: "Archived", label: "Inactive" }] }, { key: "lastActivity", label: "Last activity", type: "date-range", getValue: (row) => row.rawLastActivity }]} bulkActions={["Export CSV", "Export Excel", "Export PDF"]} columns={[{ key: "name", label: "User", render: (row) => <div><strong>{row.name}</strong><p className="cell-subcopy">{row.email}</p></div>, exportValue: (row) => row.name }, { key: "lastActivity", label: "Last activity", render: (row) => row.lastActivity, exportValue: (row) => row.lastActivity }, { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status as "Approved" | "Archived"} />, exportValue: (row) => row.status }, { key: "actions", label: "Actions", render: (row) => <RowActionMenu label={`User actions for ${row.name}`} items={[{ label: `Assign ${userDraft.role}`, description: "Assign the selected role to this user", onSelect: () => assignRoleToUser(row.backendId, row.name), disabled: savingUser }, { label: row.status === "Approved" ? "Deactivate user" : "Activate user", description: "Update user access status", onSelect: () => toggleUser(row.backendId, row.status !== "Approved"), disabled: savingUser }]} />, exportValue: () => "Interactive controls" }]} />
+          <DataTable title="Users" tableId="admin-users-live" exportFileName="admin-users" rows={userRows} searchValue={(row) => `${row.name} ${row.email} ${row.status}`} filters={[{ key: "active", label: "Active", predicate: (row) => row.status === "Approved" }, { key: "inactive", label: "Inactive", predicate: (row) => row.status === "Archived" }]} advancedFilters={[{ key: "userName", label: "User name", type: "text", getValue: (row) => row.name }, { key: "email", label: "Email", type: "text", getValue: (row) => row.email }, { key: "status", label: "Status", type: "select", getValue: (row) => row.status, options: [{ value: "Approved", label: "Active" }, { value: "Archived", label: "Inactive" }] }, { key: "lastActivity", label: "Last activity", type: "date-range", getValue: (row) => row.rawLastActivity }]} bulkActions={["Export CSV", "Export Excel", "Export PDF"]} columns={[{ key: "name", label: "User", render: (row) => <div><strong>{row.name}</strong><p className="cell-subcopy">{row.email}</p></div>, exportValue: (row) => row.name }, { key: "lastActivity", label: "Last activity", render: (row) => row.lastActivity, exportValue: (row) => row.lastActivity }, { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status as "Approved" | "Archived"} />, exportValue: (row) => row.status }, { key: "actions", label: "Actions", render: (row) => <RowActionMenu label={`User actions for ${row.name}`} items={[{ label: `Assign ${userDraft.role}`, description: "Assign the selected role to this user", onSelect: () => assignRoleToUser(row.backendId, row.name), disabled: savingUser }, { label: row.status === "Approved" ? "Deactivate user" : "Activate user", description: "Toggle active status", onSelect: () => toggleUser(row.backendId, row.status !== "Approved"), disabled: savingUser }, { label: "Edit user", description: "Load this user into the edit form", onSelect: () => beginEditUser(row), disabled: savingUser }, { label: "Reset password", description: "Set a new password and revoke sessions", onSelect: () => { setResetPasswordDraft({ userId: row.backendId, userName: row.name, newPassword: makePassword() }); setShowResetModal(true); }, disabled: savingUser }, { label: "Delete user", description: "Deactivate and remove from directory", onSelect: () => void handleDeleteUser(row.backendId, row.name), disabled: savingUser }]} />, exportValue: () => "Interactive controls" }]} />
         </SectionCard>
-        <SectionCard title="Create user" eyebrow="User & access management">
-          <div className="action-form-stack"><div className="form-grid two-up"><label className="field"><span>First name</span><input value={userDraft.firstName} onChange={(event) => setUserDraft((current) => ({ ...current, firstName: event.target.value }))} /></label><label className="field"><span>Last name</span><input value={userDraft.lastName} onChange={(event) => setUserDraft((current) => ({ ...current, lastName: event.target.value }))} /></label></div><div className="form-grid two-up"><label className="field"><span>Email</span><input value={userDraft.email} onChange={(event) => setUserDraft((current) => ({ ...current, email: event.target.value }))} /></label><label className="field"><span>Role</span><select className="select-input" value={userDraft.role} onChange={(event) => setUserDraft((current) => ({ ...current, role: event.target.value }))}><option>Admin</option><option>Accountant</option><option>Procurement Officer</option><option>Inventory Officer</option><option>HR Officer</option><option>CFO / Finance Director</option></select></label></div><label className="field"><span>Temporary password</span><div className="inline-actions"><input value={userDraft.password} onChange={(event) => setUserDraft((current) => ({ ...current, password: event.target.value }))} /><button className="ghost-button small" type="button" onClick={() => setUserDraft((current) => ({ ...current, password: makePassword() }))}>Regenerate</button></div></label></div>
+        <SectionCard title={editingUserId ? "Edit user" : "Create user"} eyebrow="User & access management">
+          <div id="admin-user-form" className="action-form-stack"><div className="form-grid two-up"><label className="field"><span>First name</span><input value={userDraft.firstName} onChange={(event) => setUserDraft((current) => ({ ...current, firstName: event.target.value }))} /></label><label className="field"><span>Last name</span><input value={userDraft.lastName} onChange={(event) => setUserDraft((current) => ({ ...current, lastName: event.target.value }))} /></label></div><div className="form-grid two-up"><label className="field"><span>Email</span><input value={userDraft.email} onChange={(event) => setUserDraft((current) => ({ ...current, email: event.target.value }))} /></label><label className="field"><span>Role</span><select className="select-input" value={userDraft.role} onChange={(event) => setUserDraft((current) => ({ ...current, role: event.target.value }))}><option>Admin</option><option>Accountant</option><option>Procurement Officer</option><option>Inventory Officer</option><option>HR Officer</option><option>CFO / Finance Director</option></select></label></div><label className="field"><span>Temporary password</span><div className="inline-actions"><input value={userDraft.password} onChange={(event) => setUserDraft((current) => ({ ...current, password: event.target.value }))} /><button className="ghost-button small" type="button" onClick={() => setUserDraft((current) => ({ ...current, password: makePassword() }))}>Regenerate</button></div></label></div>
         </SectionCard>
       </section>
 

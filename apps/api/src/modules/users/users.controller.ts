@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './users.dto';
+import { CreateUserDto, UpdateUserDto, ResetPasswordDto } from './users.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { RequirePermissions } from '../auth/permissions.decorator';
@@ -35,6 +35,16 @@ export class UsersController {
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
     return this.users.update(id, dto);
   }
+
+  @Post(':id/reset-password')
+  @RequirePermissions('users:update')
+  resetPassword(@Param('id', ParseIntPipe) id: number, @Body() dto: ResetPasswordDto) {
+    return this.users.resetPassword(id, dto);
+  }
+
+  @Delete(':id')
+  @RequirePermissions('users:update')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.users.remove(id);
+  }
 }
-
-

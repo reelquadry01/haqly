@@ -3082,3 +3082,19 @@ export async function listApprovalRules(token: string, companyId: number) {
     "Could not load approval rules",
   );
 }
+export async function resetUserPassword(token: string, userId: number, password: string) {
+  const response = await fetch(`${apiBaseUrl}/users/${userId}/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ password }),
+  });
+  return readApiResponse<{ id: number; message: string }>(response, "Could not reset password");
+}
+
+export async function deleteUser(token: string, userId: number) {
+  const response = await fetch(`${apiBaseUrl}/users/${userId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<{ id: number; message: string }>(response, "Could not delete user");
+}
