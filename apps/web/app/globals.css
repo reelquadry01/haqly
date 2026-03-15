@@ -4185,3 +4185,411 @@ button:focus-visible {
     radial-gradient(circle at 82% 18%, rgba(183, 110, 121, 0.05), transparent 16%),
     linear-gradient(180deg, #eef0f4 0%, #e4e6ea 100%) !important;
 }
+
+/* ─── Layout Overhaul — Sleek Industry-Standard ERP ─────────────────────────
+   Pure CSS overrides. Zero functionality changes.
+   Principles: sidebar tight, topbar focused, hero compact, content first.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── 1. Sidebar — tighter, starts collapsed ─────────────────────────────────
+
+   Industry standard (SAP Fiori, Odoo, NetSuite): icon-only sidebar by default.
+   288px expanded → 64px collapsed. Smooth transition on toggle.
+   The collapse button already exists — we just change the default. */
+
+:root {
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 64px;
+}
+
+.erp-sidebar {
+  padding: 14px 10px !important;
+  transition: width 200ms ease;
+  overflow: hidden;
+}
+
+/* Tighter nav links in collapsed state */
+.erp-shell.collapsed .erp-nav__link {
+  padding: 10px !important;
+  justify-content: center;
+}
+
+.erp-shell.collapsed .erp-nav__icon {
+  margin: 0 auto;
+}
+
+/* Tighter nav links in expanded state */
+.erp-nav__link {
+  padding: 9px 10px !important;
+  border-radius: 10px !important;
+  font-size: 13px;
+  transition: background 120ms ease;
+}
+
+/* Tighter nav gap */
+.erp-nav {
+  gap: 12px !important;
+}
+
+.erp-nav__group {
+  gap: 4px !important;
+}
+
+.erp-nav__items {
+  gap: 2px !important;
+}
+
+/* Nav section labels — smaller, subtler */
+.erp-nav__section {
+  font-size: 10px !important;
+  letter-spacing: 0.07em !important;
+  padding: 4px 10px 2px !important;
+  opacity: 0.55;
+}
+
+/* Workspace context — tighter */
+.workspace-context {
+  padding: 10px 12px !important;
+  margin: 8px 0 12px !important;
+  border-radius: 10px !important;
+}
+
+.erp-sidebar__top {
+  margin-bottom: 4px;
+}
+
+/* Brand mark — slightly smaller */
+.brand-block__mark {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+}
+
+/* ── 2. Topbar — lean and focused ────────────────────────────────────────────
+
+   Keep: search, quick create, notifications, user menu.
+   Move: breadcrumbs become part of the page header (see hero below).
+   Reduce height from ~64px to 50px. */
+
+.erp-topbar {
+  padding: 0 20px !important;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.erp-topbar__left,
+.erp-topbar__right {
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+}
+
+/* Search bar — tighter */
+.command-launch {
+  min-width: 220px !important;
+  max-width: 300px;
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+}
+
+.command-launch kbd {
+  font-size: 11px !important;
+  padding: 1px 6px !important;
+}
+
+/* Topbar selectors — tighter pills */
+.topbar-select-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-select {
+  min-height: 34px !important;
+  min-width: 0 !important;
+  max-width: 140px;
+  padding: 0 10px 0 30px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  background: var(--surface) !important;
+}
+
+.topbar-select-icon {
+  left: 9px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Quick create button — tighter */
+.erp-topbar .primary-button {
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  box-shadow: 0 2px 8px rgba(44, 62, 115, 0.18) !important;
+}
+
+/* Icon-only buttons in topbar */
+.erp-topbar .ghost-button.icon-only {
+  min-height: 34px !important;
+  width: 34px !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+}
+
+/* Breadcrumbs — hide in topbar, shown in page header instead */
+.breadcrumb-row {
+  display: none !important;
+}
+
+/* ── 3. Page hero → compact page header ─────────────────────────────────────
+
+   The full hero (160px) collapses to a slim header bar (52px).
+   Title on left as plain text, meta pills inline, actions on the right.
+   Description is hidden — it's redundant for daily users.
+   The section eyebrow (branch name) moves inline as a small pill. */
+
+.page-hero {
+  padding: 0 24px !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  gap: 16px;
+}
+
+/* Hide wordy description in compact header */
+.page-hero > div > p {
+  display: none !important;
+}
+
+/* Page title — sleek inline */
+.page-hero h1 {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+/* Section eyebrow — becomes a subtle prefix */
+.page-hero .section-eyebrow {
+  font-size: 11px !important;
+  color: var(--text-faint) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 400 !important;
+  margin-bottom: 0 !important;
+  display: none !important;
+}
+
+/* Meta cards — become compact inline pills */
+.page-hero__meta {
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+}
+
+.hero-meta-card {
+  min-width: 0 !important;
+  padding: 4px 10px !important;
+  border-radius: 7px !important;
+  background: var(--surface-muted) !important;
+  display: flex !important;
+  align-items: center;
+}
+
+.hero-meta-card .meta-stack {
+  display: flex !important;
+  align-items: center;
+  gap: 4px !important;
+}
+
+.hero-meta-card .meta-label {
+  font-size: 10px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  color: var(--text-faint) !important;
+  white-space: nowrap;
+}
+
+.hero-meta-card .meta-label::after {
+  content: ":";
+}
+
+.hero-meta-card .meta-value {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Hero actions — tighter */
+.hero-actions-inline {
+  gap: 6px !important;
+}
+
+.hero-actions-inline .primary-button,
+.hero-actions-inline .ghost-button {
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: 7px !important;
+  font-size: 12px !important;
+}
+
+.hero-actions-inline .module-action-bar {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ── 4. Module menu strip (Browse) — hidden ──────────────────────────────────
+
+   Redundant — the sidebar and subnav tabs already cover this.
+   Hidden entirely. No visual trace. */
+
+.module-menu-strip {
+  display: none !important;
+}
+
+/* ── 5. Subnav tabs — keep, but tighten ─────────────────────────────────────
+
+   These are the correct pattern. Just reduce the visual weight. */
+
+.tab-strip {
+  padding: 0 20px !important;
+  gap: 2px !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  min-height: 38px !important;
+  align-items: flex-end;
+}
+
+.tab-chip {
+  height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+/* ── 6. Module action bar — tighter ─────────────────────────────────────────
+
+   Reduce from tall action strip to a lean bar. */
+
+.module-action-bar {
+  padding: 10px 20px !important;
+  border-radius: 0 !important;
+  background: var(--surface) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+}
+
+.module-action-bar__main {
+  gap: 8px !important;
+}
+
+.module-action-bar .primary-button,
+.module-action-bar .ghost-button {
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: 7px !important;
+  font-size: 12px !important;
+}
+
+/* ── 7. Page content — tighter padding ──────────────────────────────────────
+
+   With the hero now 52px instead of 160px, content can breathe more
+   without excessive top padding. */
+
+.erp-page {
+  padding: 20px !important;
+  gap: 16px !important;
+}
+
+/* KPI cards — slightly tighter */
+.kpi-grid {
+  gap: 12px !important;
+}
+
+.kpi-card {
+  padding: 16px !important;
+}
+
+.kpi-card__head {
+  margin-bottom: 6px !important;
+}
+
+/* Section cards — tighter header */
+.section-card__header {
+  margin-bottom: 12px !important;
+}
+
+/* ── 8. Floating menus — sleeker ─────────────────────────────────────────────*/
+
+.floating-menu {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(10, 46, 101, 0.14) !important;
+  padding: 6px !important;
+}
+
+.floating-menu__item {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+}
+
+/* ── 9. Smooth transitions everywhere ───────────────────────────────────────*/
+
+.erp-nav__link,
+.erp-topbar,
+.page-hero,
+.tab-chip,
+.hero-meta-card,
+.kpi-card,
+.section-card {
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+/* ── 10. Hover refinements ──────────────────────────────────────────────────*/
+
+.erp-nav__link:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.erp-nav__link.active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-left: 2px solid rgba(47, 164, 169, 0.8) !important;
+}
+
+.hero-meta-card:hover {
+  background: var(--surface-alt) !important;
+  border-color: var(--border-strong) !important;
+}
+
+/* ── 11. Topbar notification badge ──────────────────────────────────────────*/
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 1.5px solid var(--surface);
+}
