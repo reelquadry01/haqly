@@ -4905,3 +4905,280 @@ body {
   position: relative;
   z-index: 25;
 }
+
+/* ─── Fiscal Year Card Fix ───────────────────────────────────────────────────
+   Clean, structured layout for fiscal year list rows and period cards.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Fiscal year list row — fix scattered layout ────────────────────────────*/
+.admin-fiscal-row {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  grid-template-rows: auto auto !important;
+  gap: 6px 12px !important;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+  cursor: pointer;
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  align-items: start;
+}
+
+.admin-fiscal-row:hover {
+  background: var(--surface-muted) !important;
+  border-color: var(--border-strong) !important;
+}
+
+.admin-fiscal-row.is-selected {
+  border-color: var(--accent) !important;
+  background: var(--accent-soft) !important;
+}
+
+/* Title row — name + Current chip */
+.admin-fiscal-row-main {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.admin-fiscal-row-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+}
+
+.admin-fiscal-row-title strong {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--text) !important;
+  white-space: nowrap;
+}
+
+/* Date range — single clean line under the title */
+.admin-fiscal-row-main > p {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+/* Status badge — top right */
+.admin-fiscal-row > .admin-fiscal-status {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  align-self: start !important;
+  white-space: nowrap !important;
+}
+
+/* Stats row — Open/Closed/Locked counts */
+.admin-fiscal-row-stats {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: flex !important;
+  gap: 12px !important;
+  flex-wrap: nowrap !important;
+}
+
+.admin-fiscal-row-stats span {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+  white-space: nowrap !important;
+  background: var(--surface-muted) !important;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Action buttons row */
+.admin-fiscal-row-actions {
+  grid-column: 1 / -1 !important;
+  grid-row: 3 !important;
+  display: flex !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  margin-top: 2px;
+}
+
+/* ── Fiscal year summary panel — right side ──────────────────────────────── */
+.admin-fiscal-summary {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  padding: 14px 16px !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+.admin-fiscal-summary h3 {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin: 2px 0 4px !important;
+  color: var(--text) !important;
+}
+
+.admin-fiscal-summary p {
+  font-size: 12px !important;
+  color: var(--text-soft) !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.admin-fiscal-summary-label {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0.03em !important;
+  color: var(--text-faint) !important;
+  margin-bottom: 4px !important;
+}
+
+/* ── Readiness stats — 3-column strip ───────────────────────────────────────*/
+.admin-fiscal-readiness {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-bottom: 14px !important;
+}
+
+.admin-fiscal-readiness article {
+  padding: 12px 14px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.admin-fiscal-readiness strong {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  color: var(--text) !important;
+}
+
+.admin-fiscal-readiness span {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+  line-height: 1.3 !important;
+}
+
+/* ── Period grid — 2-column, clean cards ─────────────────────────────────── */
+.admin-period-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.admin-period-card {
+  padding: 12px 14px !important;
+  border-radius: 8px !important;
+}
+
+.admin-period-card-head {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+.admin-period-card-head strong {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--text) !important;
+  display: block !important;
+  white-space: nowrap !important;
+}
+
+/* Date range under period name — single clean line */
+.admin-period-card-head > div > p {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+  margin: 2px 0 0 !important;
+  white-space: nowrap !important;
+  line-height: 1.3 !important;
+}
+
+.admin-period-card-actions {
+  display: flex !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+}
+
+.admin-period-card-actions .ghost-button {
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+}
+
+/* Status chip inside period card */
+.admin-period-card .admin-fiscal-status {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  font-size: 10px !important;
+  padding: 2px 8px !important;
+  min-height: 20px !important;
+}
+
+/* ── Fiscal year chip (Current) ──────────────────────────────────────────── */
+.admin-fiscal-chip {
+  font-size: 10px !important;
+  padding: 2px 7px !important;
+  border-radius: 999px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── Status badges ───────────────────────────────────────────────────────── */
+.admin-fiscal-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  min-height: 22px !important;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+.admin-fiscal-toolbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  margin-bottom: 16px !important;
+}
+
+.admin-fiscal-toolbar strong {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  display: block !important;
+  margin-bottom: 2px !important;
+}
+
+.admin-fiscal-toolbar .cell-subcopy {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+  max-width: 420px !important;
+}
+
+/* ── Overall grid — left list narrower ──────────────────────────────────────*/
+.admin-fiscal-grid {
+  display: grid !important;
+  grid-template-columns: 220px 1fr !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+
+.admin-fiscal-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
