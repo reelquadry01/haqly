@@ -2971,3 +2971,109 @@ export async function getNotifications(token: string): Promise<NotificationRecor
     return [];
   }
 }
+
+// ─── Accounting Migration Import Functions ────────────────────────────────────
+
+export async function importGLOpeningBalances(
+  token: string,
+  companyId: number,
+  openingDate: string,
+  reference: string,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/gl-opening-balances, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, openingDate, reference, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import GL opening balances");
+}
+
+export async function importAROpeningBalances(
+  token: string,
+  companyId: number,
+  openingDate: string,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/ar-opening-balances, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, openingDate, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import AR opening balances");
+}
+
+export async function importAPOpeningBalances(
+  token: string,
+  companyId: number,
+  openingDate: string,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/ap-opening-balances, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, openingDate, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import AP opening balances");
+}
+
+export async function importCustomerReceipts(
+  token: string,
+  companyId: number,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/customer-receipts, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import customer receipts");
+}
+
+export async function importSupplierPayments(
+  token: string,
+  companyId: number,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/supplier-payments, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import supplier payments");
+}
+
+export async function importFixedAssets(
+  token: string,
+  companyId: number,
+  asOfDate: string,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/fixed-assets, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, asOfDate, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import fixed assets");
+}
+
+export async function importStockOpeningBalances(
+  token: string,
+  companyId: number,
+  openingDate: string,
+  rows: Array<Record<string, unknown>>,
+) {
+  const response = await fetch(\/imports/stock-opening-balances, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: Bearer \ },
+    credentials: "include",
+    body: JSON.stringify({ companyId, openingDate, rows }),
+  });
+  return readApiResponse<BulkImportResponse>(response, "Could not import stock opening balances");
+}

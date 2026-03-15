@@ -7,7 +7,12 @@ export type ImportDatasetKey =
   | "customers"
   | "suppliers"
   | "products"
-  | "tax_codes";
+  | "tax_codes"
+  | "branches"
+  | "departments"
+  | "warehouses"
+  | "bank_accounts"
+  | "asset_categories";
 
 export type ParsedCsvResult = {
   headers: string[];
@@ -46,6 +51,31 @@ export const importTemplates: Record<
     label: "Tax Codes",
     headers: ["companyId", "code", "name", "taxType", "rate", "isInclusive", "recoverable", "filingFrequency", "outputAccountCode", "inputAccountCode", "liabilityAccountCode"],
     sampleRows: [["1", "VAT", "Value Added Tax", "VAT", "7.5", "false", "true", "MONTHLY", "2300", "1400", "2300"]],
+  },
+  branches: {
+    label: "Branches",
+    headers: ["companyCode", "branchCode", "branchName"],
+    sampleRows: [["HQ", "HQ01", "Head Office"]],
+  },
+  departments: {
+    label: "Departments",
+    headers: ["companyCode", "departmentName"],
+    sampleRows: [["HQ", "Finance"]],
+  },
+  warehouses: {
+    label: "Warehouses",
+    headers: ["branchCode", "warehouseName"],
+    sampleRows: [["HQ01", "Main Warehouse"]],
+  },
+  bank_accounts: {
+    label: "Bank Accounts",
+    headers: ["companyCode", "branchCode", "bankName", "accountName", "accountNumber", "currencyCode", "glAccountCode", "isActive"],
+    sampleRows: [["HQ", "HQ01", "GTBank", "Main Operating Account", "0123456789", "NGN", "10120", "true"]],
+  },
+  asset_categories: {
+    label: "Asset Categories",
+    headers: ["name", "usefulLifeMonths", "residualRate", "depreciationMethod"],
+    sampleRows: [["Motor Vehicles", "60", "10", "STRAIGHT_LINE"]],
   },
 };
 

@@ -371,3 +371,187 @@ export class ImportsService {
     return company;
   }
 }
+
+  async importBranches(dto: any): Promise<BulkImportResult> {
+    const errors: BulkImportResult["errors"] = [];
+    let created = 0;
+    let updated = 0;
+
+    for (const [index, row] of dto.rows.entries()) {
+      try {
+        const company = await this.prisma.company.findFirst({
+          where: { code: row.companyCode?.trim() },
+        });
+
+        if (!company) {
+          throw new NotFoundException(`Company ${row.companyCode} not found`);
+        }
+
+        const existing = await this.prisma.branch.findUnique({
+          where: { code: row.branchCode },
+        });
+
+        if (existing) {
+          await this.prisma.branch.update({
+            where: { id: existing.id },
+            data: {
+              name: row.branchName,
+              companyId: company.id,
+            },
+          });
+          updated++;
+        } else {
+          await this.prisma.branch.create({
+            data: {
+              code: row.branchCode,
+              name: row.branchName,
+              companyId: company.id,
+            },
+          });
+          created++;
+        }
+      } catch (error) {
+        errors.push({
+          row: index + 1,
+          message: error instanceof Error ? error.message : "Could not import branch row",
+        });
+      }
+    }
+
+    return { dataset: "branches", created, updated, failed: errors.length, errors };
+  }
+
+  async importDepartments(dto: any): Promise<BulkImportResult> {
+    const errors: BulkImportResult["errors"] = [];
+    let created = 0;
+
+    for (const [index, row] of dto.rows.entries()) {
+      try {
+        const company = await this.prisma.company.findFirst({
+          where: { code: row.companyCode?.trim() },
+        });
+
+        if (!company) {
+          throw new NotFoundException(`Company ${row.companyCode} not found`);
+        }
+
+        await this.prisma.department.create({
+          data: {
+            name: row.departmentName,
+            companyId: company.id,
+          },
+        });
+
+        created++;
+      } catch (error) {
+        errors.push({
+          row: index + 1,
+          message: error instanceof Error ? error.message : "Could not import department row",
+        });
+      }
+    }
+
+    return { dataset: "departments", created, updated: 0, failed: errors.length, errors };
+  }
+
+  async importWarehouses(dto: any): Promise<BulkImportResult> {
+    const errors: BulkImportResult["errors"] = [];
+    let created = 0;
+
+    for (const [index, row] of dto.rows.entries()) {
+      try {
+        const branch = await this.prisma.branch.findUnique({
+          where: { code: row.branchCode },
+        });
+
+        if (!branch) {
+          throw new NotFoundException(`Branch ${row.branchCode} not found`);
+        }
+
+        await this.prisma.warehouse.create({
+          data: {
+            name: row.warehouseName,
+            branchId: branch.id,
+          },
+        });
+
+        created++;
+      } catch (error) {
+        errors.push({
+          row: index + 1,
+          message: error instanceof Error ? error.message : "Could not import warehouse row",
+        });
+      }
+    }
+
+    return { dataset: "warehouses", created, updated: 0, failed: errors.length, errors };
+  }
+
+  async importBankAccounts(dto: any): Promise<BulkImportResult> {
+    const errors: BulkImportResult["errors"] = [];
+    let created = 0;
+
+    for (const [index, row] of dto.rows.entries()) {
+      try {
+        const company = await this.prisma.company.findFirst({
+          where: { code: row.companyCode?.trim() },
+        });
+
+        const branch = await this.prisma.branch.findFirst({
+          where: { code: row.branchCode },
+        });
+
+        if (!company || !branch) {
+          throw new NotFoundException("Company or Branch not found");
+        }
+
+        await this.prisma.bankAccount.create({
+          data: {
+            name: row.accountName,
+            accountName: row.accountName,
+            number: row.accountNumber,
+            bankName: row.bankName,
+            companyId: company.id,
+            branchId: branch.id,
+          },
+        });
+
+        created++;
+      } catch (error) {
+        errors.push({
+          row: index + 1,
+          message: error instanceof Error ? error.message : "Could not import bank account",
+        });
+      }
+    }
+
+    return { dataset: "bank_accounts", created, updated: 0, failed: errors.length, errors };
+  }
+
+  async importAssetCategories(dto: any): Promise<BulkImportResult> {
+    const errors: BulkImportResult["errors"] = [];
+    let created = 0;
+
+    for (const [index, row] of dto.rows.entries()) {
+      try {
+        await this.prisma.assetCategory.create({
+          data: {
+            name: row.name,
+            usefulLifeMonths: Number(row.usefulLifeMonths),
+            residualRate: Number(row.residualRate),
+            depreciationMethod: row.depreciationMethod,
+          },
+        });
+
+        created++;
+      } catch (error) {
+        errors.push({
+          row: index + 1,
+          message: error instanceof Error ? error.message : "Could not import asset category",
+        });
+      }
+    }
+
+    return { dataset: "asset_categories", created, updated: 0, failed: errors.length, errors };
+  }
+
