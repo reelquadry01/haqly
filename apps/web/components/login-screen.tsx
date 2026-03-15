@@ -31,6 +31,10 @@ export function LoginScreen() {
   const [mfaPending, setMfaPending] = useState<{ userId: number; tempToken: string } | null>(null);
   const [mfaCode, setMfaCode] = useState("");
   const [mfaBusy, setMfaBusy] = useState(false);
+  const [mfaStep, setMfaStep] = useState(false);
+  const [mfaEmail, setMfaEmail] = useState("");
+  const [mfaToken, setMfaToken] = useState("");
+  const [mfaTempToken, setMfaTempToken] = useState("");
 
   const selectedCompany = useMemo(
     () => companies.find((company) => company.id === selectedCompanyId) ?? null,
@@ -104,6 +108,17 @@ export function LoginScreen() {
         await verifyService();
       }
       const data = await loginRequest(trimmedEmail, password);
+
+      // MFA required — show verification step
+      if ((data as any).mfaRequired) {
+        setMfaStep(true);
+        setMfaEmail(trimmedEmail);
+        setMfaTempToken((data as any).preAuthToken ?? "");
+        setFeedbackTone("neutral");
+        setMessage("Enter the 6-digit code from your authenticator app.");
+        setBusy(false);
+        return;
+      }
       const userName = [data.user.firstName, data.user.lastName].filter(Boolean).join(" ") || data.user.email;
       setSignedInUser({
         token: data.token,
@@ -122,6 +137,46 @@ export function LoginScreen() {
 
   
   async function handleMfaVerify() {
+    if (mfaToken.trim().length !== 6) {
+      setFeedbackTone("error");
+      setMessage("Enter the 6-digit code from your authenticator app.");
+      return;
+    }
+    setMfaBusy(true);
+    setFeedbackTone("neutral");
+    setMessage("Verifying code...");
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+      const res = await fetch(`${apiBase}/auth/mfa/verify-login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${mfaTempToken}` },
+        body: JSON.stringify({ email: mfaEmail, token: mfaToken.trim() }),
+      });
+      if (!res.ok) {
+        setFeedbackTone("error");
+        setMessage("Invalid code. Check your authenticator app and try again.");
+        setMfaBusy(false);
+        return;
+      }
+      // MFA passed — use preAuthToken to load companies
+      setMfaStep(false);
+      setMfaToken("");
+      setSignedInUser({
+        token: mfaTempToken,
+        email: mfaEmail,
+        name: mfaEmail,
+        role: "admin" as AppRole,
+        roles: [],
+      });
+      await loadCompanies(mfaTempToken);
+      setMfaBusy(false);
+    } catch {
+      setFeedbackTone("error");
+      setMessage("Could not verify MFA code. Try again.");
+      setMfaBusy(false);
+    }
+  // REPLACED_PLACEHOLDER
     if (!mfaPending || mfaCode.trim().length !== 6) {
       setFeedbackTone("error");
       setMessage("Enter the 6-digit code from your authenticator app.");
@@ -193,7 +248,7 @@ export function LoginScreen() {
       <section className="auth-simple-shell">
         <article className="auth-simple-card surface">
           <div className="auth-simple-brand">
-            <BrandLockup className="auth-brand-lockup" subtitle="Enterprise resource planning" />
+            <BrandLockup className="auth-brand-lockup auth-brand-lockup--hero" />
           </div>
 
           <div className="auth-simple-copy">
@@ -202,12 +257,6 @@ export function LoginScreen() {
               <span>Secure access</span>
             </div>
             <h1>Welcome back</h1>
-            <p>Sign in with the credentials assigned to you by your administrator.</p>
-          </div>
-
-          <div className="auth-trust-row" aria-label="Trust cues">
-            <span className="auth-trust-chip">Encrypted connection</span>
-            <span className="auth-trust-chip">Enterprise workspace</span>
           </div>
 
           <form className="auth-simple-form" onSubmit={handleLogin}>
@@ -267,7 +316,6 @@ export function LoginScreen() {
             {!serviceReady ? <button className="ghost-button auth-retry" type="button" onClick={() => void verifyService()}>Retry connection</button> : null}
 
             <div className="auth-assist-row">
-              <span className="form-hint">Only users created by an administrator can access this workspace.</span>
               {signedInUser ? (
                 <span className="auth-role-pill">
                   <KeyRound size={14} />
@@ -275,9 +323,47 @@ export function LoginScreen() {
                 </span>
               ) : null}
             </div>
-            <p className="auth-support-text">Contact your administrator if you cannot access your workspace.</p>
           </form>
 
+          
+          {/* ── MFA Step ────────────────────────────────────────────────── */}
+          {mfaStep && (
+            <div className="auth-simple-form" style={{ marginTop: "1rem" }}>
+              <div className="auth-simple-copy__eyebrow">
+                <ShieldCheck size={16} />
+                <span>Two-factor authentication required</span>
+              </div>
+              <p style={{ fontSize: "0.875rem", color: "var(--text-2)" }}>
+                Enter the 6-digit code from your authenticator app.
+              </p>
+              <label className="field">
+                <span>Authenticator code</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="000000"
+                  value={mfaToken}
+                  onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, ""))}
+                  autoComplete="one-time-code"
+                />
+              </label>
+              <button
+                className="primary-button auth-submit"
+                onClick={() => void handleMfaVerify()}
+                disabled={mfaBusy}
+              >
+                {mfaBusy ? "Verifying..." : "Verify & continue"}
+              </button>
+              <button
+                className="ghost-button"
+                style={{ marginTop: "0.5rem" }}
+                onClick={() => { setMfaStep(false); setMfaToken(""); }}
+              >
+                Back to login
+              </button>
+            </div>
+          )}
           {companies.length > 0 ? (
             <section className="auth-company-card">
               <div className="auth-company-card__head">
@@ -342,8 +428,8 @@ export function LoginScreen() {
             </div>
           </div>
           <div className="auth-visual-copy">
-            <h2>One secure workspace for business operations.</h2>
-            <p>One secure workspace for finance, inventory, procurement, payroll, tax, and reporting.</p>
+            <h2>Your Enterprise Source of Truth.</h2>
+            <p>Finance, inventory, procurement, payroll and reporting — unified in one workspace.</p>
             <div className="auth-visual-points">
               <span>Role-based access</span>
               <span>Audit-ready workflows</span>
