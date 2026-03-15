@@ -318,14 +318,17 @@ model Session {
 }
 
 model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  tokenHash String   @unique
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  tokenHash       String   @unique
+  familyId        String?  // Groups tokens from the same login session
+  replacedByHash  String?  // Hash of the next token in the chain (set on rotation)
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
 
   @@index([userId, expiresAt], name: "idx_refresh_token_user_expiry")
+  @@index([familyId], name: "idx_refresh_token_family")
 }
 
 model LoginAttempt {

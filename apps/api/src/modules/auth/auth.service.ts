@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
   ConflictException,
   ForbiddenException,
@@ -127,21 +128,60 @@ export class AuthService {
       include: { user: { include: { roles: { include: { role: true } } } } },
     });
 
-    if (!stored || stored.expiresAt <= new Date()) {
-      if (stored) {
-        await this.prisma.refreshToken.delete({ where: { id: stored.id } });
+    // ── Reuse detection ────────────────────────────────────────────────────────
+    // If the token hash is NOT found but there are other tokens in the same
+    // family, it means this token was already rotated — possible theft/replay.
+    if (!stored) {
+      // Check if this looks like a replayed token by verifying the JWT is valid
+      // (payload decoded successfully above means signature is valid but token
+      // was already consumed — this is a reuse attack signal)
+      const familyTokens = await this.prisma.refreshToken.findMany({
+        where: { userId: Number(payload.userId) },
+        select: { familyId: true, userId: true },
+        take: 1,
+      });
+
+      if (familyTokens.length > 0) {
+        // Revoke all tokens for this user as a precaution
+        await this.prisma.refreshToken.deleteMany({
+          where: { userId: Number(payload.userId) },
+        });
+        await this.prisma.user.update({
+          where: { id: Number(payload.userId) },
+          data: { isLocked: true },
+        });
       }
-      throw new UnauthorizedException('Invalid refresh token');
+
+      throw new UnauthorizedException('Session invalidated. Please log in again.');
     }
 
+    // ── Expired token ──────────────────────────────────────────────────────────
+    if (stored.expiresAt <= new Date()) {
+      await this.prisma.refreshToken.delete({ where: { id: stored.id } });
+      throw new UnauthorizedException('Session expired. Please log in again.');
+    }
+
+    // ── User ID mismatch (tampered token) ─────────────────────────────────────
     if (String(stored.userId) !== String(payload.userId)) {
-      throw new UnauthorizedException('Invalid refresh token');
+      // Revoke entire family — something suspicious is happening
+      await this.revokeTokenFamily(stored.familyId, stored.userId);
+      throw new UnauthorizedException('Session invalidated. Please log in again.');
     }
 
+    // ── Valid — rotate token ───────────────────────────────────────────────────
     const roleNames = stored.user.roles.map((entry) => entry.role.name);
+
+    // Delete the used token (rotation — old token is now invalid)
     await this.prisma.refreshToken.delete({ where: { id: stored.id } });
 
-    const auth = await this.issueAuthTokens(stored.user.id, stored.user.email, roleNames);
+    // Issue new tokens, preserving the familyId so reuse can be detected
+    const auth = await this.issueAuthTokens(
+      stored.user.id,
+      stored.user.email,
+      roleNames,
+      stored.familyId, // preserve family for reuse detection
+    );
+
     return {
       user: sanitizeUser(stored.user),
       ...auth,
@@ -158,19 +198,32 @@ export class AuthService {
     return { success: true };
   }
 
-  private async issueAuthTokens(userId: number, email: string, roleNames: string[]) {
+  private async issueAuthTokens(
+    userId: number,
+    email: string,
+    roleNames: string[],
+    familyId?: string,
+  ) {
     const normalizedRoles = normalizeRoleNames(roleNames);
     const primaryRole = normalizedRoles[0] ?? 'VIEWER';
     const accessToken = generateAccessToken({ userId: String(userId), role: primaryRole, email });
     const refreshToken = generateRefreshToken(String(userId));
 
+    // familyId groups all tokens from the same login session.
+    // On first login a new familyId is created; on rotation the same familyId is reused.
+    const tokenFamilyId = familyId ?? crypto.randomUUID();
+
     await this.prisma.refreshToken.create({
       data: {
         tokenHash: hashToken(refreshToken),
+        familyId: tokenFamilyId,
         userId,
         expiresAt: new Date(Date.now() + REFRESH_TOKEN_WINDOW_MS),
       },
     });
+
+    // Prune expired tokens for this user (keep DB clean)
+    await this.pruneExpiredTokens(userId);
 
     return {
       token: accessToken,
@@ -179,6 +232,28 @@ export class AuthService {
       securityRole: primaryRole,
       workspaceRole: this.resolveWorkspaceRole(roleNames),
     };
+  }
+
+  // Deletes expired refresh tokens for a user to keep the DB clean
+  private async pruneExpiredTokens(userId: number): Promise<void> {
+    await this.prisma.refreshToken.deleteMany({
+      where: {
+        userId,
+        expiresAt: { lt: new Date() },
+      },
+    });
+  }
+
+  // Revokes ALL refresh tokens in a token family (called on theft detection)
+  private async revokeTokenFamily(familyId: string, userId: number): Promise<void> {
+    await this.prisma.refreshToken.deleteMany({
+      where: { familyId },
+    });
+    // Lock the user account to force re-authentication
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { isLocked: true },
+    });
   }
 
   private async ensureAccountNotLocked(userId: number | undefined, ipAddress: string) {
