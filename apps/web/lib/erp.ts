@@ -137,26 +137,9 @@ export function getNavigationForRole(role: AppRole) {
   return navigationItems.filter((item) => item.roles.includes(role));
 }
 
-export const notificationFeed = [
-  {
-    id: "n1",
-    title: "Payment approval pending",
-    detail: "Three vouchers are waiting for finance approval before cutoff.",
-    when: "5 min ago",
-  },
-  {
-    id: "n2",
-    title: "Low stock alert",
-    detail: "Industrial solvent is below reorder level in Lekki warehouse.",
-    when: "18 min ago",
-  },
-  {
-    id: "n3",
-    title: "Period close warning",
-    detail: "March close checklist still has two unreconciled bank lines.",
-    when: "41 min ago",
-  },
-];
+// Notifications are now fetched from the live API via getNotifications()
+// This array is intentionally empty — do not add hardcoded notifications here
+export const notificationFeed: Array<{ id: string; title: string; detail: string; when: string }> = [];
 
 export const quickCreateActions: ActionItem[] = [
   { label: "New journal entry", hint: "Finance", href: "/journal-entries", icon: "finance" },
@@ -740,11 +723,9 @@ export const scmViews = ["Dashboard", "Demand", "Procurement", "Inventory", "Ful
 export const biViews = ["Dashboard", "Financial", "Operational", "Executive", "Forecasts", "Exports"];
 export const financialManagementViews = ["Overview", "Profit & Loss", "Cash Flow", "Working Capital", "Controls", "Insights"];
 
-export const crmInteractions = [
-  { id: "CRM-1", customer: "Acme Retail", owner: "Bola S.", stage: "Negotiation", value: "$84,000", nextAction: "Send revised pricing", status: "Pending" as AppStatus },
-  { id: "CRM-2", customer: "Northern Foods", owner: "James U.", stage: "Qualified", value: "$42,500", nextAction: "Book product demo", status: "Approved" as AppStatus },
-  { id: "CRM-3", customer: "Metro Health", owner: "Sade A.", stage: "Onboarding", value: "$18,300", nextAction: "Upload credit form", status: "Submitted" as AppStatus },
-];
+// CRM interactions are fetched from the live API
+// This array is intentionally empty — do not add hardcoded interactions here
+export const crmInteractions: Array<{ id: string; customer: string; owner: string; stage: string; value: string; nextAction: string; status: AppStatus }> = [];
 
 export const supplyChainOrders = [
   { id: "SC-1", lane: "Requisition to PO", owner: "Procurement", volume: "18 open", risk: "2 overdue", status: "Pending" as AppStatus },

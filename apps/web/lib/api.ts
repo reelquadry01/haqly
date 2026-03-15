@@ -2947,5 +2947,27 @@ export async function downloadReportFile(
   anchor.remove();
   window.URL.revokeObjectURL(url);
 }
+// ─── Notifications ────────────────────────────────────────────────────────────
+export type NotificationRecord = {
+  id: number;
+  title: string;
+  detail: string;
+  channel: string;
+  status: string;
+  createdAt: string;
+  sentAt: string | null;
+};
 
-
+export async function getNotifications(token: string): Promise<NotificationRecord[]> {
+  try {
+    const response = await fetch(`${apiBaseUrl}/notifications`, {
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
+    });
+    if (!response.ok) return [];
+    return readApiResponse<NotificationRecord[]>(response, "Could not load notifications");
+  } catch {
+    return [];
+  }
+}

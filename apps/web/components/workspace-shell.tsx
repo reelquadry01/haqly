@@ -10,7 +10,6 @@ import {
   getNavigationForRole,
   getRoleLabel,
   navigationItems,
-  notificationFeed,
   quickCreateActions,
   type AppRole,
   type NavItem,
@@ -56,6 +55,8 @@ export function WorkspaceShell({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [liveNotifications, setLiveNotifications] = useState<NotificationRecord[]>([]);
+  const [notifLoading, setNotifLoading] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState("");
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -86,6 +87,23 @@ export function WorkspaceShell({
     const params = new URLSearchParams(window.location.search);
     setTabView(params.get("view") ?? activeTab);
   }, [activeTab, pathname]);
+
+  // Load live notifications
+  useEffect(() => {
+    if (!session?.token) return;
+    let cancelled = false;
+    async function loadNotifications() {
+      setNotifLoading(true);
+      try {
+        const data = await getNotifications(session!.token);
+        if (!cancelled) setLiveNotifications(data);
+      } catch { /* silent */ } finally {
+        if (!cancelled) setNotifLoading(false);
+      }
+    }
+    void loadNotifications();
+    return () => { cancelled = true; };
+  }, [session?.token]);
 
   const role = session?.role ?? "cfo";
   const currentTab = tabView ?? activeTab;
@@ -379,7 +397,7 @@ export function WorkspaceShell({
             </button>
           </div>
           <div className="notification-list">
-            {notificationFeed.map((item) => (
+            {liveNotifications.map((item) => (
               <article key={item.id} className="notification-item">
                 <strong>{item.title}</strong>
                 <p>{item.detail}</p>
