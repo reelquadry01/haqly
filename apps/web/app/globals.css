@@ -4841,3 +4841,67 @@ body {
     radial-gradient(circle at 80% 20%, rgba(14, 165, 160, 0.03), transparent 18%),
     linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
 }
+
+/* ─── Compact Hero Fix ───────────────────────────────────────────────────────
+   Allow pills to show fully, fix dropdown overflow, ensure action bar clears
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.page-hero {
+  height: auto !important;
+  min-height: 52px !important;
+  max-height: none !important;
+  padding: 10px 24px !important;
+  overflow: visible !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.page-hero__meta {
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.hero-meta-card {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  min-width: fit-content !important;
+}
+
+.hero-meta-card .meta-value {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}
+
+.page-hero > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.hero-actions-inline {
+  position: relative;
+  z-index: 30 !important;
+  overflow: visible !important;
+}
+
+.hero-actions-inline .dropdown-wrap {
+  position: relative;
+  z-index: 30 !important;
+}
+
+.hero-actions-inline .floating-menu {
+  z-index: 40 !important;
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+}
+
+.module-action-bar {
+  overflow: visible !important;
+  position: relative;
+  z-index: 25;
+}
