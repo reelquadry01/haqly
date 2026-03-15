@@ -1,4 +1,65 @@
 export const apiBaseUrl =
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Silent token refresh — uses the httpOnly refresh cookie automatically.
+// Called when memory token is missing (e.g. after page reload) or on 401.
+// ─────────────────────────────────────────────────────────────────────────────
+async function silentRefresh(): Promise<string | null> {
+  try {
+    const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+      method: "POST",
+      credentials: "include", // sends httpOnly refresh cookie automatically
+    });
+    if (!response.ok) return null;
+    const data = await response.json() as { token?: string };
+    if (data?.token) {
+      setMemoryToken(data.token);
+      return data.token;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// authFetch — drop-in replacement for fetch() on authenticated endpoints.
+// Automatically attaches the in-memory token and silently refreshes on 401.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  let token = getMemoryToken();
+
+  // No token in memory (e.g. page was reloaded) — try silent refresh first
+  if (!token) {
+    token = (await silentRefresh()) ?? "";
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  // Token expired mid-session — try one silent refresh and retry
+  if (response.status === 401) {
+    const newToken = await silentRefresh();
+    if (!newToken) return response;
+    return fetch(url, {
+      ...options,
+      credentials: "include",
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${newToken}`,
+      },
+    });
+  }
+
+  return response;
+}
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "/backend/api/v1";
 
 function toApiError(error: unknown, fallbackMessage: string) {
@@ -1372,6 +1433,7 @@ export async function login(email: string, password: string) {
   try {
     const response = await fetch(`${apiBaseUrl}/auth/login`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

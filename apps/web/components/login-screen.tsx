@@ -37,6 +37,9 @@ export function LoginScreen() {
   useEffect(() => {
     void verifyService();
 
+        // Clean up legacy token from localStorage (security fix)
+    window.localStorage.removeItem("haqly.token");
+    window.localStorage.removeItem("finova.token");
     const session = readSession();
     if (session.token && session.companyId && session.companyName) {
       router.replace("/dashboard");

@@ -1,7 +1,27 @@
 import type { AppRole } from "./erp";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Access token lives in memory ONLY — never in localStorage.
+// This prevents XSS attacks from stealing the token via document.cookie or
+// localStorage enumeration. The token is re-acquired via silent refresh
+// (httpOnly refresh cookie) after a page reload.
+// ─────────────────────────────────────────────────────────────────────────────
+let _memoryToken = "";
+
+export function getMemoryToken(): string {
+  return _memoryToken;
+}
+
+export function setMemoryToken(token: string): void {
+  _memoryToken = token;
+}
+
+export function clearMemoryToken(): void {
+  _memoryToken = "";
+}
+
+// ─── Session keys — non-sensitive data only stored in localStorage ───────────
 export const sessionKeys = {
-  token: "haqly.token",
   companyId: "haqly.companyId",
   companyName: "haqly.companyName",
   branchId: "haqly.branchId",
@@ -13,7 +33,6 @@ export const sessionKeys = {
 };
 
 const legacySessionKeys = {
-  token: "finova.token",
   companyId: "finova.companyId",
   companyName: "finova.companyName",
   branchId: "finova.branchId",
@@ -53,27 +72,39 @@ export function readSession(): StoredSession {
     return defaultSession;
   }
 
-  const readValue = (primary: string, legacy: string) => window.localStorage.getItem(primary) ?? window.localStorage.getItem(legacy);
+  const readValue = (primary: string, legacy: string) =>
+    window.localStorage.getItem(primary) ?? window.localStorage.getItem(legacy);
 
   const companyIdValue = readValue(sessionKeys.companyId, legacySessionKeys.companyId);
   const branchIdValue = readValue(sessionKeys.branchId, legacySessionKeys.branchId);
 
   return {
-    token: readValue(sessionKeys.token, legacySessionKeys.token) ?? defaultSession.token,
+    // Token always sourced from memory — never from localStorage
+    token: getMemoryToken(),
     companyId: companyIdValue ? Number(companyIdValue) : null,
-    companyName: readValue(sessionKeys.companyName, legacySessionKeys.companyName) ?? defaultSession.companyName,
+    companyName:
+      readValue(sessionKeys.companyName, legacySessionKeys.companyName) ?? defaultSession.companyName,
     branchId: branchIdValue ? Number(branchIdValue) : null,
-    branchName: readValue(sessionKeys.branchName, legacySessionKeys.branchName) ?? defaultSession.branchName,
-    role: (readValue(sessionKeys.role, legacySessionKeys.role) as AppRole | null) ?? defaultSession.role,
-    userEmail: readValue(sessionKeys.userEmail, legacySessionKeys.userEmail) ?? defaultSession.userEmail,
-    userName: readValue(sessionKeys.userName, legacySessionKeys.userName) ?? defaultSession.userName,
-    periodLabel: readValue(sessionKeys.periodLabel, legacySessionKeys.periodLabel) ?? defaultSession.periodLabel,
+    branchName:
+      readValue(sessionKeys.branchName, legacySessionKeys.branchName) ?? defaultSession.branchName,
+    role:
+      (readValue(sessionKeys.role, legacySessionKeys.role) as AppRole | null) ?? defaultSession.role,
+    userEmail:
+      readValue(sessionKeys.userEmail, legacySessionKeys.userEmail) ?? defaultSession.userEmail,
+    userName:
+      readValue(sessionKeys.userName, legacySessionKeys.userName) ?? defaultSession.userName,
+    periodLabel:
+      readValue(sessionKeys.periodLabel, legacySessionKeys.periodLabel) ?? defaultSession.periodLabel,
   };
 }
 
-export function writeSession(input: StoredSession) {
-  window.localStorage.setItem(sessionKeys.token, input.token);
+export function writeSession(input: StoredSession): void {
+  if (typeof window === "undefined") return;
 
+  // Token goes to memory — NOT localStorage
+  setMemoryToken(input.token);
+
+  // Only non-sensitive fields persisted to localStorage
   const numberFields: Array<[keyof Pick<StoredSession, "companyId" | "branchId">, string]> = [
     ["companyId", sessionKeys.companyId],
     ["branchId", sessionKeys.branchId],
@@ -88,8 +119,9 @@ export function writeSession(input: StoredSession) {
     }
   }
 
-  const stringFields: Array<[keyof Omit<StoredSession, "companyId" | "branchId">, string]> = [
-    ["token", sessionKeys.token],
+  const stringFields: Array<
+    [keyof Omit<StoredSession, "companyId" | "branchId" | "token">, string]
+  > = [
     ["companyName", sessionKeys.companyName],
     ["branchName", sessionKeys.branchName],
     ["role", sessionKeys.role],
@@ -108,6 +140,17 @@ export function writeSession(input: StoredSession) {
   }
 }
 
-export function clearSession() {
-  [...Object.values(sessionKeys), ...Object.values(legacySessionKeys)].forEach((key) => window.localStorage.removeItem(key));
+export function clearSession(): void {
+  if (typeof window === "undefined") return;
+
+  clearMemoryToken();
+
+  // Clean up both current and legacy keys
+  [...Object.values(sessionKeys), ...Object.values(legacySessionKeys)].forEach((key) =>
+    window.localStorage.removeItem(key),
+  );
+
+  // Also remove old token keys that may still be in storage from before this fix
+  window.localStorage.removeItem("haqly.token");
+  window.localStorage.removeItem("finova.token");
 }
