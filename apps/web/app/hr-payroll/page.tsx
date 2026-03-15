@@ -14,6 +14,20 @@ import { useWorkspace } from "../../hooks/use-workspace";
 import { downloadCsvFile } from "../../lib/export";
 import { payrollViews, type AppStatus, type KpiMetric, type TimelineItem } from "../../lib/erp";
 
+
+// Generate last 12 months + next 3 months as period options
+function generatePeriodOptions(): string[] {
+  const fmt = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric" });
+  const options: string[] = [];
+  const now = new Date();
+  for (let i = -11; i <= 3; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    options.push(fmt.format(d));
+  }
+  return options;
+}
+
+const PERIOD_OPTIONS = generatePeriodOptions();
 const defaultPayrollState = {
   draft: { period: new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric" }).format(new Date()), payDate: new Date().toISOString().slice(0, 10), note: "", status: "Draft" as AppStatus, employees: 0, netPay: 0 },
   message: "Payroll backend tables are not wired yet, so this page no longer shows hardcoded employee or run data.",
@@ -122,24 +136,56 @@ export default function HrPayrollPage() {
   }
 
   function handleRunBulkAction(action: string, rows: typeof allRuns) {
-    if (!action.toLowerCase().includes("approve")) {
+    const lowered = action.toLowerCase();
+
+    // ── Approve ────────────────────────────────────────────────────────────────
+    if (lowered.includes("approve")) {
+      const runIds = rows
+        .filter((row) => row.status === "Pending" || row.status === "Submitted")
+        .map((row) => row.id);
+
+      if (!runIds.length) {
+        setState((current) => ({ ...current, message: "Selected payroll runs are already approved or completed." }));
+        return;
+      }
+
+      setState((current) => ({
+        ...current,
+        message: `${runIds.length} payroll run(s) approved and retained in payroll history.`,
+        localRuns: current.localRuns.map((run) => (runIds.includes(run.id) ? { ...run, status: "Approved" } : run)),
+      }));
       return;
     }
 
-    const runIds = rows
-      .filter((row) => row.status === "Pending" || row.status === "Submitted")
-      .map((row) => row.id);
-
-    if (!runIds.length) {
-      setState((current) => ({ ...current, message: "Selected payroll runs are already approved or completed." }));
+    // ── Export ─────────────────────────────────────────────────────────────────
+    if (lowered.includes("export")) {
+      downloadCsvFile(
+        "payroll-register-selection.csv",
+        ["Run", "Period", "Employees", "Net pay", "Status", "Pay date"],
+        rows.map((run) => [run.id, run.period, run.employees, run.netPay, run.status, run.payDate]),
+      );
+      setState((current) => ({ ...current, message: `${rows.length} payroll run(s) exported to CSV.` }));
       return;
     }
 
-    setState((current) => ({
-      ...current,
-      message: `${runIds.length} payroll run(s) approved and retained in payroll history.`,
-      localRuns: current.localRuns.map((run) => (runIds.includes(run.id) ? { ...run, status: "Approved" } : run)),
-    }));
+    // ── Lock Period ────────────────────────────────────────────────────────────
+    if (lowered.includes("lock")) {
+      const lockableIds = rows
+        .filter((row) => row.status === "Approved")
+        .map((row) => row.id);
+
+      if (!lockableIds.length) {
+        setState((current) => ({ ...current, message: "Only approved runs can be locked. Select approved runs first." }));
+        return;
+      }
+
+      setState((current) => ({
+        ...current,
+        message: `${lockableIds.length} payroll run(s) locked. Locked runs cannot be edited or re-submitted.`,
+        localRuns: current.localRuns.map((run) => (lockableIds.includes(run.id) ? { ...run, status: "Posted" } : run)),
+      }));
+      return;
+    }
   }
 
   return (
@@ -198,7 +244,9 @@ export default function HrPayrollPage() {
               <label className="field">
                 <span>Period</span>
                 <select className="select-input" value={draft.period} onChange={(event) => setState((current) => ({ ...current, draft: { ...current.draft, period: event.target.value } }))}>
-                  <option>{draft.period}</option>
+                  {PERIOD_OPTIONS.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
                 </select>
               </label>
             <label className="field">
