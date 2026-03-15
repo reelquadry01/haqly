@@ -31,3 +31,9 @@ apply-*.ps1
 
 # Dev logs
 *.log
+
+*.ps1
+*.bak
+scripts/create-company.cjs
+scripts/list-companies.cjs
+scripts/check-users.cjs
