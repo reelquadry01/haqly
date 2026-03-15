@@ -1,4 +1,4 @@
-﻿import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -30,3 +30,13 @@ export class LoginDto {
   password!: string;
 }
 
+// ─── MFA DTOs ─────────────────────────────────────────────────────────────────
+
+export class MfaVerifyDto {
+  token!: string; // 6-digit TOTP code from authenticator app
+}
+
+export class MfaDisableDto {
+  token!: string; // Must verify current TOTP before disabling
+  password!: string; // Must also confirm password
+}

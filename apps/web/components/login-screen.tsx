@@ -28,6 +28,9 @@ export function LoginScreen() {
   const [companies, setCompanies] = useState<CompanyRecord[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | "">("");
   const [signedInUser, setSignedInUser] = useState<SignedInUser | null>(null);
+  const [mfaPending, setMfaPending] = useState<{ userId: number; tempToken: string } | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+  const [mfaBusy, setMfaBusy] = useState(false);
 
   const selectedCompany = useMemo(
     () => companies.find((company) => company.id === selectedCompanyId) ?? null,
@@ -117,6 +120,45 @@ export function LoginScreen() {
     }
   }
 
+  
+  async function handleMfaVerify() {
+    if (!mfaPending || mfaCode.trim().length !== 6) {
+      setFeedbackTone("error");
+      setMessage("Enter the 6-digit code from your authenticator app.");
+      return;
+    }
+    setMfaBusy(true);
+    setFeedbackTone("neutral");
+    setMessage("Verifying code...");
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "/backend/api/v1";
+      const res = await fetch(`${apiBase}/auth/mfa/verify-login`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${mfaPending.tempToken}`,
+        },
+        body: JSON.stringify({ token: mfaCode.trim() }),
+      });
+      if (!res.ok) {
+        setFeedbackTone("error");
+        setMessage("Invalid code. Check your authenticator app and try again.");
+        setMfaBusy(false);
+        return;
+      }
+      // MFA passed — continue normal login flow
+      setMfaPending(null);
+      setMfaCode("");
+      setMfaBusy(false);
+      setFeedbackTone("success");
+      setMessage("Select a company to continue.");
+    } catch {
+      setFeedbackTone("error");
+      setMessage("Could not verify MFA code. Try again.");
+      setMfaBusy(false);
+    }
+  }
   function enterWorkspace() {
     if (!signedInUser) {
       setFeedbackTone("error");

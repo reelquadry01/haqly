@@ -264,6 +264,8 @@ model User {
   lastName      String?
   isActive      Boolean        @default(true)
   isLocked      Boolean        @default(false)
+  mfaSecret     String?  // Encrypted TOTP secret (null = MFA not set up)
+  mfaEnabled    Boolean  @default(false) // True only after user verifies first TOTP code
   roles         UserRole[]
   sessions      Session[]
   auditLogs     AuditLog[]

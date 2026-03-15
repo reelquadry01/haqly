@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './auth.dto';
+import { LoginDto, RegisterDto, MfaVerifyDto, MfaDisableDto } from './auth.dto';
 import { validate } from '../../middleware/validate';
 import { userCreationSchema } from '../../schemas/user.schema';
 import { Public } from '../../middleware/public';
@@ -81,5 +81,35 @@ export class AuthController {
     } catch (error) {
       throw error;
     }
+  }
+
+
+  // ─── MFA Routes ───────────────────────────────────────────────────────────────
+
+  @Get('mfa/status')
+  async mfaStatus(@Req() req: Request) {
+    const user = req.user as { userId: number };
+    return this.auth.mfaStatus(user.userId);
+  }
+
+  @Post('mfa/setup')
+  @HttpCode(200)
+  async mfaSetup(@Req() req: Request) {
+    const user = req.user as { userId: number };
+    return this.auth.mfaSetup(user.userId);
+  }
+
+  @Post('mfa/activate')
+  @HttpCode(200)
+  async mfaActivate(@Req() req: Request, @Body() dto: MfaVerifyDto) {
+    const user = req.user as { userId: number };
+    return this.auth.mfaActivate(user.userId, dto.token);
+  }
+
+  @Post('mfa/disable')
+  @HttpCode(200)
+  async mfaDisable(@Req() req: Request, @Body() dto: MfaDisableDto) {
+    const user = req.user as { userId: number };
+    return this.auth.mfaDisable(user.userId, dto.token, dto.password);
   }
 }

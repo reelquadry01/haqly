@@ -1,3 +1,4 @@
+import { authenticator } from 'otplib';
 import crypto from 'crypto';
 import {
   ConflictException,
@@ -319,5 +320,82 @@ export class AuthService {
     }
 
     return 'admin';
+  }
+
+
+  // ─── MFA: Generate setup (returns secret + otpauth URI for QR code) ──────────
+  async mfaSetup(userId: number): Promise<{ secret: string; otpauthUrl: string; issuer: string }> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+    if (user.mfaEnabled) throw new Error('MFA is already enabled. Disable it first before setting up again.');
+
+    // Generate a new TOTP secret
+    const secret = authenticator.generateSecret(20);
+
+    // Store the secret temporarily (not yet enabled — enabled only after first verify)
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { mfaSecret: secret, mfaEnabled: false },
+    });
+
+    const issuer = 'Haqly ERP';
+    const otpauthUrl = authenticator.keyuri(user.email, issuer, secret);
+
+    return { secret, otpauthUrl, issuer };
+  }
+
+  // ─── MFA: Verify and activate ────────────────────────────────────────────────
+  async mfaActivate(userId: number, token: string): Promise<{ success: boolean }> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user?.mfaSecret) throw new UnauthorizedException('MFA setup not initiated. Call /auth/mfa/setup first.');
+
+    const isValid = authenticator.verify({ token, secret: user.mfaSecret });
+    if (!isValid) throw new UnauthorizedException('Invalid verification code. Please try again.');
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { mfaEnabled: true },
+    });
+
+    return { success: true };
+  }
+
+  // ─── MFA: Verify TOTP on login ───────────────────────────────────────────────
+  async mfaVerifyLogin(userId: number, token: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user?.mfaSecret || !user.mfaEnabled) return true; // MFA not enabled = pass through
+
+    return authenticator.verify({ token, secret: user.mfaSecret });
+  }
+
+  // ─── MFA: Disable ────────────────────────────────────────────────────────────
+  async mfaDisable(userId: number, token: string, password: string): Promise<{ success: boolean }> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+    if (!user.mfaEnabled) throw new Error('MFA is not currently enabled.');
+
+    // Verify password
+    const passwordOk = await verifyPassword(password, user.passwordHash);
+    if (!passwordOk) throw new UnauthorizedException('Incorrect password');
+
+    // Verify current TOTP
+    const totpOk = user.mfaSecret ? authenticator.verify({ token, secret: user.mfaSecret }) : false;
+    if (!totpOk) throw new UnauthorizedException('Invalid authenticator code');
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { mfaEnabled: false, mfaSecret: null },
+    });
+
+    return { success: true };
+  }
+
+  // ─── MFA: Check if user has MFA enabled (used on login) ──────────────────────
+  async mfaStatus(userId: number): Promise<{ enabled: boolean }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { mfaEnabled: true },
+    });
+    return { enabled: user?.mfaEnabled ?? false };
   }
 }
