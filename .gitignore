@@ -22,3 +22,12 @@ prisma/*.db-journal
 # OS
 .DS_Store
 Thumbs.db
+
+# Security backup folders
+_security_backup_*/
+
+# Deployment scripts
+apply-*.ps1
+
+# Dev logs
+*.log
