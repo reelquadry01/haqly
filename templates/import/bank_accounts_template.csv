@@ -1,0 +1,3 @@
+companyCode,branchCode,bankName,accountName,accountNumber,currencyCode,glAccountCode
+HQ,HQ01,GTBank,Main Operating Account,0123456789,NGN,10120
+HQ,HQ01,Zenith Bank,Collections Account,9876543210,NGN,10150

@@ -1,0 +1,4 @@
+name,usefulLifeMonths,residualRate,depreciationMethod
+Motor Vehicles,60,10,STRAIGHT_LINE
+Computer Equipment,36,5,STRAIGHT_LINE
+Furniture,48,10,STRAIGHT_LINE

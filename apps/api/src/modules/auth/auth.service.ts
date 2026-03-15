@@ -1,4 +1,4 @@
-import { authenticator } from 'otplib';
+import { authenticator, totp } from 'otplib';
 import crypto from 'crypto';
 import {
   ConflictException,
@@ -110,6 +110,23 @@ export class AuthService {
     await this.clearLoginAttempts(user.id, ipAddress);
     if (user.isLocked) {
       await this.prisma.user.update({ where: { id: user.id }, data: { isLocked: false } });
+    }
+
+    // If MFA is enabled, return mfaRequired flag with a pre-auth token
+    if (user.mfaEnabled && user.mfaSecret) {
+      const normalizedRoles2 = normalizeRoleNames(roleNames);
+      const primaryRole2 = normalizedRoles2[0] ?? 'VIEWER';
+      const preAuthToken = generateAccessToken({ userId: String(user.id), role: primaryRole2, email: user.email });
+      return {
+        user: sanitizeUser(user),
+        mfaRequired: true as const,
+        preAuthToken,
+        token: '',
+        refreshToken: '',
+        roles: roleNames,
+        securityRole: primaryRole2,
+        workspaceRole: this.resolveWorkspaceRole(roleNames),
+      };
     }
 
     const auth = await this.issueAuthTokens(user.id, user.email, roleNames);
@@ -330,7 +347,8 @@ export class AuthService {
     if (user.mfaEnabled) throw new Error('MFA is already enabled. Disable it first before setting up again.');
 
     // Generate a new TOTP secret
-    const secret = authenticator.generateSecret(20);
+    authenticator.options = { encoding: 'base32' };
+    const secret = authenticator.generateSecret();
 
     // Store the secret temporarily (not yet enabled — enabled only after first verify)
     await this.prisma.user.update({
@@ -349,7 +367,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.mfaSecret) throw new UnauthorizedException('MFA setup not initiated. Call /auth/mfa/setup first.');
 
-    const isValid = authenticator.verify({ token, secret: user.mfaSecret });
+    const isValid = (() => { try { return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; } } })();
     if (!isValid) throw new UnauthorizedException('Invalid verification code. Please try again.');
 
     await this.prisma.user.update({
@@ -365,7 +383,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.mfaSecret || !user.mfaEnabled) return true; // MFA not enabled = pass through
 
-    return authenticator.verify({ token, secret: user.mfaSecret });
+    return (() => { try { return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; } } })();
   }
 
   // ─── MFA: Disable ────────────────────────────────────────────────────────────
@@ -379,7 +397,7 @@ export class AuthService {
     if (!passwordOk) throw new UnauthorizedException('Incorrect password');
 
     // Verify current TOTP
-    const totpOk = user.mfaSecret ? authenticator.verify({ token, secret: user.mfaSecret }) : false;
+    const totpOk = user.mfaSecret ? (() => { try { return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; } } })() : false;
     if (!totpOk) throw new UnauthorizedException('Invalid authenticator code');
 
     await this.prisma.user.update({
@@ -397,5 +415,16 @@ export class AuthService {
       select: { mfaEnabled: true },
     });
     return { enabled: user?.mfaEnabled ?? false };
+  }
+
+  // ─── MFA: Verify by email — used on login before full token is issued ────────
+  async mfaVerifyLoginByEmail(email: string, token: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (!user?.mfaSecret || !user.mfaEnabled) return true;
+    try {
+      return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any);
+    } catch {
+      try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; }
+    }
   }
 }
