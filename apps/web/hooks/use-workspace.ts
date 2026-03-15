@@ -25,7 +25,16 @@ export function useWorkspace() {
       setLoading(true);
       setError("");
       try {
-        const records = await getCompanies(nextSession.token);
+        // Always attempt a silent refresh first — the in-memory access token
+        // is lost on page reload, so we need a fresh one from the refresh cookie
+        let activeToken = nextSession.token;
+        try {
+          const refreshed = await silentRefresh();
+          if (refreshed) activeToken = refreshed;
+        } catch {
+          // silentRefresh failed — proceed with stored token, will 401 if expired
+        }
+        const records = await getCompanies(activeToken);
         if (cancelled) {
           return;
         }
