@@ -41,6 +41,7 @@ import {
   type FiscalYearRecord,
   type UserRecord,
 } from "../../lib/api";
+import { MfaSetup } from "../../components/mfa-setup";
 import {
   coerceBoolean,
   coerceNumber,
@@ -950,6 +951,11 @@ export default function AdministrationPage() {
         </SectionCard>
         <SectionCard title="Security, notifications, integrations, and audit" eyebrow="Policy visibility">
           <div id="admin-integrations" />
+          <div className="mfa-setup-wrapper" style={{ marginBottom: "1.5rem" }}>
+            {session?.token && (
+              <MfaSetup token={session.token} apiBaseUrl="http://localhost:3000/api/v1" />
+            )}
+          </div>
           <div className="checklist"><label><input type="checkbox" checked={state.security.mfaAdmins} onChange={() => setState((current) => ({ ...current, security: { ...current.security, mfaAdmins: !current.security.mfaAdmins } }))} /> MFA for admins</label><label><input type="checkbox" checked={state.security.mfaApprovers} onChange={() => setState((current) => ({ ...current, security: { ...current.security, mfaApprovers: !current.security.mfaApprovers } }))} /> MFA for approvers</label><label><input type="checkbox" checked={state.notifications.email} onChange={() => setState((current) => ({ ...current, notifications: { ...current.notifications, email: !current.notifications.email } }))} /> Approval emails</label><label><input type="checkbox" checked={state.notifications.failedLogin} onChange={() => setState((current) => ({ ...current, notifications: { ...current.notifications, failedLogin: !current.notifications.failedLogin } }))} /> Failed login alerts</label></div>
           <div className="form-grid two-up"><label className="field"><span>Session timeout (mins)</span><input type="number" value={state.security.sessionTimeout} onChange={(event) => setState((current) => ({ ...current, security: { ...current.security, sessionTimeout: Number(event.target.value) } }))} /></label><label className="field"><span>Lock after failed attempts</span><input type="number" value={state.security.failedAttempts} onChange={(event) => setState((current) => ({ ...current, security: { ...current.security, failedAttempts: Number(event.target.value) } }))} /></label></div>
           <DataTable title="Module controls" tableId="admin-module-controls" exportFileName="admin-module-controls" rows={state.modules} searchValue={(row) => `${row.module} ${row.shortcut}`} filters={[{ key: "enabled", label: "Enabled", predicate: (row) => row.enabled }]} advancedFilters={[{ key: "module", label: "Module", type: "text", getValue: (row) => row.module }, { key: "shortcut", label: "Shortcut", type: "text", getValue: (row) => row.shortcut }, { key: "enabled", label: "Enabled", type: "select", getValue: (row) => (row.enabled ? "yes" : "no"), options: [{ value: "yes", label: "Enabled" }, { value: "no", label: "Disabled" }] }, { key: "exportsAllowed", label: "Export rights", type: "select", getValue: (row) => (row.exportsAllowed ? "yes" : "no"), options: [{ value: "yes", label: "Allowed" }, { value: "no", label: "Blocked" }] }]} bulkActions={["Export CSV", "Export Excel", "Export PDF"]} columns={[{ key: "module", label: "Module", render: (row) => <strong>{row.module}</strong>, exportValue: (row) => row.module }, { key: "shortcut", label: "Shortcut", render: (row) => row.shortcut, exportValue: (row) => row.shortcut }, { key: "enabled", label: "Enabled", render: (row) => <StatusBadge status={row.enabled ? "Approved" : "Archived"} />, exportValue: (row) => row.enabled ? "Yes" : "No" }, { key: "exportsAllowed", label: "Export", render: (row) => <StatusBadge status={row.exportsAllowed ? "Approved" : "Archived"} />, exportValue: (row) => row.exportsAllowed ? "Yes" : "No" }]} />

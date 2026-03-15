@@ -1,6 +1,4 @@
-export const apiBaseUrl =
-
-
+export const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 // ─────────────────────────────────────────────────────────────────────────────
 // Silent token refresh — uses the httpOnly refresh cookie automatically.
 // Called when memory token is missing (e.g. after page reload) or on 401.
