@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UsePipes,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
@@ -34,7 +35,9 @@ export class AuthController {
   async register(@Body() dto: RegisterDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
       const result = await this.auth.register(dto, getRequestIp(req));
+      if (result.refreshToken) {
       res.cookie('refreshToken', result.refreshToken, refreshCookieOptions);
+    }
       const { refreshToken, ...payload } = result;
       return payload;
     } catch (error) {
@@ -48,7 +51,9 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
       const result = await this.auth.login(dto, getRequestIp(req));
+      if (result.refreshToken) {
       res.cookie('refreshToken', result.refreshToken, refreshCookieOptions);
+    }
       const { refreshToken, ...payload } = result;
       return payload;
     } catch (error) {
@@ -63,7 +68,9 @@ export class AuthController {
     try {
       const currentRefreshToken = req.cookies?.refreshToken as string | undefined;
       const result = await this.auth.refresh(currentRefreshToken ?? '');
+      if (result.refreshToken) {
       res.cookie('refreshToken', result.refreshToken, refreshCookieOptions);
+    }
       const { refreshToken, ...payload } = result;
       return payload;
     } catch (error) {
@@ -112,5 +119,18 @@ export class AuthController {
   async mfaDisable(@Req() req: Request, @Body() dto: MfaDisableDto) {
     const user = req.user as { userId: number };
     return this.auth.mfaDisable(user.userId, dto.token, dto.password);
+  }
+
+
+  // ─── MFA: Verify login code — public endpoint (called before full auth) ──────
+  @Public()
+  @Post('mfa/verify-login')
+  @HttpCode(200)
+  async mfaVerifyLogin(@Body() body: { email: string; token: string }) {
+    const valid = await this.auth.mfaVerifyLoginByEmail(body.email, body.token);
+    if (!valid) {
+      throw new UnauthorizedException('Invalid authenticator code. Please try again.');
+    }
+    return { success: true };
   }
 }
