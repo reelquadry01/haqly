@@ -7,6 +7,8 @@ import {
   CreateRoleDto,
   FiscalYearTransitionDto,
   UpdateAccountingPeriodStatusDto,
+  UpsertCompanySettingsDto,
+  CreateApprovalRuleDto,
 } from './admin.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
@@ -69,5 +71,31 @@ export class AdminController {
   ) {
     return this.admin.updateAccountingPeriodStatus(periodId, dto);
   }
-}
 
+  @Get('settings/:companyId')
+  @RequirePermissions('org:view')
+  getSettings(@Param('companyId', ParseIntPipe) companyId: number) {
+    return this.admin.getSettings(companyId);
+  }
+
+  @Patch('settings/:companyId')
+  @RequirePermissions('org:create')
+  upsertSettings(
+    @Param('companyId', ParseIntPipe) companyId: number,
+    @Body() dto: UpsertCompanySettingsDto,
+  ) {
+    return this.admin.upsertSettings(companyId, dto);
+  }
+
+  @Get('approval-rules')
+  @RequirePermissions('org:view')
+  listApprovalRules(@Query('companyId', ParseIntPipe) companyId: number) {
+    return this.admin.listApprovalRules(companyId);
+  }
+
+  @Post('approval-rules')
+  @RequirePermissions('org:create')
+  createApprovalRule(@Body() dto: CreateApprovalRuleDto) {
+    return this.admin.createApprovalRule(dto);
+  }
+}

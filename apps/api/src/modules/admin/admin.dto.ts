@@ -60,3 +60,20 @@ export class FiscalYearTransitionDto {
   @IsString()
   reason?: string;
 }
+
+export class UpsertCompanySettingsDto {
+  mfaAdmins?: boolean;
+  mfaApprovers?: boolean;
+  sessionTimeout?: number;
+  failedAttempts?: number;
+  emailApprovals?: boolean;
+  failedLoginAlerts?: boolean;
+}
+
+export class CreateApprovalRuleDto {
+  companyId!: number;
+  module!: string;
+  transaction!: string;
+  approvers!: string;
+  range!: string;
+}

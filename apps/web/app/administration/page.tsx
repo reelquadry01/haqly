@@ -40,7 +40,8 @@ import {
   type BulkImportResponse,
   type FiscalYearRecord,
   type UserRecord,
-} from "../../lib/api";
+} from "../../lib/api"
+// NOTE: auto-patched by apply-admin-settings-api.ps1;
 import { MfaSetup } from "../../components/mfa-setup";
 import {
   coerceBoolean,

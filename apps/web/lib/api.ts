@@ -3008,3 +3008,77 @@ export async function importStockOpeningBalances(token: string, companyId: numbe
   const response = await fetch(apiBaseUrl + "/imports/stock-opening-balances", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ companyId, openingDate, rows }) });
   return readApiResponse<BulkImportResponse>(response, "Could not import stock opening balances");
 }
+
+// ── Admin Settings ────────────────────────────────────────────────────────────
+
+export async function getCompanySettings(token: string, companyId: number) {
+  const response = await fetch(`${apiBaseUrl}/admin/settings/${companyId}`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  // Returns null if not configured yet — treat 404 as empty
+  if (response.status === 404) return null;
+  return readApiResponse<{
+    mfaAdmins: boolean;
+    mfaApprovers: boolean;
+    sessionTimeout: number;
+    failedAttempts: number;
+    emailApprovals: boolean;
+    failedLoginAlerts: boolean;
+  }>(response, "Could not load company settings");
+}
+
+export async function upsertCompanySettings(
+  token: string,
+  companyId: number,
+  payload: {
+    mfaAdmins?: boolean;
+    mfaApprovers?: boolean;
+    sessionTimeout?: number;
+    failedAttempts?: number;
+    emailApprovals?: boolean;
+    failedLoginAlerts?: boolean;
+  },
+) {
+  const response = await fetch(`${apiBaseUrl}/admin/settings/${companyId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  return readApiResponse<{ companyId: number }>(response, "Could not save company settings");
+}
+
+export async function createApprovalRule(
+  token: string,
+  payload: {
+    companyId: number;
+    module: string;
+    transaction: string;
+    approvers: string;
+    range: string;
+  },
+) {
+  const response = await fetch(`${apiBaseUrl}/admin/approval-rules`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  return readApiResponse<{ id: number; module: string }>(response, "Could not create approval rule");
+}
+
+export async function listApprovalRules(token: string, companyId: number) {
+  const response = await fetch(`${apiBaseUrl}/admin/approval-rules?companyId=${companyId}`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<Array<{ id: number; module: string; transaction: string; approvers: string; range: string; status: string }>>(
+    response,
+    "Could not load approval rules",
+  );
+}

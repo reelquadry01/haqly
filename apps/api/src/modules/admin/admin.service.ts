@@ -312,4 +312,40 @@ export class AdminService {
     }
     return 'OPEN';
   }
+
+  async upsertSettings(companyId: number, data: {
+    mfaAdmins?: boolean;
+    mfaApprovers?: boolean;
+    sessionTimeout?: number;
+    failedAttempts?: number;
+    emailApprovals?: boolean;
+    failedLoginAlerts?: boolean;
+  }) {
+    return this.prisma.companySettings.upsert({
+      where: { companyId },
+      update: { ...data, updatedAt: new Date() },
+      create: { companyId, ...data },
+    });
+  }
+
+  async getSettings(companyId: number) {
+    return this.prisma.companySettings.findUnique({ where: { companyId } });
+  }
+
+  async createApprovalRule(data: {
+    companyId: number;
+    module: string;
+    transaction: string;
+    approvers: string;
+    range: string;
+  }) {
+    return this.prisma.approvalRule.create({ data });
+  }
+
+  async listApprovalRules(companyId: number) {
+    return this.prisma.approvalRule.findMany({
+      where: { companyId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }
