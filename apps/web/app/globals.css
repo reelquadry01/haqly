@@ -12,23 +12,49 @@
   --text: #111827;
   --text-soft: #6b7280;
   --text-faint: #94a3b8;
-  --primary: #0066f5;
-  --primary-deep: #0052cc;
-  --primary-soft: #e8f0fe;
-  --secondary: #0a2e65;
-  --secondary-soft: #e7eef9;
-  --accent: #0066f5;
-  --accent-soft: #e8f0fe;
-  --accent-blend: #b76e79;
-  --accent-blend-soft: #f6eeef;
-  --success: #10b981;
-  --warning: #d97706;
-  --danger: #dc2626;
-  --info: #3b82f6;
-  --sidebar-bg: #0a2e65;
-  --sidebar-bg-deep: #08244f;
+  /* ── Colour system — 2 blues, teal accent, semantic states ── */
+  --primary: #1a56db;          /* action blue — buttons, links, focus rings */
+  --primary-deep: #1347c0;     /* hover/pressed state */
+  --primary-soft: #eff6ff;     /* light background tint */
+  --secondary: #0d1f4e;        /* brand navy — sidebar, headings */
+  --secondary-soft: #eef2fb;   /* light navy tint */
+  --accent: #0ea5a0;           /* teal — already in the logo, use for highlights */
+  --accent-soft: #e6f7f7;      /* teal light tint */
+  --accent-blend: #b76e79;     /* warm rose — kept for subtle body bg gradients */
+  --accent-blend-soft: #f9f0f1;
+
+  /* ── Semantic status colours — more distinct, accessible ── */
+  --success: #059669;          /* emerald — approved, posted */
+  --success-soft: #d1fae5;
+  --warning: #d97706;          /* amber — pending, overdue */
+  --warning-soft: #fef3c7;
+  --danger: #dc2626;           /* red — rejected, error */
+  --danger-soft: #fee2e2;
+  --info: #2563eb;             /* blue — submitted, info */
+  --info-soft: #dbeafe;
+
+  /* ── Text colour ramp — 4 levels ── */
+  --text: #0f172a;             /* primary — darkest, headings */
+  --text-secondary: #334155;   /* new level — subheadings, emphasized body */
+  --text-soft: #64748b;        /* muted — secondary info, labels */
+  --text-faint: #94a3b8;       /* faint — placeholders, disabled */
+
+  /* ── Surface colours — clear depth hierarchy ── */
+  --bg: #f8fafc;               /* page background */
+  --bg-subtle: #f1f5f9;        /* inset areas, alternate rows */
+  --surface: #ffffff;          /* card / panel surface */
+  --surface-muted: #f1f5f9;    /* muted surface — table headers, pills */
+  --surface-alt: #e8f0fe;      /* accent tinted surface */
+
+  /* ── Borders ── */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* ── Sidebar ── */
+  --sidebar-bg: #0d1f4e;
+  --sidebar-bg-deep: #091833;
   --sidebar-text: #ffffff;
-  --sidebar-text-soft: rgba(255, 255, 255, 0.68);
+  --sidebar-text-soft: rgba(255, 255, 255, 0.65);
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 16px 40px rgba(10, 46, 101, 0.08);
@@ -92,7 +118,7 @@ body {
     linear-gradient(180deg, #f0f1f4 0%, var(--bg) 100%);
   color: var(--text);
   font-family: var(--font-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: var(--font-regular);
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
@@ -147,7 +173,7 @@ p {
 
 h1 {
   font-weight: 700;
-  font-size: clamp(1.75rem, 2.4vw, 2.2rem);
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
   line-height: 1.12;
 }
 
@@ -157,12 +183,12 @@ h3 {
 }
 
 h2 {
-  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
   line-height: 1.2;
 }
 
 h3 {
-  font-size: 0.98rem;
+  font-size: 0.875rem;
   line-height: 1.3;
 }
 
@@ -771,8 +797,8 @@ button:focus-visible {
   align-items: center;
   gap: 8px;
   color: var(--text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0.03em;
   font-size: 11px;
   font-weight: 600;
 }
@@ -890,8 +916,8 @@ button:focus-visible {
 .meta-label {
   display: block;
   color: var(--text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   font-size: 11px;
   line-height: 1.1;
   margin-bottom: 2px;
@@ -1024,7 +1050,7 @@ button:focus-visible {
 }
 
 .primary-button {
-  background: linear-gradient(180deg, #344980 0%, var(--primary) 100%);
+  background: linear-gradient(180deg, #1e63f0 0%, var(--primary) 100%);
   border-color: var(--primary-deep);
   color: var(--sidebar-text);
   box-shadow: 0 10px 20px rgba(44, 62, 115, 0.16);
@@ -1748,6 +1774,11 @@ button:focus-visible {
   color: var(--danger);
 }
 
+/* KPI values — richer colour for key metrics */
+.kpi-card--up .kpi-card__value { color: var(--success) !important; }
+.kpi-card--down .kpi-card__value { color: var(--danger) !important; }
+.kpi-card--neutral .kpi-card__value { color: var(--text) !important; }
+
 .kpi-card__value {
   display: block;
   font-size: 28px;
@@ -1829,18 +1860,18 @@ button:focus-visible {
 }
 
 .alert-row.warning {
-  border-color: #dcc7a6;
-  background: #f5f0e8;
+  border-left: 3px solid var(--warning);
+  background: linear-gradient(90deg, #fffbeb 0%, #fff 60%);
 }
 
 .alert-row.critical {
-  border-color: #d8b2ae;
-  background: #f7eceb;
+  border-left: 3px solid var(--danger);
+  background: linear-gradient(90deg, #fff5f5 0%, #fff 60%);
 }
 
 .alert-row.info {
-  border-color: #bfc9d8;
-  background: #edf0f4;
+  border-left: 3px solid var(--accent);
+  background: linear-gradient(90deg, #f0fdfa 0%, #fff 60%);
 }
 
 .trend-bars {
@@ -2229,13 +2260,17 @@ button:focus-visible {
   letter-spacing: 0.01em;
 }
 
-.status-badge.draft { background: #eceef2; color: #4e5a70; border-color: #c7ced8; }
-.status-badge.pending { background: #f3ede3; color: #8f6d3e; border-color: #d6c3a3; }
-.status-badge.submitted { background: #e5edf3; color: #2c3e73; border-color: #bec9d9; }
-.status-badge.approved { background: #e3f0ef; color: #2d7d80; border-color: #bdd9da; }
-.status-badge.rejected { background: #f5e9e7; color: #a5504a; border-color: #d6b8b4; }
-.status-badge.posted { background: #e2ecee; color: #356f7e; border-color: #bcd1d6; }
-.status-badge.reversed { background: #ece9ef; color: #5a6073; border-color: #cbc7d1; }
+/* ── Status badges — distinct, accessible colours ────────────────────────── */
+.status-badge.draft     { background: #f1f5f9; color: #475569; border-color: rgba(71,85,105,0.2); }
+.status-badge.pending   { background: #fef3c7; color: #92400e; border-color: rgba(217,119,6,0.25); }
+.status-badge.submitted { background: #dbeafe; color: #1e40af; border-color: rgba(37,99,235,0.2); }
+.status-badge.approved  { background: #d1fae5; color: #065f46; border-color: rgba(5,150,105,0.2); }
+.status-badge.rejected  { background: #fee2e2; color: #991b1b; border-color: rgba(220,38,38,0.2); }
+.status-badge.posted    { background: #e0f2fe; color: #0c4a6e; border-color: rgba(14,165,233,0.2); }
+.status-badge.reversed  { background: #f3e8ff; color: #6b21a8; border-color: rgba(147,51,234,0.2); }
+.status-badge.overdue   { background: #fff7ed; color: #9a3412; border-color: rgba(234,88,12,0.2); }
+.status-badge.closed    { background: #f8fafc; color: #475569; border-color: rgba(71,85,105,0.15); }
+.status-badge.archived  { background: #faf5ff; color: #6b21a8; border-color: rgba(147,51,234,0.15); }
 .status-badge.overdue { background: #f4ece4; color: #9b6f39; border-color: #dcc4a7; }
 .status-badge.closed { background: #e8eaee; color: #4e5a70; border-color: #c6ccd6; }
 .status-badge.archived { background: #f0f1f4; color: #6c7687; border-color: #d4d8df; }
@@ -3428,7 +3463,7 @@ button:focus-visible {
 .admin-fiscal-row-title strong,
 .admin-period-card-head strong,
 .admin-fiscal-summary h3 {
-  font-size: 0.98rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--text);
 }
@@ -4592,4 +4627,217 @@ button:focus-visible {
   border-radius: 50%;
   background: var(--danger);
   border: 1.5px solid var(--surface);
+}
+
+/* ─── Typography & Colour Refinement ────────────────────────────────────────
+   Applied: tighter type scale, 2-blue system, 4-level text ramp,
+   colourful status badges, accent highlights where useful.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Tighter body ──────────────────────────────────────────────────────────── */
+body {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: var(--text) !important;
+}
+
+/* ── Section eyebrows — no uppercase, subtle ──────────────────────────────── */
+.section-eyebrow,
+.brand-line,
+.context-label {
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--text-soft) !important;
+}
+
+/* ── Section card title — refined ───────────────────────────────────────────*/
+.section-card__header h3 {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--text) !important;
+}
+
+.section-card__header p,
+.section-card__header .section-eyebrow {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+}
+
+/* ── Data tables — tighter, better contrast ──────────────────────────────── */
+.data-table th,
+.data-table td {
+  font-size: 12px !important;
+  padding: 10px 14px !important;
+}
+
+.data-table thead th {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--text-soft) !important;
+  background: var(--surface-muted) !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+}
+
+/* Row left accent bar — use teal instead of blue gradient */
+.data-table tbody tr:hover td:first-child::before,
+.data-table tbody tr.is-selected td:first-child::before {
+  background: var(--accent) !important;
+}
+
+/* ── KPI cards — accent colours for trend ───────────────────────────────────*/
+.kpi-card {
+  border-top: 2px solid transparent;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.kpi-card:hover {
+  border-top-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(14, 165, 160, 0.1) !important;
+}
+
+.kpi-card__value {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.kpi-card__label {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--text-soft) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.kpi-card__delta {
+  font-size: 11px !important;
+}
+
+/* ── Sidebar nav — accent left border on active ─────────────────────────────*/
+.erp-nav__link.active {
+  background: rgba(14, 165, 160, 0.12) !important;
+  border-left: 2px solid var(--accent) !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+
+/* ── Focus rings — use accent teal ──────────────────────────────────────────*/
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(14, 165, 160, 0.22) !important;
+  border-color: var(--accent) !important;
+}
+
+/* ── Primary button — use action blue ───────────────────────────────────────*/
+.primary-button {
+  background: linear-gradient(180deg, #2563eb 0%, #1a56db 100%) !important;
+  border-color: #1347c0 !important;
+  box-shadow: 0 2px 8px rgba(26, 86, 219, 0.28) !important;
+}
+
+.primary-button:hover {
+  background: linear-gradient(180deg, #1d4ed8 0%, #1347c0 100%) !important;
+  box-shadow: 0 4px 16px rgba(26, 86, 219, 0.36) !important;
+}
+
+/* ── Topbar search — subtle teal on focus ────────────────────────────────────*/
+.command-launch:focus-within {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(14, 165, 160, 0.15) !important;
+}
+
+/* ── Timeline dots — teal ───────────────────────────────────────────────────*/
+.timeline-item__dot,
+.approval-step__index {
+  background: var(--accent) !important;
+}
+
+/* ── Approval stepper index — lighter teal ───────────────────────────────────*/
+.approval-step__index {
+  background: var(--secondary) !important;
+  font-size: 11px !important;
+}
+
+/* ── Note/hint text ─────────────────────────────────────────────────────────*/
+.note,
+.form-hint,
+.cell-subcopy {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+}
+
+/* ── Labels on form fields ───────────────────────────────────────────────────*/
+.field > span {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary, var(--text)) !important;
+}
+
+/* ── Empty states — tighten text ─────────────────────────────────────────────*/
+.empty-state__title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.empty-state__body {
+  font-size: 12px !important;
+  color: var(--text-soft) !important;
+}
+
+/* ── Breadcrumb row ──────────────────────────────────────────────────────────*/
+.breadcrumb-row {
+  font-size: 12px !important;
+  color: var(--text-soft) !important;
+}
+
+/* ── Page hero compact — teal accent on title ─────────────────────────────── */
+.page-hero h1 {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--text) !important;
+}
+
+/* ── Section card eyebrow — no uppercase ─────────────────────────────────── */
+.section-card .section-eyebrow {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+  color: var(--text-faint) !important;
+}
+
+/* ── Floating menus — tighter type ───────────────────────────────────────────*/
+.floating-menu__item strong {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.floating-menu__item span {
+  font-size: 11px !important;
+  color: var(--text-soft) !important;
+}
+
+/* ── Tab chips — tighter ─────────────────────────────────────────────────────*/
+.tab-chip {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.tab-chip.active {
+  color: var(--secondary) !important;
+  border-bottom: 2px solid var(--accent) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Page background — clean ─────────────────────────────────────────────────*/
+body {
+  background:
+    radial-gradient(circle at top left, rgba(13, 31, 78, 0.04), transparent 24%),
+    radial-gradient(circle at 80% 20%, rgba(14, 165, 160, 0.03), transparent 18%),
+    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
 }
