@@ -9,6 +9,7 @@ export type ImportDatasetKey =
   | "products"
   | "tax_codes"
   | "gl_opening_balances"
+  | "gl_journal_dump"
   | "ar_opening_balances"
   | "ap_opening_balances"
   | "customer_receipts"
@@ -32,7 +33,17 @@ export const importTemplates: Record<
   // ── Master data ───────────────────────────────────────────────────────────
   chart_of_accounts: {
     label: "Chart of Accounts",
-    headers: ["code", "name", "type", "description", "parentCode", "isActive", "allowsPosting", "isControlAccount", "controlSource"],
+    headers: [
+      "code",
+      "name",
+      "type",
+      "description",
+      "parentCode",
+      "isActive",
+      "allowsPosting",
+      "isControlAccount",
+      "controlSource",
+    ],
     sampleRows: [
       ["1000", "Cash at Bank", "ASSET", "Main operating bank account", "", "true", "true", "false", ""],
       ["1100", "Accounts Receivable", "ASSET", "Trade debtors control account", "", "true", "false", "true", "CUSTOMER"],
@@ -42,6 +53,7 @@ export const importTemplates: Record<
       ["5000", "Cost of Sales", "EXPENSE", "Direct cost of goods sold", "", "true", "true", "false", ""],
     ],
   },
+
   customers: {
     label: "Customers",
     headers: ["name", "email", "phone", "line1", "city", "state", "country", "postalCode"],
@@ -50,6 +62,7 @@ export const importTemplates: Record<
       ["Northern Foods Ltd", "finance@northernfoods.ng", "+2348022222222", "5 Industrial Layout", "Kano", "Kano", "Nigeria", "700001"],
     ],
   },
+
   suppliers: {
     label: "Suppliers",
     headers: ["name", "email", "phone", "line1", "city", "state", "country", "postalCode"],
@@ -58,6 +71,7 @@ export const importTemplates: Record<
       ["Lagos Packaging Co", "billing@lagospkg.ng", "+2348044444444", "22 Apapa Road", "Lagos", "Lagos", "Nigeria", "100002"],
     ],
   },
+
   products: {
     label: "Products",
     headers: ["sku", "name", "category", "uom", "isActive"],
@@ -66,9 +80,22 @@ export const importTemplates: Record<
       ["RM-110", "Packaging Film Roll", "Raw Materials", "Roll", "true"],
     ],
   },
+
   tax_codes: {
     label: "Tax Codes",
-    headers: ["companyId", "code", "name", "taxType", "rate", "isInclusive", "recoverable", "filingFrequency", "outputAccountCode", "inputAccountCode", "liabilityAccountCode"],
+    headers: [
+      "companyId",
+      "code",
+      "name",
+      "taxType",
+      "rate",
+      "isInclusive",
+      "recoverable",
+      "filingFrequency",
+      "outputAccountCode",
+      "inputAccountCode",
+      "liabilityAccountCode",
+    ],
     sampleRows: [
       ["1", "VAT", "Value Added Tax", "VAT", "7.5", "false", "true", "MONTHLY", "2300", "1400", "2300"],
       ["1", "WHT", "Withholding Tax", "WITHHOLDING", "5", "false", "false", "MONTHLY", "", "", "2400"],
@@ -89,23 +116,71 @@ export const importTemplates: Record<
       ["3000", "Retained Earnings", "EQUITY", "0", "20000000", "", "Opening balance as at 31 Dec 2025"],
     ],
   },
+
+  gl_journal_dump: {
+    label: "GL Journal Dump",
+    headers: [
+      "journalNumber",
+      "postingDate",
+      "branchCode",
+      "accountCode",
+      "debit",
+      "credit",
+      "currencyCode",
+      "departmentCode",
+      "costCenterCode",
+      "projectCode",
+      "reference",
+      "sourceDocument",
+      "narration",
+    ],
+    sampleRows: [
+      ["JV-2025-0001", "2025-12-31", "HQ", "1000", "2500000", "0", "NGN", "", "", "", "GLDUMP-001", "LEGACY-ERP", "Cash opening migration"],
+      ["JV-2025-0001", "2025-12-31", "HQ", "3000", "0", "2500000", "NGN", "", "", "", "GLDUMP-001", "LEGACY-ERP", "Retained earnings opening migration"],
+      ["JV-2025-0002", "2025-12-31", "HQ", "1100", "850000", "0", "NGN", "Finance", "", "", "GLDUMP-002", "INV-2025-0891", "Customer invoice migration"],
+      ["JV-2025-0002", "2025-12-31", "HQ", "4000", "0", "850000", "NGN", "Finance", "", "", "GLDUMP-002", "INV-2025-0891", "Revenue migration"],
+    ],
+  },
+
   ar_opening_balances: {
     label: "AR Opening Balances",
-    headers: ["customerName", "customerEmail", "invoiceNumber", "invoiceDate", "dueDate", "amount", "outstanding", "currencyCode", "narration"],
+    headers: [
+      "customerName",
+      "customerEmail",
+      "invoiceNumber",
+      "invoiceDate",
+      "dueDate",
+      "amount",
+      "outstanding",
+      "currencyCode",
+      "narration",
+    ],
     sampleRows: [
       ["Atlantic Retail Ltd", "ap@atlanticretail.com", "INV-2025-0891", "2025-12-01", "2025-12-31", "850000", "850000", "NGN", "Opening AR — fully outstanding"],
       ["Northern Foods Ltd", "finance@northernfoods.ng", "INV-2025-0876", "2025-11-15", "2025-12-15", "420000", "210000", "NGN", "Opening AR — partially paid"],
       ["Metro Health Ltd", "accounts@metrohealth.ng", "INV-2025-0860", "2025-11-01", "2025-12-01", "320000", "320000", "NGN", "Opening AR — fully outstanding"],
     ],
   },
+
   ap_opening_balances: {
     label: "AP Opening Balances",
-    headers: ["supplierName", "supplierEmail", "billNumber", "billDate", "dueDate", "amount", "outstanding", "currencyCode", "narration"],
+    headers: [
+      "supplierName",
+      "supplierEmail",
+      "billNumber",
+      "billDate",
+      "dueDate",
+      "amount",
+      "outstanding",
+      "currencyCode",
+      "narration",
+    ],
     sampleRows: [
       ["Prime Industrial", "orders@primeindustrial.com", "PO-2025-0441", "2025-12-05", "2026-01-05", "1200000", "1200000", "NGN", "Opening AP — fully outstanding"],
       ["Lagos Packaging Co", "billing@lagospkg.ng", "PO-2025-0398", "2025-11-20", "2025-12-20", "380000", "190000", "NGN", "Opening AP — partially paid"],
     ],
   },
+
   customer_receipts: {
     label: "Customer Receipts",
     headers: ["customerName", "receiptNumber", "receiptDate", "amount", "invoiceReference", "paymentMethod", "bankAccountCode", "narration"],
@@ -114,6 +189,7 @@ export const importTemplates: Record<
       ["Metro Health Ltd", "RCP-2025-0119", "2025-12-22", "320000", "INV-2025-0860", "CHEQUE", "1000", "Cheque payment cleared"],
     ],
   },
+
   supplier_payments: {
     label: "Supplier Payments",
     headers: ["supplierName", "paymentReference", "paymentDate", "amount", "billReference", "paymentMethod", "bankAccountCode", "narration"],
@@ -122,15 +198,32 @@ export const importTemplates: Record<
       ["Lagos Packaging Co", "PAY-2025-0087", "2025-12-28", "380000", "PO-2025-0398", "BANK_TRANSFER", "1000", "Full settlement"],
     ],
   },
+
   fixed_assets: {
     label: "Fixed Asset Register",
-    headers: ["assetCode", "assetName", "category", "acquisitionDate", "costPrice", "accumulatedDepreciation", "netBookValue", "depreciationMethod", "usefulLifeYears", "assetAccountCode", "depreciationAccountCode", "location", "serialNumber", "narration"],
+    headers: [
+      "assetCode",
+      "assetName",
+      "category",
+      "acquisitionDate",
+      "costPrice",
+      "accumulatedDepreciation",
+      "netBookValue",
+      "depreciationMethod",
+      "usefulLifeYears",
+      "assetAccountCode",
+      "depreciationAccountCode",
+      "location",
+      "serialNumber",
+      "narration",
+    ],
     sampleRows: [
       ["VEH-001", "Toyota Hilux 2022", "Motor Vehicles", "2022-03-15", "12500000", "4166667", "8333333", "STRAIGHT_LINE", "6", "1500", "1510", "Head Office", "TY22-HIL-001", "Migrated from legacy register"],
       ["IT-002", "Dell Server R740", "Computer Equipment", "2023-01-10", "3800000", "1266667", "2533333", "STRAIGHT_LINE", "3", "1500", "1510", "Data Centre", "SRV-DELL-002", "Migrated from legacy register"],
       ["FUR-003", "Executive Office Furniture", "Furniture & Fittings", "2021-06-01", "850000", "425000", "425000", "STRAIGHT_LINE", "4", "1500", "1510", "Head Office", "", "Migrated from legacy register"],
     ],
   },
+
   stock_opening_balances: {
     label: "Stock Opening Balances",
     headers: ["sku", "productName", "warehouseName", "quantity", "unitCost", "totalValue", "uom", "inventoryAccountCode", "narration"],

@@ -2979,6 +2979,17 @@ export async function importGLOpeningBalances(token: string, companyId: number, 
   return readApiResponse<BulkImportResponse>(response, "Could not import GL opening balances");
 }
 
+export async function importGLJournalDump(payload: unknown) {
+  const response = await fetch(`${API_BASE_URL}/v1/imports/gl-journal-dump`, {
+    method: "POST",
+    headers: await buildJsonHeaders(),
+    body: JSON.stringify(payload),
+    credentials: "include",
+  });
+
+  return readApiResponse<BulkImportResponse>(response, "Could not import GL journal dump");
+}
+
 export async function importAROpeningBalances(token: string, companyId: number, openingDate: string, rows: Array<Record<string, unknown>>) {
   const response = await fetch(apiBaseUrl + "/imports/ar-opening-balances", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ companyId, openingDate, rows }) });
   return readApiResponse<BulkImportResponse>(response, "Could not import AR opening balances");

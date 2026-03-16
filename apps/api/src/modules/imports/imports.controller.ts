@@ -1,35 +1,31 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
-import { RequirePermissions } from '../auth/permissions.decorator';
-import { RequireRole, RolesGuard } from '../../middleware/rbac';
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/jwt.guard";
+import { PermissionsGuard } from "../auth/permissions.guard";
+import { RequirePermissions } from "../auth/permissions.decorator";
 
 import {
   BulkImportAccountsDto,
   BulkImportAPOpeningBalancesDto,
   BulkImportAROpeningBalancesDto,
+  BulkImportAssetCategoriesDto,
+  BulkImportBankAccountsDto,
+  BulkImportBranchesDto,
   BulkImportCustomerReceiptsDto,
   BulkImportCustomersDto,
+  BulkImportDepartmentsDto,
   BulkImportFixedAssetsDto,
   BulkImportGLOpeningBalancesDto,
+  BulkImportGLJournalDumpDto,
   BulkImportProductsDto,
   BulkImportStockOpeningBalancesDto,
   BulkImportSupplierPaymentsDto,
   BulkImportSuppliersDto,
   BulkImportTaxConfigsDto,
-  BulkImportBranchesDto,
-  BulkImportDepartmentsDto,
   BulkImportWarehousesDto,
-  BulkImportBankAccountsDto,
-  BulkImportAssetCategoriesDto
-} from './dto';BulkImportGLJournalDumpDto,
-  BulkImportAssetCategoriesDto
-} from './dto';
+} from "./dto";
 
-import { ImportsService } from './imports.service';
-
-@UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
-@RequireRole('ADMIN', 'FINANCE', 'WAREHOUSE')
+import { ImportsService } from "./imports.service";
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller({ path: 'imports', version: '1' })
 export class ImportsController {
   constructor(private readonly imports: ImportsService) {}
@@ -145,4 +141,10 @@ export class ImportsController {
     return this.imports.importGLJournalDump(dto);
   }
 }
+
+
+
+
+
+
 
