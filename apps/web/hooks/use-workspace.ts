@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { getCompanies, type CompanyRecord } from "../lib/api";
 import { readSession, writeSession, type StoredSession } from "../lib/session";
 
+const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+
 export function useWorkspace() {
   const [session, setSession] = useState<StoredSession | null>(null);
   const [companies, setCompanies] = useState<CompanyRecord[]>([]);
@@ -11,10 +13,10 @@ export function useWorkspace() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const nextSession = readSession();
-    setSession(nextSession);
+    const stored = readSession();
+    setSession(stored);
 
-    if (!nextSession.token) {
+    if (!stored.token) {
       setLoading(false);
       return;
     }
@@ -25,78 +27,81 @@ export function useWorkspace() {
       setLoading(true);
       setError("");
       try {
-        // Always attempt a silent refresh first — the in-memory access token
-        // is lost on page reload, so we need a fresh one from the refresh cookie
-        let activeToken = nextSession.token;
+        // Always refresh the token first — in-memory token is lost on reload
+        let token = stored.token;
         try {
-          const refreshed = await silentRefresh();
-          if (refreshed) activeToken = refreshed;
+          const res = await fetch(apiBase + "/auth/refresh", {
+            method: "POST",
+            credentials: "include",
+          });
+          if (res.ok) {
+            const data = await res.json() as { token?: string };
+            if (data.token) {
+              token = data.token;
+              // Write fresh token back to localStorage immediately
+              const refreshed = { ...stored, token };
+              writeSession(refreshed);
+              if (!cancelled) setSession(refreshed);
+            }
+          }
         } catch {
-          // silentRefresh failed — proceed with stored token, will 401 if expired
+          // Refresh failed — use stored token as fallback
         }
-        const records = await getCompanies(activeToken);
-        if (cancelled) {
-          return;
-        }
+
+        const records = await getCompanies(token);
+        if (cancelled) return;
+
         setCompanies(records);
 
-        const selectedCompany = records.find((company) => company.id === nextSession.companyId) ?? records[0];
+        const selectedCompany =
+          records.find((c) => c.id === stored.companyId) ?? records[0];
         const selectedBranch =
-          selectedCompany?.branches.find((branch) => branch.id === nextSession.branchId) ?? selectedCompany?.branches[0];
+          selectedCompany?.branches.find((b) => b.id === stored.branchId) ??
+          selectedCompany?.branches[0];
 
         if (selectedCompany) {
-          const updatedSession = {
-            ...nextSession,
+          const next: StoredSession = {
+            ...stored,
+            token,
             companyId: selectedCompany.id,
             companyName: selectedCompany.name,
             branchId: selectedBranch?.id ?? null,
             branchName: selectedBranch?.name ?? "All branches",
           };
-          writeSession(updatedSession);
-          setSession(updatedSession);
+          writeSession(next);
+          if (!cancelled) setSession(next);
         }
-      } catch (loadError) {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : "Could not load companies.");
-        }
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Could not load workspace.");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
 
     void load();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  const activeCompany = useMemo(() => {
-    return companies.find((company) => company.id === session?.companyId) ?? null;
-  }, [companies, session?.companyId]);
+  const activeCompany = useMemo(
+    () => companies.find((c) => c.id === session?.companyId) ?? null,
+    [companies, session?.companyId],
+  );
 
-  const activeBranch = useMemo(() => {
-    return activeCompany?.branches.find((branch) => branch.id === session?.branchId) ?? null;
-  }, [activeCompany, session?.branchId]);
+  const activeBranch = useMemo(
+    () => activeCompany?.branches.find((b) => b.id === session?.branchId) ?? null,
+    [activeCompany, session?.branchId],
+  );
 
   function updateSession(patch: Partial<StoredSession>) {
-    if (!session) {
-      return;
-    }
-
+    if (!session) return;
     const next = { ...session, ...patch };
     writeSession(next);
     setSession(next);
   }
 
   function setCompany(companyId: number) {
-    const company = companies.find((entry) => entry.id === companyId);
-    if (!company || !session) {
-      return;
-    }
-
+    const company = companies.find((c) => c.id === companyId);
+    if (!company || !session) return;
     updateSession({
       companyId: company.id,
       companyName: company.name,
@@ -106,11 +111,8 @@ export function useWorkspace() {
   }
 
   function setBranch(branchId: number) {
-    const branch = activeCompany?.branches.find((entry) => entry.id === branchId);
-    if (!branch) {
-      return;
-    }
-
+    const branch = activeCompany?.branches.find((b) => b.id === branchId);
+    if (!branch) return;
     updateSession({ branchId: branch.id, branchName: branch.name });
   }
 
@@ -129,9 +131,7 @@ export function useWorkspace() {
     setBranch,
     setPeriod,
     refreshCompanies: async () => {
-      if (!session?.token) {
-        return;
-      }
+      if (!session?.token) return;
       const records = await getCompanies(session.token);
       setCompanies(records);
     },
