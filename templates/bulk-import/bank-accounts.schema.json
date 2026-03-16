@@ -1,0 +1,63 @@
+﻿{
+    "dataset":  "bank-accounts",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Company code",
+                        "mapsTo":  "BankAccount.companyId -\u003e Company.code"
+                    },
+                    {
+                        "name":  "branchCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Branch code",
+                        "mapsTo":  "BankAccount.branchId -\u003e Branch.code"
+                    },
+                    {
+                        "name":  "bankName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Bank name",
+                        "mapsTo":  "BankAccount.bankName"
+                    },
+                    {
+                        "name":  "accountName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Account name",
+                        "mapsTo":  "BankAccount.accountName"
+                    },
+                    {
+                        "name":  "accountNumber",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Bank account number",
+                        "mapsTo":  "BankAccount.accountNumber"
+                    },
+                    {
+                        "name":  "currencyCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Currency code, e.g. NGN",
+                        "mapsTo":  "BankAccount.currencyId -\u003e Currency.code"
+                    },
+                    {
+                        "name":  "glAccountCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Related GL account code",
+                        "mapsTo":  "BankAccount.glAccountId -\u003e Account.code"
+                    },
+                    {
+                        "name":  "isActive",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "BankAccount.isActive"
+                    }
+                ]
+}

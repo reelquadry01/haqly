@@ -1,0 +1,84 @@
+﻿{
+    "dataset":  "tax-configs",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "TaxConfig.companyId"
+                    },
+                    {
+                        "name":  "code",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Tax code",
+                        "mapsTo":  "TaxConfig.code"
+                    },
+                    {
+                        "name":  "name",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Tax name",
+                        "mapsTo":  "TaxConfig.name"
+                    },
+                    {
+                        "name":  "taxType",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "VAT or other tax type",
+                        "mapsTo":  "TaxConfig.taxType"
+                    },
+                    {
+                        "name":  "rate",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Tax rate as number",
+                        "mapsTo":  "TaxConfig.rate"
+                    },
+                    {
+                        "name":  "isInclusive",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "TaxConfig.isInclusive"
+                    },
+                    {
+                        "name":  "recoverable",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "TaxConfig.recoverable"
+                    },
+                    {
+                        "name":  "filingFrequency",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "MONTHLY, QUARTERLY, etc.",
+                        "mapsTo":  "TaxConfig.filingFrequency"
+                    },
+                    {
+                        "name":  "outputAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "GL output account code",
+                        "mapsTo":  "TaxConfig.outputAccountId -\u003e Account.code"
+                    },
+                    {
+                        "name":  "inputAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "GL input account code",
+                        "mapsTo":  "TaxConfig.inputAccountId -\u003e Account.code"
+                    },
+                    {
+                        "name":  "liabilityAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "GL liability account code",
+                        "mapsTo":  "TaxConfig.liabilityAccountId -\u003e Account.code"
+                    }
+                ]
+}

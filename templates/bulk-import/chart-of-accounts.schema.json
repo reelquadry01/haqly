@@ -1,0 +1,70 @@
+﻿{
+    "dataset":  "chart-of-accounts",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:39",
+    "columns":  [
+                    {
+                        "name":  "code",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Unique account code",
+                        "mapsTo":  "Account.code"
+                    },
+                    {
+                        "name":  "name",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Account name",
+                        "mapsTo":  "Account.name"
+                    },
+                    {
+                        "name":  "type",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "ASSET, LIABILITY, EQUITY, INCOME, EXPENSE",
+                        "mapsTo":  "Account.type"
+                    },
+                    {
+                        "name":  "description",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Optional description",
+                        "mapsTo":  "Account.description"
+                    },
+                    {
+                        "name":  "parentCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Parent account code",
+                        "mapsTo":  "Account.parentId -\u003e Account.code"
+                    },
+                    {
+                        "name":  "isActive",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "Account.isActive"
+                    },
+                    {
+                        "name":  "allowsPosting",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "Account.allowsPosting"
+                    },
+                    {
+                        "name":  "isControlAccount",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "Account.isControlAccount"
+                    },
+                    {
+                        "name":  "controlSource",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Optional control source",
+                        "mapsTo":  "Account.controlSource"
+                    }
+                ]
+}

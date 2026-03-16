@@ -1,0 +1,84 @@
+﻿{
+    "dataset":  "stock-opening-balances",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "openingDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Opening date",
+                        "mapsTo":  "Header.openingDate"
+                    },
+                    {
+                        "name":  "sku",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Product SKU",
+                        "mapsTo":  "Product.sku"
+                    },
+                    {
+                        "name":  "productName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Product name for reference",
+                        "mapsTo":  "Product.name"
+                    },
+                    {
+                        "name":  "warehouseName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Warehouse name",
+                        "mapsTo":  "Warehouse.name"
+                    },
+                    {
+                        "name":  "quantity",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Opening quantity",
+                        "mapsTo":  "Stock quantity"
+                    },
+                    {
+                        "name":  "unitCost",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Cost per unit",
+                        "mapsTo":  "Unit cost"
+                    },
+                    {
+                        "name":  "totalValue",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Total value",
+                        "mapsTo":  "Inventory value"
+                    },
+                    {
+                        "name":  "uom",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Unit of measure",
+                        "mapsTo":  "UnitOfMeasure.name/code"
+                    },
+                    {
+                        "name":  "inventoryAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Inventory GL account code",
+                        "mapsTo":  "Account.code"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Narration",
+                        "mapsTo":  "Description"
+                    }
+                ]
+}

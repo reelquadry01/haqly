@@ -1,0 +1,70 @@
+﻿{
+    "dataset":  "customer-receipts",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "customerName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Customer name",
+                        "mapsTo":  "Customer.name"
+                    },
+                    {
+                        "name":  "receiptNumber",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Receipt number",
+                        "mapsTo":  "CustomerReceiptHeader.receiptNumber/reference"
+                    },
+                    {
+                        "name":  "receiptDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Receipt date",
+                        "mapsTo":  "CustomerReceiptHeader.receiptDate"
+                    },
+                    {
+                        "name":  "amount",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Receipt amount",
+                        "mapsTo":  "CustomerReceiptHeader.amount"
+                    },
+                    {
+                        "name":  "invoiceReference",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Invoice reference",
+                        "mapsTo":  "CustomerReceiptLine.invoiceId -\u003e SalesInvoice.reference"
+                    },
+                    {
+                        "name":  "paymentMethod",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "CASH, BANK_TRANSFER, CHEQUE",
+                        "mapsTo":  "Header.paymentMethod"
+                    },
+                    {
+                        "name":  "bankAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Bank or cash account code",
+                        "mapsTo":  "BankAccount / Account resolver"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Narration",
+                        "mapsTo":  "Header.narration"
+                    }
+                ]
+}

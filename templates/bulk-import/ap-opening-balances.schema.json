@@ -1,0 +1,84 @@
+﻿{
+    "dataset":  "ap-opening-balances",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "openingDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "ISO date",
+                        "mapsTo":  "Header.openingDate"
+                    },
+                    {
+                        "name":  "supplierName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Supplier name",
+                        "mapsTo":  "Supplier.name"
+                    },
+                    {
+                        "name":  "supplierEmail",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Supplier email",
+                        "mapsTo":  "Supplier.email"
+                    },
+                    {
+                        "name":  "billNumber",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Legacy bill number",
+                        "mapsTo":  "PurchaseBill.billNumber/reference"
+                    },
+                    {
+                        "name":  "billDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Bill date",
+                        "mapsTo":  "PurchaseBill.billDate"
+                    },
+                    {
+                        "name":  "dueDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Due date",
+                        "mapsTo":  "PurchaseBill.dueDate"
+                    },
+                    {
+                        "name":  "amount",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Bill total",
+                        "mapsTo":  "PurchaseBill.totalAmount"
+                    },
+                    {
+                        "name":  "outstanding",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Outstanding amount",
+                        "mapsTo":  "AP outstanding balance"
+                    },
+                    {
+                        "name":  "currencyCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Currency code",
+                        "mapsTo":  "Currency.code"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Narration",
+                        "mapsTo":  "Memo / description"
+                    }
+                ]
+}

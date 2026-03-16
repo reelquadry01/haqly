@@ -1,0 +1,21 @@
+﻿{
+    "dataset":  "warehouses",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "branchCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Branch code",
+                        "mapsTo":  "Warehouse.branchId -\u003e Branch.code"
+                    },
+                    {
+                        "name":  "warehouseName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Warehouse name",
+                        "mapsTo":  "Warehouse.name"
+                    }
+                ]
+}

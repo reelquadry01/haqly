@@ -1,0 +1,84 @@
+﻿{
+    "dataset":  "gl-opening-balances",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "openingDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "ISO date, e.g. 2026-01-01",
+                        "mapsTo":  "Header.openingDate"
+                    },
+                    {
+                        "name":  "reference",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Opening balance reference",
+                        "mapsTo":  "Header.reference"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Header narration",
+                        "mapsTo":  "Header.narration"
+                    },
+                    {
+                        "name":  "accountCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "GL account code",
+                        "mapsTo":  "Row.accountCode -\u003e Account.code"
+                    },
+                    {
+                        "name":  "accountName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Reference account name",
+                        "mapsTo":  "Row.accountName"
+                    },
+                    {
+                        "name":  "type",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Account type",
+                        "mapsTo":  "Row.type"
+                    },
+                    {
+                        "name":  "debit",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Opening debit",
+                        "mapsTo":  "Row.debit"
+                    },
+                    {
+                        "name":  "credit",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Opening credit",
+                        "mapsTo":  "Row.credit"
+                    },
+                    {
+                        "name":  "branchCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Branch code",
+                        "mapsTo":  "Row.branchCode -\u003e Branch.code"
+                    },
+                    {
+                        "name":  "narrationLine",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Row narration",
+                        "mapsTo":  "Row.narration"
+                    }
+                ]
+}
