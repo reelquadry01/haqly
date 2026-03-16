@@ -22,6 +22,8 @@ import {
   BulkImportWarehousesDto,
   BulkImportBankAccountsDto,
   BulkImportAssetCategoriesDto
+} from './dto';BulkImportGLJournalDumpDto,
+  BulkImportAssetCategoriesDto
 } from './dto';
 
 import { ImportsService } from './imports.service';
@@ -136,4 +138,11 @@ export class ImportsController {
   importStockOpeningBalances(@Body() dto: BulkImportStockOpeningBalancesDto) {
     return this.imports.importStockOpeningBalances(dto);
   }
+
+  @Post('gl-journal-dump')
+  @RequirePermissions('accounting:journal')
+  importGLJournalDump(@Body() dto: BulkImportGLJournalDumpDto) {
+    return this.imports.importGLJournalDump(dto);
+  }
 }
+

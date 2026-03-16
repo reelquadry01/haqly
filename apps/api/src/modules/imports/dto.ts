@@ -672,3 +672,77 @@ export class BulkImportStockOpeningBalancesDto {
   @Type(() => ImportStockOpeningBalanceRowDto)
   rows!: ImportStockOpeningBalanceRowDto[];
 }
+
+
+class ImportGLJournalDumpRowDto {
+  @IsString()
+  journalNumber!: string;
+
+  @IsString()
+  postingDate!: string;
+
+  @IsString()
+  accountCode!: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  debit!: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  credit!: number;
+
+  @IsOptional()
+  @IsString()
+  companyCode?: string;
+
+  @IsOptional()
+  @IsString()
+  branchCode?: string;
+
+  @IsOptional()
+  @IsString()
+  departmentCode?: string;
+
+  @IsOptional()
+  @IsString()
+  costCenterCode?: string;
+
+  @IsOptional()
+  @IsString()
+  projectCode?: string;
+
+  @IsOptional()
+  @IsString()
+  currencyCode?: string;
+
+  @IsOptional()
+  @IsString()
+  reference?: string;
+
+  @IsOptional()
+  @IsString()
+  sourceDocument?: string;
+
+  @IsOptional()
+  @IsString()
+  narration?: string;
+}
+
+export class BulkImportGLJournalDumpDto {
+  @Type(() => Number)
+  @IsInt()
+  companyId!: number;
+
+  @IsOptional()
+  @IsString()
+  defaultNarration?: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImportGLJournalDumpRowDto)
+  rows!: ImportGLJournalDumpRowDto[];
+}
+
