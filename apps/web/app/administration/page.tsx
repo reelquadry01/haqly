@@ -33,6 +33,13 @@ import {
   importProducts,
   importSuppliers,
   importTaxConfigs,
+  importGLOpeningBalances,
+  importAROpeningBalances,
+  importAPOpeningBalances,
+  importCustomerReceipts,
+  importSupplierPayments,
+  importFixedAssets,
+  importStockOpeningBalances,
   lockFiscalYear,
   updateAccountingPeriodStatus,
   updateCompany,
@@ -544,79 +551,48 @@ export default function AdministrationPage() {
   async function handleImportRows() {
     if (!session?.token) return setMessage("Sign in again before importing data.");
     if (!importPreview.length) return setMessage("Load a CSV file first.");
-    if (["customers", "suppliers", "products", "tax_codes"].includes(importDataset) && !activeCompany?.id) {
-      return setMessage("Choose an active company before importing company-specific data.");
-    }
-
+    const companyRequiredDatasets = ["customers","suppliers","products","tax_codes","gl_opening_balances","ar_opening_balances","ap_opening_balances","customer_receipts","supplier_payments","fixed_assets","stock_opening_balances"];
+    if (companyRequiredDatasets.includes(importDataset) && !activeCompany?.id) return setMessage("Choose an active company first.");
     setImporting(true);
     setImportResult(null);
-
     try {
-      const rows = importPreview.map((row) => {
+      const companyId = activeCompany?.id ?? 0;
+      const today = new Date().toISOString().slice(0, 10);
+      const mappedRows = importPreview.map((row) => {
         switch (importDataset) {
-          case "chart_of_accounts":
-            return {
-              code: row.code,
-              name: row.name,
-              type: row.type,
-              description: row.description || undefined,
-              parentCode: row.parentCode || undefined,
-              isActive: coerceBoolean(row.isActive || "true"),
-              allowsPosting: coerceBoolean(row.allowsPosting || "true"),
-              isControlAccount: coerceBoolean(row.isControlAccount || "false"),
-              controlSource: row.controlSource || undefined,
-            };
-          case "customers":
-          case "suppliers":
-            return {
-              name: row.name,
-              email: row.email || undefined,
-              phone: row.phone || undefined,
-              line1: row.line1 || undefined,
-              city: row.city || undefined,
-              state: row.state || undefined,
-              country: row.country || undefined,
-              postalCode: row.postalCode || undefined,
-            };
-          case "products":
-            return {
-              sku: row.sku,
-              name: row.name,
-              category: row.category || undefined,
-              uom: row.uom || undefined,
-              isActive: coerceBoolean(row.isActive || "true"),
-            };
-          case "tax_codes":
-            return {
-              companyId: coerceNumber(row.companyId || String(activeCompany?.id ?? 0)),
-              code: row.code,
-              name: row.name,
-              taxType: row.taxType || "VAT",
-              rate: coerceNumber(row.rate),
-              isInclusive: coerceBoolean(row.isInclusive || "false"),
-              recoverable: coerceBoolean(row.recoverable || "false"),
-              filingFrequency: row.filingFrequency || "MONTHLY",
-              outputAccountCode: row.outputAccountCode || undefined,
-              inputAccountCode: row.inputAccountCode || undefined,
-              liabilityAccountCode: row.liabilityAccountCode || undefined,
-            };
+          case "chart_of_accounts": return { code: row.code, name: row.name, type: row.type, description: row.description || undefined, parentCode: row.parentCode || undefined, isActive: coerceBoolean(row.isActive || "true"), allowsPosting: coerceBoolean(row.allowsPosting || "true"), isControlAccount: coerceBoolean(row.isControlAccount || "false"), controlSource: row.controlSource || undefined };
+          case "customers": case "suppliers": return { name: row.name, email: row.email || undefined, phone: row.phone || undefined, line1: row.line1 || undefined, city: row.city || undefined, state: row.state || undefined, country: row.country || undefined, postalCode: row.postalCode || undefined };
+          case "products": return { sku: row.sku, name: row.name, category: row.category || undefined, uom: row.uom || undefined, isActive: coerceBoolean(row.isActive || "true") };
+          case "tax_codes": return { companyId, code: row.code, name: row.name, taxType: row.taxType || "VAT", rate: coerceNumber(row.rate), isInclusive: coerceBoolean(row.isInclusive || "false"), recoverable: coerceBoolean(row.recoverable || "false"), filingFrequency: row.filingFrequency || "MONTHLY", outputAccountCode: row.outputAccountCode || undefined, inputAccountCode: row.inputAccountCode || undefined, liabilityAccountCode: row.liabilityAccountCode || undefined };
+          case "gl_opening_balances": return { accountCode: row.accountCode, accountName: row.accountName || "", type: row.type || undefined, debit: coerceNumber(row.debit || "0"), credit: coerceNumber(row.credit || "0"), branchCode: row.branchCode || undefined, narration: row.narration || undefined };
+          case "ar_opening_balances": return { customerName: row.customerName, customerEmail: row.customerEmail || undefined, invoiceNumber: row.invoiceNumber, invoiceDate: row.invoiceDate, dueDate: row.dueDate, amount: coerceNumber(row.amount), outstanding: coerceNumber(row.outstanding || row.amount), currencyCode: row.currencyCode || "NGN", narration: row.narration || undefined };
+          case "ap_opening_balances": return { supplierName: row.supplierName, supplierEmail: row.supplierEmail || undefined, billNumber: row.billNumber, billDate: row.billDate, dueDate: row.dueDate, amount: coerceNumber(row.amount), outstanding: coerceNumber(row.outstanding || row.amount), currencyCode: row.currencyCode || "NGN", narration: row.narration || undefined };
+          case "customer_receipts": return { customerName: row.customerName, receiptNumber: row.receiptNumber, receiptDate: row.receiptDate, amount: coerceNumber(row.amount), invoiceReference: row.invoiceReference || undefined, paymentMethod: row.paymentMethod || "BANK_TRANSFER", bankAccountCode: row.bankAccountCode || undefined, narration: row.narration || undefined };
+          case "supplier_payments": return { supplierName: row.supplierName, paymentReference: row.paymentReference, paymentDate: row.paymentDate, amount: coerceNumber(row.amount), billReference: row.billReference || undefined, paymentMethod: row.paymentMethod || "BANK_TRANSFER", bankAccountCode: row.bankAccountCode || undefined, narration: row.narration || undefined };
+          case "fixed_assets": return { assetCode: row.assetCode, assetName: row.assetName, category: row.category, acquisitionDate: row.acquisitionDate, costPrice: coerceNumber(row.costPrice), accumulatedDepreciation: coerceNumber(row.accumulatedDepreciation || "0"), netBookValue: coerceNumber(row.netBookValue || row.costPrice), depreciationMethod: row.depreciationMethod || "STRAIGHT_LINE", usefulLifeYears: row.usefulLifeYears ? coerceNumber(row.usefulLifeYears) : undefined, location: row.location || undefined, serialNumber: row.serialNumber || undefined, narration: row.narration || undefined };
+          case "stock_opening_balances": return { sku: row.sku, productName: row.productName || "", warehouseName: row.warehouseName, quantity: coerceNumber(row.quantity), unitCost: coerceNumber(row.unitCost), totalValue: coerceNumber(row.totalValue || String(coerceNumber(row.quantity) * coerceNumber(row.unitCost))), uom: row.uom || undefined, narration: row.narration || undefined };
+          default: return row as Record<string, unknown>;
         }
       });
-
-      const result =
-        importDataset === "chart_of_accounts"
-          ? await importChartOfAccounts(session.token, rows)
-          : importDataset === "customers"
-            ? await importCustomers(session.token, activeCompany!.id, rows)
-            : importDataset === "suppliers"
-              ? await importSuppliers(session.token, activeCompany!.id, rows)
-              : importDataset === "products"
-                ? await importProducts(session.token, activeCompany!.id, rows)
-                : await importTaxConfigs(session.token, rows);
-
+      let result: BulkImportResponse;
+      switch (importDataset) {
+        case "chart_of_accounts": result = await importChartOfAccounts(session.token, mappedRows); break;
+        case "customers": result = await importCustomers(session.token, companyId, mappedRows); break;
+        case "suppliers": result = await importSuppliers(session.token, companyId, mappedRows); break;
+        case "products": result = await importProducts(session.token, companyId, mappedRows); break;
+        case "tax_codes": result = await importTaxConfigs(session.token, mappedRows); break;
+        case "gl_opening_balances": result = await importGLOpeningBalances(session.token, companyId, today, "OB-" + today, mappedRows); break;
+        case "ar_opening_balances": result = await importAROpeningBalances(session.token, companyId, today, mappedRows); break;
+        case "ap_opening_balances": result = await importAPOpeningBalances(session.token, companyId, today, mappedRows); break;
+        case "customer_receipts": result = await importCustomerReceipts(session.token, companyId, mappedRows); break;
+        case "supplier_payments": result = await importSupplierPayments(session.token, companyId, mappedRows); break;
+        case "fixed_assets": result = await importFixedAssets(session.token, companyId, today, mappedRows); break;
+        case "stock_opening_balances": result = await importStockOpeningBalances(session.token, companyId, today, mappedRows); break;
+        default: setMessage("Unknown dataset."); return;
+      }
       setImportResult(result);
       const verification = await verifyImportFromSource(session.token, importDataset);
-      setMessage(`Bulk import committed: ${result.created} created, ${result.updated} updated, ${result.failed} failed. ${verification}`);
+      setMessage("Import complete: " + result.created + " created, " + result.updated + " updated, " + result.failed + " failed. " + verification);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not complete bulk import.");
     } finally {
@@ -624,7 +600,7 @@ export default function AdministrationPage() {
     }
   }
 
-  function updateApprovalQueue(stepId: string, status: "Approved" | "Rejected") {
+    function updateApprovalQueue(stepId: string, status: "Approved" | "Rejected") {
     setBusyApprovalId(stepId);
     setApprovalQueue((current) =>
       current.map((step) =>
