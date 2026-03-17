@@ -9,6 +9,7 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
 /// Common enums
 enum JournalType {
   GENERAL
@@ -364,6 +365,7 @@ model AuditLog {
 
 /// Organization
 model Company {
+  eInvoiceProfile           EInvoiceProfile?
   id                        Int                          @id @default(autoincrement())
   name                      String
   legalName                 String?
@@ -387,8 +389,8 @@ model Company {
   usePayroll                Boolean                      @default(false)
   useDepartments            Boolean                      @default(true)
   branches                  Branch[]
-  settings      CompanySettings?
-  approvalRules ApprovalRule[]
+  settings                  CompanySettings?
+  approvalRules             ApprovalRule[]
   departments               Department[]
   sequences                 NumberingSequence[]
   accountingPeriods         AccountingPeriod[]
@@ -1436,20 +1438,21 @@ model StockMovement {
 }
 
 model SalesInvoice {
-  id            Int                   @id @default(autoincrement())
-  number        String                @unique
-  legalEntityId Int?
-  customerId    Int
-  date          DateTime
-  dueDate       DateTime?
-  status        String
-  total         Decimal               @db.Decimal(18, 2)
-  items         SalesInvoiceItem[]
-  receiptLines  CustomerReceiptLine[]
-  legalEntity   Company?              @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
-  customer      Customer              @relation(fields: [customerId], references: [id])
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
+  eInvoiceDocument EInvoiceDocument?
+  id               Int                   @id @default(autoincrement())
+  number           String                @unique
+  legalEntityId    Int?
+  customerId       Int
+  date             DateTime
+  dueDate          DateTime?
+  status           String
+  total            Decimal               @db.Decimal(18, 2)
+  items            SalesInvoiceItem[]
+  receiptLines     CustomerReceiptLine[]
+  legalEntity      Company?              @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  customer         Customer              @relation(fields: [customerId], references: [id])
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
 
   @@index([legalEntityId, date], name: "idx_sales_invoice_company_date")
 }
@@ -1739,4 +1742,114 @@ model ApprovalRule {
   updatedAt   DateTime @updatedAt
 
   @@index([companyId], name: "idx_approval_rule_company")
+}
+
+enum EInvoiceEnvironment {
+  SANDBOX
+  PRODUCTION
+}
+
+enum EInvoiceComplianceStatus {
+  NOT_REQUIRED
+  PENDING_PROFILE
+  READY_FOR_PREP
+  PREPARED
+  VALIDATION_PENDING
+  VALIDATED
+  SUBMISSION_PENDING
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  CREDITED
+}
+
+model EInvoiceProfile {
+  id                      Int                  @id @default(autoincrement())
+  companyId               Int                  @unique
+  tin                     String
+  legalName               String
+  tradeName               String?
+  businessEmail           String?
+  businessPhone           String?
+  countryCode             String               @default("NG")
+  state                   String?
+  city                    String?
+  addressLine1            String?
+  addressLine2            String?
+  postalCode              String?
+  peppolEnabled           Boolean              @default(false)
+  defaultCurrencyCode     String               @default("NGN")
+  accessPointProviderName String?
+  accessPointProviderCode String?
+  isEnabled               Boolean              @default(false)
+  environment             EInvoiceEnvironment  @default(SANDBOX)
+  company                 Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  credentials             EInvoiceCredential[]
+  documents               EInvoiceDocument[]
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  @@index([tin], name: "idx_einvoice_profile_tin")
+}
+
+model EInvoiceCredential {
+  id                        Int             @id @default(autoincrement())
+  companyId                 Int
+  profileId                 Int
+  apiKeyEncrypted           String?
+  apiKeyLast4               String?
+  cryptoPrivateKeyEncrypted String?
+  cryptoPublicKey           String?
+  keyName                   String?
+  keyFingerprint            String?
+  keyCreatedAt              DateTime?
+  keyExpiresAt              DateTime?
+  createdBy                 Int?
+  updatedBy                 Int?
+  profile                   EInvoiceProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime        @updatedAt
+
+  @@index([companyId], name: "idx_einvoice_credential_company")
+  @@index([profileId], name: "idx_einvoice_credential_profile")
+}
+
+model EInvoiceDocument {
+  id               Int                      @id @default(autoincrement())
+  companyId        Int
+  profileId        Int
+  salesInvoiceId   Int                      @unique
+  invoiceNumber    String
+  invoiceType      String
+  complianceStatus EInvoiceComplianceStatus @default(PENDING_PROFILE)
+  irn              String?
+  qrCodeData       String?
+  signedAt         DateTime?
+  submittedAt      DateTime?
+  acceptedAt       DateTime?
+  rejectedAt       DateTime?
+  lastErrorMessage String?
+  profile          EInvoiceProfile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  salesInvoice     SalesInvoice             @relation(fields: [salesInvoiceId], references: [id], onDelete: Cascade)
+  events           EInvoiceEvent[]
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  @@index([companyId], name: "idx_einvoice_document_company")
+  @@index([invoiceNumber], name: "idx_einvoice_document_number")
+  @@index([complianceStatus], name: "idx_einvoice_document_status")
+}
+
+model EInvoiceEvent {
+  id                 Int              @id @default(autoincrement())
+  einvoiceDocumentId Int
+  eventType          String
+  eventPayloadJson   Json?
+  createdBy          Int?
+  document           EInvoiceDocument @relation(fields: [einvoiceDocumentId], references: [id], onDelete: Cascade)
+  createdAt          DateTime         @default(now())
+
+  @@index([einvoiceDocumentId], name: "idx_einvoice_event_document")
+  @@index([eventType], name: "idx_einvoice_event_type")
 }

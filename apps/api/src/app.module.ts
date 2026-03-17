@@ -31,6 +31,7 @@ import { PostingModule } from './modules/posting/module';
 import { ImportsModule } from './modules/imports/module';
 import { JournalsModule } from './modules/journals/module';
 import { PaymentVouchersModule } from './modules/payment-vouchers/module';
+import { EInvoicingModule } from './modules/einvoicing/module';
 import { JwtAuthGuard } from './middleware/auth';
 import { PermissionsGuard } from './modules/auth/permissions.guard';
 import { RolesGuard } from './middleware/rbac';
@@ -70,6 +71,7 @@ import { GlobalErrorFilter } from './middleware/errorHandler';
     ImportsModule,
     JournalsModule,
     PaymentVouchersModule,
+    EInvoicingModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
@@ -80,3 +82,4 @@ import { GlobalErrorFilter } from './middleware/errorHandler';
   ],
 })
 export class AppModule {}
+
