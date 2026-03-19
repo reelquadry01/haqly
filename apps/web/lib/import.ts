@@ -8,6 +8,10 @@ export type ImportDatasetKey =
   | "suppliers"
   | "products"
   | "tax_codes"
+  | "departments"
+  | "warehouses"
+  | "bank_accounts"
+  | "asset_categories"
   | "gl_opening_balances"
   | "gl_journal_dump"
   | "ar_opening_balances"
@@ -46,8 +50,8 @@ export const importTemplates: Record<
     ],
     sampleRows: [
       ["1000", "Cash at Bank", "ASSET", "Main operating bank account", "", "true", "true", "false", ""],
-      ["1100", "Accounts Receivable", "ASSET", "Trade debtors control account", "", "true", "false", "true", "CUSTOMER"],
-      ["2000", "Accounts Payable", "LIABILITY", "Trade creditors control account", "", "true", "false", "true", "SUPPLIER"],
+      ["1100", "Accounts Receivable", "ASSET", "Trade debtors control account", "", "true", "false", "true", "SALES"],
+      ["2000", "Accounts Payable", "LIABILITY", "Trade creditors control account", "", "true", "false", "true", "PROCUREMENT"],
       ["3000", "Retained Earnings", "EQUITY", "Accumulated profit", "", "true", "true", "false", ""],
       ["4000", "Sales Revenue", "INCOME", "Product and service revenue", "", "true", "true", "false", ""],
       ["5000", "Cost of Sales", "EXPENSE", "Direct cost of goods sold", "", "true", "true", "false", ""],
@@ -56,19 +60,19 @@ export const importTemplates: Record<
 
   customers: {
     label: "Customers",
-    headers: ["name", "email", "phone", "line1", "city", "state", "country", "postalCode"],
+    headers: ["name", "email", "phone", "customerType", "taxId", "contactPerson", "line1", "line2", "city", "state", "country", "postalCode"],
     sampleRows: [
-      ["Atlantic Retail Ltd", "ap@atlanticretail.com", "+2348011111111", "14 Akin Adesola Street", "Lagos", "Lagos", "Nigeria", "100001"],
-      ["Northern Foods Ltd", "finance@northernfoods.ng", "+2348022222222", "5 Industrial Layout", "Kano", "Kano", "Nigeria", "700001"],
+      ["Atlantic Retail Ltd", "ap@atlanticretail.com", "+2348011111111", "BUSINESS", "12345678-0001", "Amina Yusuf", "14 Akin Adesola Street", "Victoria Island", "Lagos", "Lagos", "Nigeria", "100001"],
+      ["Northern Foods Ltd", "finance@northernfoods.ng", "+2348022222222", "BUSINESS", "22345678-0002", "Musa Bello", "5 Industrial Layout", "", "Kano", "Kano", "Nigeria", "700001"],
     ],
   },
 
   suppliers: {
     label: "Suppliers",
-    headers: ["name", "email", "phone", "line1", "city", "state", "country", "postalCode"],
+    headers: ["name", "email", "phone", "line1", "line2", "city", "state", "country", "postalCode"],
     sampleRows: [
-      ["Prime Industrial", "orders@primeindustrial.com", "+2348033333333", "8 Creek Road", "Port Harcourt", "Rivers", "Nigeria", "500001"],
-      ["Lagos Packaging Co", "billing@lagospkg.ng", "+2348044444444", "22 Apapa Road", "Lagos", "Lagos", "Nigeria", "100002"],
+      ["Prime Industrial", "orders@primeindustrial.com", "+2348033333333", "8 Creek Road", "Trans Amadi", "Port Harcourt", "Rivers", "Nigeria", "500001"],
+      ["Lagos Packaging Co", "billing@lagospkg.ng", "+2348044444444", "22 Apapa Road", "", "Lagos", "Lagos", "Nigeria", "100002"],
     ],
   },
 
@@ -99,6 +103,45 @@ export const importTemplates: Record<
     sampleRows: [
       ["1", "VAT", "Value Added Tax", "VAT", "7.5", "false", "true", "MONTHLY", "2300", "1400", "2300"],
       ["1", "WHT", "Withholding Tax", "WITHHOLDING", "5", "false", "false", "MONTHLY", "", "", "2400"],
+    ],
+  },
+
+  departments: {
+    label: "Departments",
+    headers: ["companyCode", "departmentName"],
+    sampleRows: [
+      ["HAQLY", "Finance"],
+      ["HAQLY", "Operations"],
+      ["HAQLY", "Sales"],
+    ],
+  },
+
+  warehouses: {
+    label: "Warehouses",
+    headers: ["branchCode", "warehouseName"],
+    sampleRows: [
+      ["HQ", "Main Warehouse"],
+      ["HQ", "Returns Warehouse"],
+      ["LAG", "Lekki Warehouse"],
+    ],
+  },
+
+  bank_accounts: {
+    label: "Bank Accounts",
+    headers: ["companyCode", "branchCode", "bankName", "accountName", "accountNumber", "currencyCode", "glAccountCode", "isActive"],
+    sampleRows: [
+      ["HAQLY", "HQ", "Access Bank", "HAQLY Operations", "0123456789", "NGN", "1000", "true"],
+      ["HAQLY", "HQ", "GTBank", "HAQLY Collections", "1234567890", "NGN", "1000", "true"],
+    ],
+  },
+
+  asset_categories: {
+    label: "Asset Categories",
+    headers: ["name", "usefulLifeMonths", "residualRate", "depreciationMethod"],
+    sampleRows: [
+      ["Computer Equipment", "36", "5", "STRAIGHT_LINE"],
+      ["Motor Vehicles", "72", "10", "STRAIGHT_LINE"],
+      ["Production Equipment", "84", "5", "DECLINING_BALANCE"],
     ],
   },
 

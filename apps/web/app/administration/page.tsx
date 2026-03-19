@@ -24,8 +24,10 @@ import {
   getAccountingAccounts,
   getFiscalYears,
   getInventoryProducts,
+  getInventoryWarehouses,
   getPurchaseSuppliers,
   getSalesCustomers,
+  getFixedAssetCategories,
   getTaxConfigs,
   getUsers,
   importChartOfAccounts,
@@ -36,8 +38,8 @@ import {
   importGLOpeningBalances,
   importAROpeningBalances,
   importAPOpeningBalances,
-  importCustomerReceipts,
   importSupplierPayments,
+  importCustomerReceipts,
   importFixedAssets,
   importStockOpeningBalances,
   lockFiscalYear,
@@ -49,6 +51,12 @@ import {
   type UserRecord,
 } from "../../lib/api"
 // NOTE: auto-patched by apply-admin-settings-api.ps1;
+import {
+  importAssetCategories,
+  importBankAccounts,
+  importDepartments,
+  importWarehouses,
+} from "../../lib/import-api";
 import { MfaSetup } from "../../components/mfa-setup";
 import {
   coerceBoolean,
@@ -298,6 +306,21 @@ export default function AdministrationPage() {
         }
         const configs = await getTaxConfigs(token, activeCompany.id);
         return `${configs.length} tax rules now exist for the active company.`;
+      }
+      case "departments":
+        return "Department import completed. Live verification count is not wired yet in the admin workspace.";
+      case "warehouses": {
+        if (!activeCompany?.id) {
+          return "Warehouse import completed and the active company context was not available for a follow-up verification count.";
+        }
+        const warehouses = await getInventoryWarehouses(token, activeCompany.id);
+        return `${warehouses.length} warehouses now exist for the active company.`;
+      }
+      case "bank_accounts":
+        return "Bank account import completed. Live verification count is not wired yet in the admin workspace.";
+      case "asset_categories": {
+        const categories = await getFixedAssetCategories(token);
+        return `${categories.length} fixed asset categories now exist in the live register.`;
       }
       default:
         return "Import committed successfully.";
@@ -561,9 +584,39 @@ export default function AdministrationPage() {
       const mappedRows = importPreview.map((row) => {
         switch (importDataset) {
           case "chart_of_accounts": return { code: row.code, name: row.name, type: row.type, description: row.description || undefined, parentCode: row.parentCode || undefined, isActive: coerceBoolean(row.isActive || "true"), allowsPosting: coerceBoolean(row.allowsPosting || "true"), isControlAccount: coerceBoolean(row.isControlAccount || "false"), controlSource: row.controlSource || undefined };
-          case "customers": case "suppliers": return { name: row.name, email: row.email || undefined, phone: row.phone || undefined, line1: row.line1 || undefined, city: row.city || undefined, state: row.state || undefined, country: row.country || undefined, postalCode: row.postalCode || undefined };
+          case "customers":
+            return {
+              name: row.name,
+              email: row.email || undefined,
+              phone: row.phone || undefined,
+              customerType: row.customerType || "BUSINESS",
+              taxId: row.taxId || undefined,
+              contactPerson: row.contactPerson || undefined,
+              line1: row.line1 || undefined,
+              line2: row.line2 || undefined,
+              city: row.city || undefined,
+              state: row.state || undefined,
+              country: row.country || undefined,
+              postalCode: row.postalCode || undefined,
+            };
+          case "suppliers":
+            return {
+              name: row.name,
+              email: row.email || undefined,
+              phone: row.phone || undefined,
+              line1: row.line1 || undefined,
+              line2: row.line2 || undefined,
+              city: row.city || undefined,
+              state: row.state || undefined,
+              country: row.country || undefined,
+              postalCode: row.postalCode || undefined,
+            };
           case "products": return { sku: row.sku, name: row.name, category: row.category || undefined, uom: row.uom || undefined, isActive: coerceBoolean(row.isActive || "true") };
           case "tax_codes": return { companyId, code: row.code, name: row.name, taxType: row.taxType || "VAT", rate: coerceNumber(row.rate), isInclusive: coerceBoolean(row.isInclusive || "false"), recoverable: coerceBoolean(row.recoverable || "false"), filingFrequency: row.filingFrequency || "MONTHLY", outputAccountCode: row.outputAccountCode || undefined, inputAccountCode: row.inputAccountCode || undefined, liabilityAccountCode: row.liabilityAccountCode || undefined };
+          case "departments": return { companyCode: row.companyCode, departmentName: row.departmentName };
+          case "warehouses": return { branchCode: row.branchCode, warehouseName: row.warehouseName };
+          case "bank_accounts": return { companyCode: row.companyCode, branchCode: row.branchCode, bankName: row.bankName, accountName: row.accountName, accountNumber: row.accountNumber, currencyCode: row.currencyCode || "NGN", glAccountCode: row.glAccountCode, isActive: coerceBoolean(row.isActive || "true") };
+          case "asset_categories": return { name: row.name, usefulLifeMonths: coerceNumber(row.usefulLifeMonths), residualRate: coerceNumber(row.residualRate || "0"), depreciationMethod: row.depreciationMethod || "STRAIGHT_LINE" };
           case "gl_opening_balances": return { accountCode: row.accountCode, accountName: row.accountName || "", type: row.type || undefined, debit: coerceNumber(row.debit || "0"), credit: coerceNumber(row.credit || "0"), branchCode: row.branchCode || undefined, narration: row.narration || undefined };
           case "ar_opening_balances": return { customerName: row.customerName, customerEmail: row.customerEmail || undefined, invoiceNumber: row.invoiceNumber, invoiceDate: row.invoiceDate, dueDate: row.dueDate, amount: coerceNumber(row.amount), outstanding: coerceNumber(row.outstanding || row.amount), currencyCode: row.currencyCode || "NGN", narration: row.narration || undefined };
           case "ap_opening_balances": return { supplierName: row.supplierName, supplierEmail: row.supplierEmail || undefined, billNumber: row.billNumber, billDate: row.billDate, dueDate: row.dueDate, amount: coerceNumber(row.amount), outstanding: coerceNumber(row.outstanding || row.amount), currencyCode: row.currencyCode || "NGN", narration: row.narration || undefined };
@@ -581,6 +634,10 @@ export default function AdministrationPage() {
         case "suppliers": result = await importSuppliers(session.token, companyId, mappedRows); break;
         case "products": result = await importProducts(session.token, companyId, mappedRows); break;
         case "tax_codes": result = await importTaxConfigs(session.token, mappedRows); break;
+        case "departments": result = await importDepartments(session.token, mappedRows); break;
+        case "warehouses": result = await importWarehouses(session.token, mappedRows); break;
+        case "bank_accounts": result = await importBankAccounts(session.token, mappedRows); break;
+        case "asset_categories": result = await importAssetCategories(session.token, mappedRows); break;
         case "gl_opening_balances": result = await importGLOpeningBalances(session.token, companyId, today, "OB-" + today, mappedRows); break;
         case "ar_opening_balances": result = await importAROpeningBalances(session.token, companyId, today, mappedRows); break;
         case "ap_opening_balances": result = await importAPOpeningBalances(session.token, companyId, today, mappedRows); break;
@@ -592,7 +649,7 @@ export default function AdministrationPage() {
       }
       setImportResult(result);
       const verification = await verifyImportFromSource(session.token, importDataset);
-      setMessage("Import complete: " + result.created + " created, " + result.updated + " updated, " + result.failed + " failed. " + verification);
+      setMessage("Import complete: " + result.created + " created, " + result.updated + " updated, " + result.failed + " failed. Verification: " + verification);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not complete bulk import.");
     } finally {

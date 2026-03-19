@@ -59,7 +59,23 @@ class ImportPartyRowDto {
 
   @IsOptional()
   @IsString()
+  customerType?: string;
+
+  @IsOptional()
+  @IsString()
+  taxId?: string;
+
+  @IsOptional()
+  @IsString()
+  contactPerson?: string;
+
+  @IsOptional()
+  @IsString()
   line1?: string;
+
+  @IsOptional()
+  @IsString()
+  line2?: string;
 
   @IsOptional()
   @IsString()
