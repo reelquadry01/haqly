@@ -183,12 +183,13 @@ Soft archive behavior should remain in place to preserve audit and relational in
 `GET /users`
 
 - returns live users
-- must include `roles: string[]`
+- must include `roles: string[]` where each entry is a role name
 - should return enough fields for the user table and edit panel
 
 `GET /users/:id`
 
 - returns one user with the same role array contract
+- v1 should keep the read shape simple and avoid introducing role objects unless required elsewhere
 
 `PATCH /users/:id`
 
@@ -197,6 +198,7 @@ Soft archive behavior should remain in place to preserve audit and relational in
 
 `POST /admin/users/:id/roles`
 
+- accepts `{ roles: string[] }` where each entry is a role name
 - replaces the user's role assignments with the submitted role array
 - remains the source of truth for many-to-many role assignment
 
@@ -204,11 +206,18 @@ Soft archive behavior should remain in place to preserve audit and relational in
 
 - updates password hash
 - revokes refresh tokens or active sessions so the new password takes effect immediately
+- v1 flow: the admin chooses the new temporary password in the UI, with a generate button as a helper
+- HAQLY does not send an automatic notification in this pass; the admin shares the temporary password out of band
 
 `DELETE /users/:id`
 
 - remains soft archive behavior
 - frontend must treat this as deactivate or archive, not hard delete
+- this endpoint powers `Deactivate` in the Administration UI
+
+`PATCH /users/:id`
+
+- also powers `Reactivate` by sending `isActive: true`
 
 ### Backend Behavior Requirements
 
@@ -238,8 +247,9 @@ Required improvements:
 
 - `Edit user` opens the panel populated with the selected record
 - `Assign roles` becomes part of the same editing experience rather than feeling like a detached action
-- `Deactivate` and `Reactivate` should be obvious status transitions
-- `Reset password` should warn that sessions are revoked
+- `Deactivate` must call the existing soft-archive endpoint and then refresh the directory
+- `Reactivate` must call the user update endpoint with `isActive: true` and, if needed, `isLocked: false` support can be added in implementation if the current service requires it
+- `Reset password` should warn that sessions are revoked and that the administrator must share the temporary password securely
 - saving should refresh the live user directory after success
 
 ### Visual and UX Requirements
@@ -248,6 +258,7 @@ Required improvements:
 - action labels should read like ERP admin actions, not developer placeholders
 - the screen should not imply hard deletion when data is only archived
 - multi-role selection should remain simple even if many roles exist
+- the reset-password control should make it obvious whether the password was typed manually or generated in the UI
 
 ## Error Handling
 
@@ -283,6 +294,39 @@ At minimum verify:
 - editing flow submits profile and role changes correctly
 - deactivate/reactivate actions call the right endpoints
 - reset password flow calls the right endpoint and updates messaging
+
+## API Examples
+
+Read shape example:
+
+```json
+{
+  "id": 14,
+  "email": "finance.ops@haqly.com",
+  "firstName": "Amina",
+  "lastName": "Okoro",
+  "isActive": true,
+  "createdAt": "2026-03-18T09:15:00.000Z",
+  "updatedAt": "2026-03-19T08:10:00.000Z",
+  "roles": ["Accountant", "Inventory Officer"]
+}
+```
+
+Role write example:
+
+```json
+{
+  "roles": ["Accountant", "Approver"]
+}
+```
+
+Password reset example:
+
+```json
+{
+  "password": "Tmp42Secure!9"
+}
+```
 
 ## Acceptance Criteria
 
