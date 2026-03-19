@@ -78,6 +78,7 @@ The main gap is cohesion and usability, not a missing foundational data model.
 - Support multiple assigned roles for authorization.
 - Keep v1 simple by not mixing in scope persistence yet.
 - Reserve space in the UI and types for future scope-based access controls.
+- Prefer explicit sequential saves over hidden multi-endpoint behavior.
 
 ## Chosen Approach
 
@@ -108,7 +109,7 @@ The table remains the main anchor and should show:
 - email
 - active or inactive status
 - assigned roles summary
-- last activity
+- last updated date, sourced from `updatedAt` with fallback to `createdAt`
 
 Primary actions:
 
@@ -184,7 +185,9 @@ Soft archive behavior should remain in place to preserve audit and relational in
 
 - returns live users
 - must include `roles: string[]` where each entry is a role name
+- role names are unique in the database and act as the v1 role-assignment key
 - should return enough fields for the user table and edit panel
+- must include `createdAt` and `updatedAt` so the UI can render the v1 `Last updated` column without adding a new activity dependency
 
 `GET /users/:id`
 
@@ -199,6 +202,8 @@ Soft archive behavior should remain in place to preserve audit and relational in
 `POST /admin/users/:id/roles`
 
 - accepts `{ roles: string[] }` where each entry is a role name
+- role names are treated as unique role identifiers for v1
+- role rename handling is out of scope for this pass
 - replaces the user's role assignments with the submitted role array
 - remains the source of truth for many-to-many role assignment
 
@@ -242,11 +247,17 @@ Required improvements:
 - rename misleading actions
 - make reset password a clear modal or panel action
 - align message text with real backend behavior
+- keep one visible save button in the editor even though the frontend coordinates two backend mutations under the hood
 
 ### Interaction Requirements
 
 - `Edit user` opens the panel populated with the selected record
 - `Assign roles` becomes part of the same editing experience rather than feeling like a detached action
+- `Save changes` is a sequential frontend flow:
+  1. call `PATCH /users/:id` for profile and active-state changes
+  2. if that succeeds, call `POST /admin/users/:id/roles` for role bundle updates
+  3. if the second call fails, show a partial-success message explaining that profile changes were saved but roles were not updated
+  4. after either outcome, reload the live user detail and directory so the UI reflects the database truth
 - `Deactivate` must call the existing soft-archive endpoint and then refresh the directory
 - `Reactivate` must call the user update endpoint with `isActive: true` and, if needed, `isLocked: false` support can be added in implementation if the current service requires it
 - `Reset password` should warn that sessions are revoked and that the administrator must share the temporary password securely
@@ -291,7 +302,8 @@ At minimum verify:
 
 - type safety for the administration page and API helpers
 - user table renders role summaries
-- editing flow submits profile and role changes correctly
+- editing flow submits profile and role changes in the defined sequence
+- partial failure handling keeps the UI honest and refreshes from the database
 - deactivate/reactivate actions call the right endpoints
 - reset password flow calls the right endpoint and updates messaging
 
