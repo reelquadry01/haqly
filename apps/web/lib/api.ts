@@ -58,7 +58,6 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
 
   return response;
 }
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "/backend/api/v1";
 
 function toApiError(error: unknown, fallbackMessage: string) {
   if (error instanceof Error) {
@@ -150,6 +149,9 @@ export type LoginResponse = {
   token: string;
   roles: string[];
   workspaceRole: string;
+  securityRole?: string;
+  mfaRequired?: boolean;
+  preAuthToken?: string;
   user: {
     id: number;
     email: string;
@@ -3097,4 +3099,176 @@ export async function deleteUser(token: string, userId: number) {
     headers: { Authorization: `Bearer ${token}` },
   });
   return readApiResponse<{ id: number; message: string }>(response, "Could not delete user");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Payroll & HR
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type EmployeeRecord = {
+  id: number;
+  companyId: number;
+  employeeNo: string;
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  jobTitle?: string | null;
+  departmentId?: number | null;
+  branchId?: number | null;
+  grossSalary: string | number;
+  currency: string;
+  startDate: string;
+  endDate?: string | null;
+  status: "ACTIVE" | "INACTIVE" | "TERMINATED";
+  department?: { id: number; name: string } | null;
+  branch?: { id: number; name: string } | null;
+};
+
+export type PayrollRunRecord = {
+  id: number;
+  companyId: number;
+  period: string;
+  payDate: string;
+  status: "DRAFT" | "SUBMITTED" | "APPROVED" | "POSTED" | "CANCELLED";
+  note?: string | null;
+  createdBy?: number | null;
+  approvedBy?: number | null;
+  createdAt: string;
+  _count?: { lines: number };
+};
+
+export type PayrollRunLineRecord = {
+  id: number;
+  runId: number;
+  employeeId: number;
+  grossPay: string | number;
+  taxDeduction: string | number;
+  otherDeductions: string | number;
+  netPay: string | number;
+  employee?: { id: number; employeeNo: string; firstName: string; lastName: string; jobTitle?: string | null };
+};
+
+export async function getEmployees(token: string, companyId?: number) {
+  const query = companyId ? `?companyId=${companyId}` : "";
+  const response = await fetch(`${apiBaseUrl}/payroll/employees${query}`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<EmployeeRecord[]>(response, "Could not load employees");
+}
+
+export async function createEmployee(
+  token: string,
+  payload: {
+    companyId: number;
+    employeeNo: string;
+    firstName: string;
+    lastName: string;
+    email?: string;
+    jobTitle?: string;
+    departmentId?: number;
+    branchId?: number;
+    grossSalary: number;
+    currency?: string;
+    startDate: string;
+    endDate?: string;
+  },
+) {
+  const response = await fetch(`${apiBaseUrl}/payroll/employees`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+  return readApiResponse<EmployeeRecord>(response, "Could not create employee");
+}
+
+export async function updateEmployee(
+  token: string,
+  employeeId: number,
+  payload: Partial<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    jobTitle: string;
+    departmentId: number;
+    branchId: number;
+    grossSalary: number;
+    currency: string;
+    endDate: string;
+    status: "ACTIVE" | "INACTIVE" | "TERMINATED";
+  }>,
+) {
+  const response = await fetch(`${apiBaseUrl}/payroll/employees/${employeeId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+  return readApiResponse<EmployeeRecord>(response, "Could not update employee");
+}
+
+export async function getPayrollRuns(token: string, companyId?: number) {
+  const query = companyId ? `?companyId=${companyId}` : "";
+  const response = await fetch(`${apiBaseUrl}/payroll/runs${query}`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<PayrollRunRecord[]>(response, "Could not load payroll runs");
+}
+
+export async function createPayrollRun(
+  token: string,
+  payload: { companyId: number; period: string; payDate: string; note?: string },
+) {
+  const response = await fetch(`${apiBaseUrl}/payroll/runs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+  return readApiResponse<PayrollRunRecord>(response, "Could not create payroll run");
+}
+
+export async function getPayrollRun(token: string, runId: number) {
+  const response = await fetch(`${apiBaseUrl}/payroll/runs/${runId}`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<PayrollRunRecord & { lines: PayrollRunLineRecord[] }>(response, "Could not load payroll run");
+}
+
+export async function addPayrollRunLine(
+  token: string,
+  runId: number,
+  payload: { employeeId: number; grossPay: number; taxDeduction?: number; otherDeductions?: number },
+) {
+  const response = await fetch(`${apiBaseUrl}/payroll/runs/${runId}/lines`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+  return readApiResponse<PayrollRunLineRecord>(response, "Could not add payroll line");
+}
+
+export async function submitPayrollRun(token: string, runId: number) {
+  const response = await fetch(`${apiBaseUrl}/payroll/runs/${runId}/submit`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<PayrollRunRecord>(response, "Could not submit payroll run");
+}
+
+export async function approvePayrollRun(token: string, runId: number, approvedBy: number) {
+  const response = await fetch(`${apiBaseUrl}/payroll/runs/${runId}/approve`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ approvedBy }),
+  });
+  return readApiResponse<PayrollRunRecord>(response, "Could not approve payroll run");
+}
+
+export async function postPayrollRun(token: string, runId: number) {
+  const response = await fetch(`${apiBaseUrl}/payroll/runs/${runId}/post`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readApiResponse<PayrollRunRecord>(response, "Could not post payroll run");
 }
