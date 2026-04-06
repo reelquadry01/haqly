@@ -138,6 +138,7 @@ export class AddPayrollLineDto {
 }
 
 export class ApprovePayrollRunDto {
+  @IsOptional()
   @IsInt()
-  approvedBy!: number;
+  approvedBy?: number;
 }

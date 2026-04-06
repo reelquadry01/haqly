@@ -1,35 +1,54 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 import { WorkspaceShell } from "../../components/workspace-shell";
 import { DataTable } from "../../components/ui/data-table";
 import { EmptyState } from "../../components/ui/empty-state";
 import { KpiCard } from "../../components/ui/kpi-card";
 import { ModuleActionBar } from "../../components/ui/module-action-bar";
 import { SectionCard } from "../../components/ui/section-card";
-import { useCompanyPersistentState } from "../../hooks/use-company-persistent-state";
+import { StatusBadge } from "../../components/ui/status-badge";
 import { useWorkspace } from "../../hooks/use-workspace";
+import { getEmployees, getPayrollRuns, type EmployeeRecord, type PayrollRunRecord } from "../../lib/api";
 import { payrollViews, type KpiMetric } from "../../lib/erp";
 
 export default function HumanResourcesPage() {
   const router = useRouter();
-  const { activeCompany } = useWorkspace();
-  const [payrollState] = useCompanyPersistentState("payroll", activeCompany?.id, {
-    draft: { period: "", payDate: "", note: "", status: "Draft", employees: 0, netPay: 0 },
-    message: "",
-    localRuns: [] as Array<{ id: string; period: string; employees: number; netPay: string; status: string; owner: string; payDate: string }>,
-  });
+  const { session, activeCompany } = useWorkspace();
+  const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
+  const [runs, setRuns] = useState<PayrollRunRecord[]>([]);
+  const [message, setMessage] = useState("");
 
-  const metrics: KpiMetric[] = useMemo(
-    () => [
-      { label: "Employees", value: "0", delta: "Backend not wired", trend: "neutral", detail: "Employee master rows will appear once HR tables are mapped to the API" },
-      { label: "Payroll runs", value: String(payrollState.localRuns.length), delta: "Company-local history", trend: payrollState.localRuns.length ? "up" : "neutral", detail: "Payroll cycles captured in the current company workspace" },
-      { label: "Bank-ready staff", value: "0", delta: "Backend not wired", trend: "neutral", detail: "Bank setup readiness will appear when employee data is mapped" },
-      { label: "HR exceptions", value: "0", delta: "Backend not wired", trend: "neutral", detail: "HR exceptions are hidden until employee records are mapped to the database" },
-    ],
-    [payrollState.localRuns.length],
-  );
+  const load = useCallback(async (token: string, companyId?: number) => {
+    const [emps, runsData] = await Promise.all([
+      getEmployees(token, companyId),
+      getPayrollRuns(token, companyId),
+    ]);
+    setEmployees(emps);
+    setRuns(runsData);
+  }, []);
+
+  useEffect(() => {
+    if (!session?.token) return;
+    load(session.token, activeCompany?.id).catch((err) =>
+      setMessage(err instanceof Error ? err.message : "Could not load HR data."),
+    );
+  }, [session?.token, activeCompany?.id, load]);
+
+  const metrics = useMemo<KpiMetric[]>(() => {
+    const active = employees.filter((e) => e.status === "ACTIVE").length;
+    const inactive = employees.filter((e) => e.status !== "ACTIVE").length;
+    const bankReady = employees.filter((e) => e.status === "ACTIVE" && !!e.email).length;
+    const exceptions = inactive;
+
+    return [
+      { label: "Employees", value: String(active), delta: "Active", trend: active ? "up" : "neutral", detail: "Employees with ACTIVE status in the company" },
+      { label: "Payroll runs", value: String(runs.length), delta: "All periods", trend: runs.length ? "up" : "neutral", detail: "Payroll cycles for this company" },
+      { label: "Bank-ready staff", value: String(bankReady), delta: "Active with email", trend: bankReady ? "up" : "neutral", detail: "Active employees with an email address on record" },
+      { label: "HR exceptions", value: String(exceptions), delta: "Inactive / terminated", trend: exceptions ? "down" : "neutral", detail: "Employees not in active status" },
+    ];
+  }, [employees, runs]);
 
   return (
     <WorkspaceShell
@@ -81,14 +100,38 @@ export default function HumanResourcesPage() {
         {metrics.map((metric) => <KpiCard key={metric.label} metric={metric} tone="payroll" />)}
       </section>
 
+      {message && <p className="note">{message}</p>}
+
       <section className="content-grid split-65">
         <SectionCard title="Employee directory" eyebrow="Workforce records">
           <div id="hr-employee-directory" />
-          <EmptyState
-            tone="payroll"
-            title="No employee directory mapped yet"
-            body="This page no longer shows hardcoded employee records. Employee data will appear here when HR tables are connected to the backend."
-          />
+          {employees.length === 0 ? (
+            <EmptyState
+              tone="payroll"
+              title="No employees yet"
+              body="Employees added via the Payroll workspace will appear here."
+            />
+          ) : (
+            <DataTable
+              title="Employees"
+              tableId="hr-employee-directory-table"
+              exportFileName="employees"
+              rows={employees}
+              searchValue={(row) => `${row.employeeNo} ${row.firstName} ${row.lastName} ${row.jobTitle ?? ""} ${row.email ?? ""}`}
+              advancedFilters={[
+                { key: "status", label: "Status", type: "select", options: ["ACTIVE", "INACTIVE", "TERMINATED"].map((v) => ({ label: v, value: v })), getValue: (row) => row.status },
+                { key: "jobTitle", label: "Job title", type: "text", placeholder: "Filter by title", getValue: (row) => row.jobTitle ?? "" },
+              ]}
+              columns={[
+                { key: "employeeNo", label: "No.", render: (row) => <strong>{row.employeeNo}</strong> },
+                { key: "name", label: "Name", render: (row) => `${row.firstName} ${row.lastName}` },
+                { key: "email", label: "Email", render: (row) => row.email ?? "—" },
+                { key: "jobTitle", label: "Title", render: (row) => row.jobTitle ?? "—" },
+                { key: "department", label: "Department", render: (row) => row.department?.name ?? "—" },
+                { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status} /> },
+              ]}
+            />
+          )}
         </SectionCard>
 
         <SectionCard title="Payroll-linked HR activity" eyebrow="Cycle visibility">
@@ -97,23 +140,20 @@ export default function HumanResourcesPage() {
             title="Payroll cycles"
             tableId="human-resources-payroll-runs"
             exportFileName="human-resources-payroll-runs"
-            rows={payrollState.localRuns}
-            searchValue={(row) => `${row.period} ${row.owner} ${row.status}`}
+            rows={runs}
+            searchValue={(row) => `${row.period} ${row.status}`}
             advancedFilters={[
               { key: "period", label: "Period", type: "text", getValue: (row) => row.period },
-              { key: "owner", label: "Owner", type: "text", getValue: (row) => row.owner },
-              { key: "status", label: "Status", type: "select", getValue: (row) => row.status, options: [...new Set(payrollState.localRuns.map((row) => row.status))].map((value) => ({ value, label: value })) },
-              { key: "employees", label: "Employees", type: "number-range", getValue: (row) => row.employees },
+              { key: "status", label: "Status", type: "select", getValue: (row) => row.status, options: [...new Set(runs.map((r) => r.status))].map((v) => ({ value: v, label: v })) },
             ]}
-            bulkActions={["Export CSV", "Export Excel", "Export PDF"]}
+            bulkActions={["Export CSV"]}
             emptyTitle="No payroll cycles yet"
             emptyMessage="Payroll run history will appear here after runs are created in the Payroll workspace."
             columns={[
-              { key: "period", label: "Period", render: (row) => <strong>{row.period}</strong>, exportValue: (row) => row.period },
-              { key: "employees", label: "Employees", className: "numeric", render: (row) => row.employees, exportValue: (row) => row.employees },
-              { key: "netPay", label: "Net pay", className: "numeric", render: (row) => row.netPay, exportValue: (row) => row.netPay },
-              { key: "payDate", label: "Pay date", render: (row) => row.payDate, exportValue: (row) => row.payDate },
-              { key: "status", label: "Status", render: (row) => row.status, exportValue: (row) => row.status },
+              { key: "period", label: "Period", render: (row) => <strong>{row.period}</strong> },
+              { key: "lines", label: "Lines", className: "numeric", render: (row) => row._count?.lines ?? 0 },
+              { key: "payDate", label: "Pay date", render: (row) => row.payDate },
+              { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status} /> },
             ]}
           />
         </SectionCard>

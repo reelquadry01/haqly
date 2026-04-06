@@ -3256,11 +3256,11 @@ export async function submitPayrollRun(token: string, runId: number) {
   return readApiResponse<PayrollRunRecord>(response, "Could not submit payroll run");
 }
 
-export async function approvePayrollRun(token: string, runId: number, approvedBy: number) {
+export async function approvePayrollRun(token: string, runId: number) {
   const response = await fetch(`${apiBaseUrl}/payroll/runs/${runId}/approve`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ approvedBy }),
+    body: JSON.stringify({}),
   });
   return readApiResponse<PayrollRunRecord>(response, "Could not approve payroll run");
 }
