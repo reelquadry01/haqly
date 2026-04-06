@@ -44,6 +44,8 @@ import {
   updateAccountingPeriodStatus,
   updateCompany,
   updateUser,
+  getCompanySettings,
+  upsertCompanySettings,
   type BulkImportResponse,
   type FiscalYearRecord,
   type UserRecord,
@@ -136,7 +138,27 @@ export default function AdministrationPage() {
     const raw = typeof window !== "undefined" ? window.localStorage.getItem(storeKey(activeCompany?.id)) : null;
     const baseState = createDefaultAdminState(activeCompany?.name);
     setState(raw ? { ...baseState, ...JSON.parse(raw) } : baseState);
-  }, [activeCompany?.id, activeCompany?.name]);
+
+    if (!session?.token || !activeCompany?.id) return;
+    getCompanySettings(session.token, activeCompany.id).then((settings) => {
+      if (!settings) return;
+      setState((current) => ({
+        ...current,
+        security: {
+          ...current.security,
+          mfaAdmins: settings.mfaAdmins,
+          mfaApprovers: settings.mfaApprovers,
+          sessionTimeout: settings.sessionTimeout,
+          failedAttempts: settings.failedAttempts,
+        },
+        notifications: {
+          ...current.notifications,
+          email: settings.emailApprovals,
+          failedLogin: settings.failedLoginAlerts,
+        },
+      }));
+    }).catch(() => { /* silently fall back to localStorage values */ });
+  }, [activeCompany?.id, activeCompany?.name, session?.token]);
 
   async function loadUserDirectory(token: string) {
     const data = await getUsers(token);
@@ -263,6 +285,26 @@ export default function AdministrationPage() {
     setState(nextState);
     if (typeof window !== "undefined") window.localStorage.setItem(storeKey(activeCompany?.id), JSON.stringify(nextState));
     setMessage(nextMessage);
+  }
+
+  async function saveSettingsToDb() {
+    if (!session?.token || !activeCompany?.id) {
+      setMessage("No active company selected. Settings saved locally only.");
+      return;
+    }
+    try {
+      await upsertCompanySettings(session.token, activeCompany.id, {
+        mfaAdmins: state.security.mfaAdmins,
+        mfaApprovers: state.security.mfaApprovers,
+        sessionTimeout: state.security.sessionTimeout,
+        failedAttempts: state.security.failedAttempts,
+        emailApprovals: state.notifications.email,
+        failedLoginAlerts: state.notifications.failedLogin,
+      });
+      persist(state, "Security and notification settings saved to the database.");
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Could not save settings.");
+    }
   }
 
   async function verifyImportFromSource(token: string, dataset: ImportDatasetKey) {
@@ -1014,7 +1056,7 @@ export default function AdministrationPage() {
           <div className="form-grid two-up"><label className="field"><span>Session timeout (mins)</span><input type="number" value={state.security.sessionTimeout} onChange={(event) => setState((current) => ({ ...current, security: { ...current.security, sessionTimeout: Number(event.target.value) } }))} /></label><label className="field"><span>Lock after failed attempts</span><input type="number" value={state.security.failedAttempts} onChange={(event) => setState((current) => ({ ...current, security: { ...current.security, failedAttempts: Number(event.target.value) } }))} /></label></div>
           <DataTable title="Module controls" tableId="admin-module-controls" exportFileName="admin-module-controls" rows={state.modules} searchValue={(row) => `${row.module} ${row.shortcut}`} filters={[{ key: "enabled", label: "Enabled", predicate: (row) => row.enabled }]} advancedFilters={[{ key: "module", label: "Module", type: "text", getValue: (row) => row.module }, { key: "shortcut", label: "Shortcut", type: "text", getValue: (row) => row.shortcut }, { key: "enabled", label: "Enabled", type: "select", getValue: (row) => (row.enabled ? "yes" : "no"), options: [{ value: "yes", label: "Enabled" }, { value: "no", label: "Disabled" }] }, { key: "exportsAllowed", label: "Export rights", type: "select", getValue: (row) => (row.exportsAllowed ? "yes" : "no"), options: [{ value: "yes", label: "Allowed" }, { value: "no", label: "Blocked" }] }]} bulkActions={["Export CSV", "Export Excel", "Export PDF"]} columns={[{ key: "module", label: "Module", render: (row) => <strong>{row.module}</strong>, exportValue: (row) => row.module }, { key: "shortcut", label: "Shortcut", render: (row) => row.shortcut, exportValue: (row) => row.shortcut }, { key: "enabled", label: "Enabled", render: (row) => <StatusBadge status={row.enabled ? "Approved" : "Archived"} />, exportValue: (row) => row.enabled ? "Yes" : "No" }, { key: "exportsAllowed", label: "Export", render: (row) => <StatusBadge status={row.exportsAllowed ? "Approved" : "Archived"} />, exportValue: (row) => row.exportsAllowed ? "Yes" : "No" }]} />
           <DataTable title="Integrations" tableId="admin-integrations" exportFileName="admin-integrations" rows={state.integrations} searchValue={(row) => `${row.name} ${row.owner} ${row.status}`} filters={[{ key: "attention", label: "Needs attention", predicate: (row) => row.status !== "Healthy" }]} advancedFilters={[{ key: "integration", label: "Integration", type: "text", getValue: (row) => row.name }, { key: "owner", label: "Owner", type: "text", getValue: (row) => row.owner }, { key: "status", label: "Status", type: "select", getValue: (row) => row.status, options: [{ value: "Healthy", label: "Healthy" }, { value: "Warning", label: "Warning" }, { value: "Failed", label: "Failed" }] }, { key: "lastSync", label: "Last sync", type: "text", getValue: (row) => row.lastSync }]} bulkActions={["Export CSV", "Export Excel", "Export PDF"]} columns={[{ key: "name", label: "Integration", render: (row) => <strong>{row.name}</strong>, exportValue: (row) => row.name }, { key: "owner", label: "Owner", render: (row) => row.owner, exportValue: (row) => row.owner }, { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status === "Healthy" ? "Approved" : row.status === "Warning" ? "Pending" : "Rejected"} />, exportValue: (row) => row.status }, { key: "lastSync", label: "Last sync", render: (row) => row.lastSync, exportValue: (row) => row.lastSync }]} />
-          <div className="inline-actions compact-end"><button className="ghost-button with-icon" type="button" onClick={() => persist(state, "Security settings stored only in this browser. Database persistence is not wired for this section yet.")}><Shield size={16} /> Save locally (not yet in DB)</button><button className="ghost-button with-icon" type="button" onClick={() => persist(state, "Notification settings stored only in this browser. Database persistence is not wired for this section yet.")}><Bell size={16} /> Save locally (not yet in DB)</button></div>
+          <div className="inline-actions compact-end"><button className="primary-button with-icon" type="button" onClick={saveSettingsToDb}><Shield size={16} /> Save settings</button></div>
           {adminTimeline.length ? (
             <ActivityTimeline items={adminTimeline} />
           ) : (
