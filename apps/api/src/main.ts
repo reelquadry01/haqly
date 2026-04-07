@@ -1,3 +1,6 @@
+// Load .env before any other modules (env.ts validates at import time)
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('dotenv').config();
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';

@@ -4,7 +4,10 @@ const envSchema = z.object({
   DATABASE_URL: z
     .string()
     .min(1, 'DATABASE_URL is required')
-    .refine((value) => value.includes('sslmode=require'), 'DATABASE_URL must include sslmode=require for Neon TLS connections.'),
+    .refine(
+      (value) => process.env.NODE_ENV === 'production' ? value.includes('sslmode=require') : true,
+      'DATABASE_URL must include sslmode=require in production.',
+    ),
   ACCESS_TOKEN_SECRET: z.string().min(32, 'ACCESS_TOKEN_SECRET must be at least 32 characters long.'),
   REFRESH_TOKEN_SECRET: z.string().min(32, 'REFRESH_TOKEN_SECRET must be at least 32 characters long.'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
