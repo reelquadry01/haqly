@@ -94,7 +94,7 @@ export default function HrPayrollPage() {
         subtitle: run.period,
         timestamp: run.payDate,
         user: run.createdBy ? `User #${run.createdBy}` : "System",
-        status: run.status as string,
+        status: run.status as import("../../lib/erp").AppStatus,
       })),
     [runs],
   );

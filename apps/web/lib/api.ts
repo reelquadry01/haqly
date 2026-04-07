@@ -1,3 +1,5 @@
+import { getMemoryToken, setMemoryToken } from "./session";
+
 export const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 // ─────────────────────────────────────────────────────────────────────────────
 // Silent token refresh — uses the httpOnly refresh cookie automatically.
@@ -1470,7 +1472,7 @@ export async function createUser(
 export async function updateUser(
   token: string,
   userId: number,
-  payload: { firstName?: string; lastName?: string; isActive?: boolean },
+  payload: { firstName?: string; lastName?: string; email?: string; isActive?: boolean },
 ) {
   const response = await fetch(`${apiBaseUrl}/users/${userId}`, {
     method: "PATCH",

@@ -20,10 +20,12 @@ type MfaSetupProps = {
   apiBaseUrl: string; // e.g. http://localhost:3000/api/v1
 };
 
-type SetupState = "idle" | "loading" | "qr" | "verifying" | "success" | "error";
+type SetupState = "idle" | "qr" | "success" | "error";
 
 export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
   const [state, setState] = useState<SetupState>("idle");
+  const [loadingSetup, setLoadingSetup] = useState(false);
+  const [activating, setActivating] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState<boolean | null>(null);
   const [otpauthUrl, setOtpauthUrl] = useState("");
   const [secret, setSecret] = useState("");
@@ -59,7 +61,7 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
   }
 
   async function handleSetup() {
-    setState("loading");
+    setLoadingSetup(true);
     setMessage("");
     try {
       const res = await fetch(`${apiBaseUrl}/auth/mfa/setup`, {
@@ -79,6 +81,8 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
     } catch (err) {
       setState("error");
       setMessage(err instanceof Error ? err.message : "Could not start MFA setup.");
+    } finally {
+      setLoadingSetup(false);
     }
   }
 
@@ -87,7 +91,7 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
       setMessage("Enter the 6-digit code from your authenticator app.");
       return;
     }
-    setState("verifying");
+    setActivating(true);
     setMessage("");
     try {
       const res = await fetch(`${apiBaseUrl}/auth/mfa/activate`, {
@@ -109,11 +113,13 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
     } catch (err) {
       setState("qr");
       setMessage(err instanceof Error ? err.message : "Invalid code. Try again.");
+    } finally {
+      setActivating(false);
     }
   }
 
   async function handleDisable(password: string, totpToken: string) {
-    setState("loading");
+    setLoadingSetup(true);
     setMessage("");
     try {
       const res = await fetch(`${apiBaseUrl}/auth/mfa/disable`, {
@@ -138,6 +144,8 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
     } catch (err) {
       setState("idle");
       setMessage(err instanceof Error ? err.message : "Could not disable MFA.");
+    } finally {
+      setLoadingSetup(false);
     }
   }
 
@@ -193,9 +201,9 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
           <button
             className="primary-button"
             onClick={() => void handleActivate()}
-            disabled={state === "verifying"}
+            disabled={activating}
           >
-            {state === "verifying" ? "Verifying..." : "Activate MFA"}
+            {activating ? "Verifying..." : "Activate MFA"}
           </button>
         </div>
       )}
@@ -215,12 +223,12 @@ export function MfaSetup({ token, apiBaseUrl }: MfaSetupProps) {
             <button
               className="primary-button"
               onClick={() => void handleSetup()}
-              disabled={state === "loading"}
+              disabled={loadingSetup}
             >
-              {state === "loading" ? "Setting up..." : "Enable MFA"}
+              {loadingSetup ? "Setting up..." : "Enable MFA"}
             </button>
           ) : (
-            <DisableMfaForm onDisable={handleDisable} busy={state === "loading"} />
+            <DisableMfaForm onDisable={handleDisable} busy={loadingSetup} />
           )}
         </div>
       )}

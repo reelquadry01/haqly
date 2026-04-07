@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -15,6 +16,7 @@ import {
   type NavItem,
 } from "../lib/erp";
 import { clearSession } from "../lib/session";
+import { getNotifications, type NotificationRecord } from "../lib/api";
 import { AppIcon } from "./ui/app-icon";
 import { ActionMenu } from "./ui/action-menu";
 import { BrandLockup, BrandMark } from "./ui/brand-lockup";
@@ -162,7 +164,7 @@ export function WorkspaceShell({
         </div>
 
         <div className="workspace-context surface-muted">
-          {activeCompany?.logoUrl ? <img src={activeCompany.logoUrl} alt={`${activeCompany.name} logo`} className="workspace-company-logo" /> : null}
+          {activeCompany?.logoUrl ? <Image src={activeCompany.logoUrl} alt={`${activeCompany.name} logo`} className="workspace-company-logo" width={32} height={32} unoptimized /> : null}
           <strong>{session.companyName || "Select company"}</strong>
         </div>
 
@@ -401,7 +403,7 @@ export function WorkspaceShell({
               <article key={item.id} className="notification-item">
                 <strong>{item.title}</strong>
                 <p>{item.detail}</p>
-                <span>{item.when}</span>
+                <span>{item.createdAt}</span>
               </article>
             ))}
           </div>

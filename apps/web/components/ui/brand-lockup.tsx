@@ -1,3 +1,5 @@
+"use client";
+
 import { useId, type CSSProperties } from "react";
 
 type BrandMarkProps = {
