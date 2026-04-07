@@ -182,7 +182,7 @@ export class AuthService {
     // ── User ID mismatch (tampered token) ─────────────────────────────────────
     if (String(stored.userId) !== String(payload.userId)) {
       // Revoke entire family — something suspicious is happening
-      await this.revokeTokenFamily(stored.familyId, stored.userId);
+      await this.revokeTokenFamily(stored.familyId ?? String(stored.id), stored.userId);
       throw new UnauthorizedException('Session invalidated. Please log in again.');
     }
 
@@ -197,7 +197,7 @@ export class AuthService {
       stored.user.id,
       stored.user.email,
       roleNames,
-      stored.familyId, // preserve family for reuse detection
+      stored.familyId ?? undefined, // preserve family for reuse detection
     );
 
     return {
@@ -347,7 +347,6 @@ export class AuthService {
     if (user.mfaEnabled) throw new Error('MFA is already enabled. Disable it first before setting up again.');
 
     // Generate a new TOTP secret
-    authenticator.options = { encoding: 'base32' };
     const secret = authenticator.generateSecret();
 
     // Store the secret temporarily (not yet enabled — enabled only after first verify)

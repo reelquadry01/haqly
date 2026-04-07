@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateIntegrationDto, UpdateIntegrationDto } from './dto';
 
@@ -15,7 +16,7 @@ export class IntegrationsService {
         companyId: dto.companyId,
         provider: dto.provider.toUpperCase(),
         label: dto.label,
-        config: dto.config ?? {},
+        config: (dto.config ?? {}) as Prisma.InputJsonValue,
       },
     });
   }
@@ -39,7 +40,7 @@ export class IntegrationsService {
       where: { id },
       data: {
         ...(dto.label !== undefined && { label: dto.label }),
-        ...(dto.config !== undefined && { config: dto.config }),
+        ...(dto.config !== undefined && { config: dto.config as Prisma.InputJsonValue }),
         ...(dto.isActive !== undefined && { isActive: dto.isActive }),
       },
     });

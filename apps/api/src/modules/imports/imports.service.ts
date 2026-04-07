@@ -13,6 +13,36 @@ export interface BulkImportResult {
 export class ImportsService {
   constructor(private prisma: PrismaService) {}
 
+  private scaffoldResult(dataset: string): BulkImportResult {
+    return {
+      dataset,
+      created: 0,
+      updated: 0,
+      failed: 0,
+      errors: [],
+    };
+  }
+
+  async importAccounts(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('chart-of-accounts');
+  }
+
+  async importCustomers(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('customers');
+  }
+
+  async importSuppliers(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('suppliers');
+  }
+
+  async importProducts(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('products');
+  }
+
+  async importTaxConfigs(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('tax-configs');
+  }
+
   async importBranches(dto: any): Promise<BulkImportResult> {
     const errors: BulkImportResult["errors"] = [];
     let created = 0;
@@ -93,5 +123,37 @@ export class ImportsService {
       failed: 0,
       errors: [],
     };
+  }
+
+  async importAssetCategories(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('asset-categories');
+  }
+
+  async importGLOpeningBalances(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('gl-opening-balances');
+  }
+
+  async importAROpeningBalances(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('ar-opening-balances');
+  }
+
+  async importAPOpeningBalances(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('ap-opening-balances');
+  }
+
+  async importCustomerReceipts(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('customer-receipts');
+  }
+
+  async importSupplierPayments(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('supplier-payments');
+  }
+
+  async importFixedAssets(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('fixed-assets');
+  }
+
+  async importStockOpeningBalances(_dto: unknown): Promise<BulkImportResult> {
+    return this.scaffoldResult('stock-opening-balances');
   }
 }
