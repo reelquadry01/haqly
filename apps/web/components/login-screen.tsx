@@ -28,13 +28,10 @@ export function LoginScreen() {
   const [companies, setCompanies] = useState<CompanyRecord[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | "">("");
   const [signedInUser, setSignedInUser] = useState<SignedInUser | null>(null);
-  const [mfaPending, setMfaPending] = useState<{ userId: number; tempToken: string } | null>(null);
-  const [mfaCode, setMfaCode] = useState("");
   const [mfaBusy, setMfaBusy] = useState(false);
   const [mfaStep, setMfaStep] = useState(false);
   const [mfaEmail, setMfaEmail] = useState("");
   const [mfaToken, setMfaToken] = useState("");
-  const [mfaTempToken, setMfaTempToken] = useState("");
 
   const selectedCompany = useMemo(
     () => companies.find((company) => company.id === selectedCompanyId) ?? null,
@@ -110,10 +107,9 @@ export function LoginScreen() {
       const data = await loginRequest(trimmedEmail, password);
 
       // MFA required — show verification step
-      if ((data as any).mfaRequired) {
+      if (data.mfaRequired) {
         setMfaStep(true);
         setMfaEmail(trimmedEmail);
-        setMfaTempToken((data as any).preAuthToken ?? "");
         setFeedbackTone("neutral");
         setMessage("Enter the 6-digit code from your authenticator app.");
         setBusy(false);
@@ -136,7 +132,8 @@ export function LoginScreen() {
   }
 
   
-  async function handleMfaVerify() {
+  async function handleMfaVerify(event?: React.FormEvent) {
+    event?.preventDefault();
     if (mfaToken.trim().length !== 6) {
       setFeedbackTone("error");
       setMessage("Enter the 6-digit code from your authenticator app.");
@@ -150,7 +147,7 @@ export function LoginScreen() {
       const res = await fetch(`${apiBase}/auth/mfa/verify-login`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${mfaTempToken}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: mfaEmail, token: mfaToken.trim() }),
       });
       if (!res.ok) {
@@ -159,55 +156,19 @@ export function LoginScreen() {
         setMfaBusy(false);
         return;
       }
-      // MFA passed — use preAuthToken to load companies
+      const data = await res.json() as { token: string; workspaceRole: string; roles: string[]; user: { firstName?: string; lastName?: string; email: string } };
+      const userName = [data.user.firstName, data.user.lastName].filter(Boolean).join(" ") || data.user.email;
       setMfaStep(false);
       setMfaToken("");
       setSignedInUser({
-        token: mfaTempToken,
-        email: mfaEmail,
-        name: mfaEmail,
-        role: "admin" as AppRole,
-        roles: [],
+        token: data.token,
+        email: data.user.email,
+        name: userName,
+        role: data.workspaceRole as AppRole,
+        roles: data.roles,
       });
-      await loadCompanies(mfaTempToken);
+      await loadCompanies(data.token);
       setMfaBusy(false);
-    } catch {
-      setFeedbackTone("error");
-      setMessage("Could not verify MFA code. Try again.");
-      setMfaBusy(false);
-    }
-  // REPLACED_PLACEHOLDER
-    if (!mfaPending || mfaCode.trim().length !== 6) {
-      setFeedbackTone("error");
-      setMessage("Enter the 6-digit code from your authenticator app.");
-      return;
-    }
-    setMfaBusy(true);
-    setFeedbackTone("neutral");
-    setMessage("Verifying code...");
-    try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "/backend/api/v1";
-      const res = await fetch(`${apiBase}/auth/mfa/verify-login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${mfaPending.tempToken}`,
-        },
-        body: JSON.stringify({ token: mfaCode.trim() }),
-      });
-      if (!res.ok) {
-        setFeedbackTone("error");
-        setMessage("Invalid code. Check your authenticator app and try again.");
-        setMfaBusy(false);
-        return;
-      }
-      // MFA passed — continue normal login flow
-      setMfaPending(null);
-      setMfaCode("");
-      setMfaBusy(false);
-      setFeedbackTone("success");
-      setMessage("Select a company to continue.");
     } catch {
       setFeedbackTone("error");
       setMessage("Could not verify MFA code. Try again.");
@@ -229,6 +190,9 @@ export function LoginScreen() {
 
     const firstBranch = selectedCompany.branches[0];
 
+    const now = new Date();
+    const periodLabel = now.toLocaleString("default", { month: "short", year: "numeric" });
+
     writeSession({
       token: signedInUser.token,
       companyId: selectedCompany.id,
@@ -238,7 +202,7 @@ export function LoginScreen() {
       role: signedInUser.role,
       userEmail: signedInUser.email,
       userName: signedInUser.name,
-      periodLabel: "Mar 2026",
+      periodLabel,
     });
     router.push("/dashboard");
   }
@@ -328,7 +292,7 @@ export function LoginScreen() {
           
           {/* ── MFA Step ────────────────────────────────────────────────── */}
           {mfaStep && (
-            <div className="auth-simple-form" style={{ marginTop: "1rem" }}>
+            <form className="auth-simple-form" style={{ marginTop: "1rem" }} onSubmit={(e) => void handleMfaVerify(e)}>
               <div className="auth-simple-copy__eyebrow">
                 <ShieldCheck size={16} />
                 <span>Two-factor authentication required</span>
@@ -346,23 +310,25 @@ export function LoginScreen() {
                   value={mfaToken}
                   onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, ""))}
                   autoComplete="one-time-code"
+                  autoFocus
                 />
               </label>
               <button
                 className="primary-button auth-submit"
-                onClick={() => void handleMfaVerify()}
+                type="submit"
                 disabled={mfaBusy}
               >
                 {mfaBusy ? "Verifying..." : "Verify & continue"}
               </button>
               <button
                 className="ghost-button"
+                type="button"
                 style={{ marginTop: "0.5rem" }}
                 onClick={() => { setMfaStep(false); setMfaToken(""); }}
               >
                 Back to login
               </button>
-            </div>
+            </form>
           )}
           {companies.length > 0 ? (
             <section className="auth-company-card">

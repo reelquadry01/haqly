@@ -55,6 +55,11 @@ export type StoredSession = {
   periodLabel: string;
 };
 
+function currentPeriodLabel(): string {
+  const now = new Date();
+  return now.toLocaleString("default", { month: "short", year: "numeric" });
+}
+
 const defaultSession: StoredSession = {
   token: "",
   companyId: null,
@@ -64,7 +69,7 @@ const defaultSession: StoredSession = {
   role: "cfo",
   userEmail: "",
   userName: "",
-  periodLabel: "Mar 2026",
+  periodLabel: currentPeriodLabel(),
 };
 
 export function readSession(): StoredSession {

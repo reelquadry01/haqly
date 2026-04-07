@@ -336,7 +336,7 @@ export class AuthService {
       return 'ceo';
     }
 
-    return 'admin';
+    return 'viewer';
   }
 
 
@@ -426,5 +426,34 @@ export class AuthService {
     } catch {
       try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; }
     }
+  }
+
+  // ─── MFA: Verify TOTP and issue full auth tokens ─────────────────────────────
+  async mfaVerifyLoginAndIssueTokens(email: string, token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      include: { roles: { include: { role: true } } },
+    });
+
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user.isActive) throw new UnauthorizedException('This login has been disabled.');
+    if (!user.mfaEnabled || !user.mfaSecret) {
+      throw new UnauthorizedException('MFA is not enabled for this account.');
+    }
+
+    const valid = (() => {
+      try { return authenticator.verify({ token, secret: user.mfaSecret!, encoding: 'base32' } as any); }
+      catch { try { return totp.verify({ token, secret: user.mfaSecret!, encoding: 'base32' } as any); } catch { return false; } }
+    })();
+
+    if (!valid) throw new UnauthorizedException('Invalid authenticator code. Please try again.');
+
+    const roleNames = user.roles.map((entry) => entry.role.name);
+    const auth = await this.issueAuthTokens(user.id, user.email, roleNames);
+
+    return {
+      user: sanitizeUser(user),
+      ...auth,
+    };
   }
 }
