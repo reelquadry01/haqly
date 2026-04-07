@@ -17,7 +17,23 @@ export type AppStatus =
   | "Reversed"
   | "Overdue"
   | "Closed"
-  | "Archived";
+  | "Archived"
+  | "Cancelled"
+  | "Active"
+  | "Inactive"
+  | "Terminated"
+  // API uppercase variants
+  | "DRAFT"
+  | "PENDING"
+  | "SUBMITTED"
+  | "APPROVED"
+  | "REJECTED"
+  | "POSTED"
+  | "REVERSED"
+  | "CANCELLED"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "TERMINATED";
 
 export type NavItem = {
   href: string;
