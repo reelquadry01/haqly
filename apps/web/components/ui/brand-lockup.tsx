@@ -6,8 +6,7 @@ type BrandMarkProps = {
 };
 
 export function BrandMark({ size = 40, className }: BrandMarkProps) {
-  const gradientId = useId().replace(/:/g, "");
-  const clipId = useId().replace(/:/g, "");
+  const id = useId().replace(/:/g, "");
 
   return (
     <svg
@@ -20,19 +19,29 @@ export function BrandMark({ size = 40, className }: BrandMarkProps) {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id={gradientId} x1="10" y1="54" x2="55" y2="10" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#132B7A" />
-          <stop offset="0.52" stopColor="#16708A" />
+        <linearGradient id={`g1-${id}`} x1="0" y1="64" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#0B1D51" />
+          <stop offset="0.45" stopColor="#145C8A" />
+          <stop offset="1" stopColor="#0EA5A0" />
+        </linearGradient>
+        <linearGradient id={`g2-${id}`} x1="32" y1="0" x2="32" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#0EA5A0" />
           <stop offset="1" stopColor="#2BC85A" />
         </linearGradient>
-        <clipPath id={clipId}>
-          <path d="M16 10H28V31H38V24H48V10L60 22H52V54H40V34H28V54H16V10Z" />
-        </clipPath>
+        <linearGradient id={`g3-${id}`} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#1A56DB" />
+          <stop offset="1" stopColor="#0B1D51" />
+        </linearGradient>
       </defs>
-      <path d="M16 10H28V31H38V24H48V10L60 22H52V54H40V34H28V54H16V10Z" fill={`url(#${gradientId})`} />
-      <g clipPath={`url(#${clipId})`}>
-        <path d="M6 56C13 42 24 34 40 34C49 34 57 36 63 39V64H6V56Z" fill="rgba(9, 28, 96, 0.24)" />
-      </g>
+      <rect x="4" y="4" width="56" height="56" rx="16" fill={`url(#g1-${id})`} />
+      <rect x="4" y="4" width="56" height="56" rx="16" fill="rgba(255,255,255,0.06)" />
+      <rect x="14" y="16" width="6" height="32" rx="3" fill="#fff" opacity="0.95" />
+      <rect x="34" y="16" width="6" height="32" rx="3" fill="#fff" opacity="0.95" />
+      <rect x="20" y="27" width="14" height="6" rx="3" fill={`url(#g2-${id})`} opacity="0.92" />
+      <rect x="20" y="27" width="14" height="6" rx="3" fill="rgba(255,255,255,0.55)" />
+      <circle cx="48" cy="16" r="4" fill={`url(#g2-${id})`} opacity="0.9" />
+      <circle cx="48" cy="16" r="4" fill="rgba(255,255,255,0.45)" />
+      <path d="M4 20C4 11.16 11.16 4 20 4H44C52.84 4 60 11.16 60 20V22C60 13.16 52.84 6 44 6H20C11.16 6 4 13.16 4 22V20Z" fill="rgba(255,255,255,0.12)" />
     </svg>
   );
 }
