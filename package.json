@@ -16,7 +16,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "seed": "node scripts/seed.cjs || true",
+    "seed": "node scripts/seed.cjs",
     "company:tools": "node scripts/company-tools.cjs"
   },
   "dependencies": {

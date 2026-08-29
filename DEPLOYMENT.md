@@ -30,6 +30,27 @@ npm run prisma:migrate:deploy
 The two migrations in `prisma/migrations/` build the full 68-model schema
 (77 tables). Verify with `npx prisma migrate status`.
 
+### Create the first admin
+
+A migrated database has no users, so nothing can log in until you seed one:
+
+```bash
+SEED_ADMIN_EMAIL="you@yourcompany.com" \
+SEED_ADMIN_PASSWORD="a-long-random-password" \
+NODE_ENV=production npm run seed
+```
+
+This also loads the permission set, the SuperAdmin role, and a base chart of
+accounts. It creates no companies or sample data.
+
+Two things worth knowing:
+
+- In production the seed **refuses to run without `SEED_ADMIN_PASSWORD`**, rather
+  than falling back to the development default, which is published in this repo.
+- Re-running the seed **leaves an existing admin untouched**. It is safe to call
+  from a deploy hook. To rotate that account's password and unlock it, opt in
+  explicitly with `SEED_ADMIN_RESET_PASSWORD=true`.
+
 ## 2. API
 
 Set these environment variables on your host:
@@ -77,9 +98,10 @@ just a restart.
 ## 4. After the first deploy
 
 1. Confirm `GET /api/v1/health` returns ok.
-2. Confirm the web app can reach the API — a CORS error in the browser console
+2. Log in with the seeded admin, then change its password from the UI.
+3. Confirm the web app can reach the API — a CORS error in the browser console
    means `ALLOWED_ORIGINS` on the API is missing the Vercel origin.
-3. Create the first company, branch, and chart of accounts before importing any
+4. Create the first company, branch, and chart of accounts before importing any
    transactional data. The opening-balance importers need them to resolve
    references, and supplier payments additionally need an **open accounting
    period** covering the payment date.

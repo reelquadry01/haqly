@@ -87,29 +87,57 @@ async function main() {
   });
 
   console.log('Seeding admin user...');
-  const email = 'admin@example.com';
-  const passwordHash = await bcrypt.hash('Admin123!', 12);
+  const isProduction = process.env.NODE_ENV === 'production';
+  const email = (process.env.SEED_ADMIN_EMAIL || 'admin@example.com').toLowerCase();
+  const passwordFromEnv = process.env.SEED_ADMIN_PASSWORD;
+
+  // A default credential that ships in the repo is public knowledge, so it is
+  // only ever acceptable for local development.
+  if (isProduction && !passwordFromEnv) {
+    throw new Error(
+      'SEED_ADMIN_PASSWORD must be set when NODE_ENV=production. Refusing to seed a known default credential.',
+    );
+  }
+
+  if (passwordFromEnv && passwordFromEnv.length < 12) {
+    throw new Error('SEED_ADMIN_PASSWORD must be at least 12 characters.');
+  }
+
+  const password = passwordFromEnv || 'Admin123!';
 
   const existing = await prisma.user.findUnique({ where: { email } });
   let user;
 
   if (existing) {
-    user = await prisma.user.update({
-      where: { email },
-      data: { passwordHash, isActive: true, isLocked: false },
-    });
-    console.log('Admin user already exists — password reset and unlocked.');
+    // Re-seeding is a routine part of deploys, and it must not quietly hand an
+    // existing account back to whoever knows the default. Rotating the password
+    // or unlocking an account is an explicit, opt-in action.
+    const resetRequested = process.env.SEED_ADMIN_RESET_PASSWORD === 'true';
+
+    if (resetRequested) {
+      user = await prisma.user.update({
+        where: { email },
+        data: { passwordHash: await bcrypt.hash(password, 12), isActive: true, isLocked: false },
+      });
+      console.log(`Admin user ${email} already existed — password reset and account unlocked.`);
+    } else {
+      user = existing;
+      console.log(
+        `Admin user ${email} already exists — left untouched. ` +
+          'Set SEED_ADMIN_RESET_PASSWORD=true to rotate its password and unlock it.',
+      );
+    }
   } else {
     user = await prisma.user.create({
       data: {
         email,
-        passwordHash,
+        passwordHash: await bcrypt.hash(password, 12),
         firstName: 'System',
         lastName: 'Administrator',
         isActive: true,
       },
     });
-    console.log('Admin user created.');
+    console.log(`Admin user ${email} created.`);
   }
 
   // Assign SuperAdmin role to admin user
@@ -132,8 +160,13 @@ async function main() {
   console.log('');
   console.log('======================================================');
   console.log('  Bootstrap complete.');
-  console.log('  Admin login : admin@example.com');
-  console.log('  Password    : Admin123!');
+  console.log(`  Admin login : ${email}`);
+  // Never echo a real secret to stdout — deploy logs are widely readable.
+  console.log(
+    passwordFromEnv
+      ? '  Password    : (as supplied in SEED_ADMIN_PASSWORD)'
+      : '  Password    : Admin123!  ← development default, change it',
+  );
   console.log('');
   console.log('  No placeholder companies or fake data created.');
   console.log('  Create your first company from the Organizations page.');
