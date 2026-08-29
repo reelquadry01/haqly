@@ -1,6 +1,16 @@
-import { getMemoryToken, setMemoryToken } from "./session";
-
 export const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+
+const TOKEN_KEY = "haqly.token";
+
+function getMemoryToken(): string {
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem(TOKEN_KEY) ?? "";
+}
+
+function setMemoryToken(token: string): void {
+  if (typeof window === "undefined") return;
+  if (token) window.localStorage.setItem(TOKEN_KEY, token);
+}
 // ─────────────────────────────────────────────────────────────────────────────
 // Silent token refresh — uses the httpOnly refresh cookie automatically.
 // Called when memory token is missing (e.g. after page reload) or on 401.
@@ -2983,6 +2993,17 @@ export async function importGLOpeningBalances(token: string, companyId: number, 
   return readApiResponse<BulkImportResponse>(response, "Could not import GL opening balances");
 }
 
+export async function importGLJournalDump(token: string, payload: unknown) {
+  const response = await fetch(`${apiBaseUrl}/imports/gl-journal-dump`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+    credentials: "include",
+  });
+
+  return readApiResponse<BulkImportResponse>(response, "Could not import GL journal dump");
+}
+
 export async function importAROpeningBalances(token: string, companyId: number, openingDate: string, rows: Array<Record<string, unknown>>) {
   const response = await fetch(apiBaseUrl + "/imports/ar-opening-balances", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ companyId, openingDate, rows }) });
   return readApiResponse<BulkImportResponse>(response, "Could not import AR opening balances");
@@ -3102,10 +3123,6 @@ export async function deleteUser(token: string, userId: number) {
   });
   return readApiResponse<{ id: number; message: string }>(response, "Could not delete user");
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Payroll & HR
-// ─────────────────────────────────────────────────────────────────────────────
 
 export type EmployeeRecord = {
   id: number;

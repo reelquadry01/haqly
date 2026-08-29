@@ -1,0 +1,84 @@
+﻿{
+    "dataset":  "ar-opening-balances",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "openingDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "ISO date",
+                        "mapsTo":  "Header.openingDate"
+                    },
+                    {
+                        "name":  "customerName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Customer name",
+                        "mapsTo":  "Customer.name"
+                    },
+                    {
+                        "name":  "customerEmail",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Customer email",
+                        "mapsTo":  "Customer.email"
+                    },
+                    {
+                        "name":  "invoiceNumber",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Legacy invoice number",
+                        "mapsTo":  "SalesInvoice.invoiceNumber/reference"
+                    },
+                    {
+                        "name":  "invoiceDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Invoice date",
+                        "mapsTo":  "SalesInvoice.invoiceDate"
+                    },
+                    {
+                        "name":  "dueDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Due date",
+                        "mapsTo":  "SalesInvoice.dueDate"
+                    },
+                    {
+                        "name":  "amount",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Invoice total",
+                        "mapsTo":  "SalesInvoice.totalAmount"
+                    },
+                    {
+                        "name":  "outstanding",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Outstanding amount",
+                        "mapsTo":  "AR outstanding balance"
+                    },
+                    {
+                        "name":  "currencyCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Currency code",
+                        "mapsTo":  "Currency.code"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Narration",
+                        "mapsTo":  "Memo / description"
+                    }
+                ]
+}

@@ -1,0 +1,28 @@
+﻿{
+    "dataset":  "branches",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Company code, e.g. RQI",
+                        "mapsTo":  "Branch.companyId -\u003e Company.code"
+                    },
+                    {
+                        "name":  "branchCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Unique branch code",
+                        "mapsTo":  "Branch.code"
+                    },
+                    {
+                        "name":  "branchName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Branch name",
+                        "mapsTo":  "Branch.name"
+                    }
+                ]
+}

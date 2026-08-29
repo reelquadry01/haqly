@@ -1,27 +1,19 @@
 import type { AppRole } from "./erp";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Access token lives in memory ONLY — never in localStorage.
-// This prevents XSS attacks from stealing the token via document.cookie or
-// localStorage enumeration. The token is re-acquired via silent refresh
 // (httpOnly refresh cookie) after a page reload.
 // ─────────────────────────────────────────────────────────────────────────────
-let _memoryToken = "";
 
-export function getMemoryToken(): string {
-  return _memoryToken;
-}
 
-export function setMemoryToken(token: string): void {
-  _memoryToken = token;
-}
 
-export function clearMemoryToken(): void {
-  _memoryToken = "";
-}
+
+
+
+
 
 // ─── Session keys — non-sensitive data only stored in localStorage ───────────
 export const sessionKeys = {
+  token: "haqly.token",
   companyId: "haqly.companyId",
   companyName: "haqly.companyName",
   branchId: "haqly.branchId",
@@ -33,6 +25,7 @@ export const sessionKeys = {
 };
 
 const legacySessionKeys = {
+  token: "finova.token",
   companyId: "finova.companyId",
   companyName: "finova.companyName",
   branchId: "finova.branchId",
@@ -84,8 +77,7 @@ export function readSession(): StoredSession {
   const branchIdValue = readValue(sessionKeys.branchId, legacySessionKeys.branchId);
 
   return {
-    // Token always sourced from memory — never from localStorage
-    token: getMemoryToken(),
+    token: readValue(sessionKeys.token, legacySessionKeys.token) ?? defaultSession.token,
     companyId: companyIdValue ? Number(companyIdValue) : null,
     companyName:
       readValue(sessionKeys.companyName, legacySessionKeys.companyName) ?? defaultSession.companyName,
@@ -106,8 +98,7 @@ export function readSession(): StoredSession {
 export function writeSession(input: StoredSession): void {
   if (typeof window === "undefined") return;
 
-  // Token goes to memory — NOT localStorage
-  setMemoryToken(input.token);
+  window.localStorage.setItem(sessionKeys.token, input.token);
 
   // Only non-sensitive fields persisted to localStorage
   const numberFields: Array<[keyof Pick<StoredSession, "companyId" | "branchId">, string]> = [
@@ -125,7 +116,7 @@ export function writeSession(input: StoredSession): void {
   }
 
   const stringFields: Array<
-    [keyof Omit<StoredSession, "companyId" | "branchId" | "token">, string]
+    [keyof Omit<StoredSession, "companyId" | "branchId">, string]
   > = [
     ["companyName", sessionKeys.companyName],
     ["branchName", sessionKeys.branchName],
@@ -148,14 +139,10 @@ export function writeSession(input: StoredSession): void {
 export function clearSession(): void {
   if (typeof window === "undefined") return;
 
-  clearMemoryToken();
-
   // Clean up both current and legacy keys
   [...Object.values(sessionKeys), ...Object.values(legacySessionKeys)].forEach((key) =>
     window.localStorage.removeItem(key),
   );
 
-  // Also remove old token keys that may still be in storage from before this fix
-  window.localStorage.removeItem("haqly.token");
-  window.localStorage.removeItem("finova.token");
+
 }
