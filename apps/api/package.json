@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node dist/main.js",
     "start:dev": "ts-node --transpile-only src/main.ts",
+    "prebuild": "prisma generate --schema=../../prisma/schema.prisma",
     "build": "tsc -p tsconfig.json",
+    "migrate:deploy": "prisma migrate deploy --schema=../../prisma/schema.prisma",
     "test": "jest"
   },
   "dependencies": {

@@ -1,6 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateIntegrationDto, UpdateIntegrationDto } from './dto';
+
+/** Prisma's Json input rejects a bare index signature, so narrow it here. */
+function toJson(value: Record<string, unknown>): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
 
 @Injectable()
 export class IntegrationsService {
@@ -15,7 +21,7 @@ export class IntegrationsService {
         companyId: dto.companyId,
         provider: dto.provider.toUpperCase(),
         label: dto.label,
-        config: dto.config ?? {},
+        config: toJson(dto.config ?? {}),
       },
     });
   }
@@ -39,7 +45,7 @@ export class IntegrationsService {
       where: { id },
       data: {
         ...(dto.label !== undefined && { label: dto.label }),
-        ...(dto.config !== undefined && { config: dto.config }),
+        ...(dto.config !== undefined && { config: toJson(dto.config) }),
         ...(dto.isActive !== undefined && { isActive: dto.isActive }),
       },
     });
