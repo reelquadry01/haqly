@@ -64,6 +64,24 @@ Set these environment variables on your host:
 | `ACCESS_TOKEN_SECRET` | ≥ 32 chars, random |
 | `REFRESH_TOKEN_SECRET` | ≥ 32 chars, random, different from the access secret |
 | `ALLOWED_ORIGINS` | Comma-separated. **Must include your Vercel URL** or the browser blocks every request |
+| `STORAGE_BUCKET` | **Required.** S3-compatible bucket for uploaded attachments |
+| `STORAGE_REGION` | `auto` for R2, otherwise the bucket's region |
+| `STORAGE_ENDPOINT` | Leave unset for AWS S3; set it for R2, Spaces, or MinIO |
+| `STORAGE_ACCESS_KEY_ID` / `STORAGE_SECRET_ACCESS_KEY` | Bucket credentials |
+| `TRUST_PROXY` | Defaults to 1 in production, correct for these hosts |
+
+### Why object storage is not optional
+
+Container filesystems on these hosts are wiped on every restart and every
+deploy. Writing attachments to local disk loses them silently — the upload
+succeeds, the user sees the file, and it is gone after the next deploy, quite
+possibly after they discarded the original. The API therefore **refuses to start
+in production without `STORAGE_BUCKET`** rather than accepting uploads it cannot
+keep. Any S3-compatible provider works: S3, Cloudflare R2, DigitalOcean Spaces,
+Backblaze B2, MinIO.
+
+Keep the bucket **private**. Attachments are served through `GET /api/v1/files/:key`,
+which requires authentication and redirects to a five-minute signed URL.
 
 Generate the secrets with:
 
@@ -105,6 +123,21 @@ just a restart.
    transactional data. The opening-balance importers need them to resolve
    references, and supplier payments additionally need an **open accounting
    period** covering the payment date.
+
+## Account locking
+
+Two different things can stop a sign-in, and they behave differently on purpose:
+
+- **Too many failed attempts** — a temporary block, five failures in fifteen
+  minutes, returning `423`. It expires on its own; nobody needs to intervene.
+- **`isLocked`** — set when the system detects refresh-token reuse, which means
+  a session token was replayed and is presumed stolen. It does **not** expire,
+  and a correct password will not clear it. An administrator clears it with
+  `POST /api/v1/users/:id/unlock`, which also revokes every existing session for
+  that user.
+
+If a user reports being locked out permanently, that second case is what
+happened, and it is worth understanding why before unlocking.
 
 ## Data migration order
 

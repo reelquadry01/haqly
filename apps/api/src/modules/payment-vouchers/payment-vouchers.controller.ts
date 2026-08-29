@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -12,9 +13,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { mkdirSync } from 'fs';
+import { memoryStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApprovePaymentVoucherDto,
@@ -32,6 +31,7 @@ import {
   VoucherCommentDto,
 } from './dto';
 import { PaymentVouchersService } from './payment-vouchers.service';
+import { StorageService } from '../../storage/storage.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { RequirePermissions } from '../auth/permissions.decorator';
@@ -39,14 +39,19 @@ import { RequireRole, RolesGuard } from '../../middleware/rbac';
 
 type RequestUser = { userId?: number; email?: string; role?: string; roles?: string[] };
 
-const paymentVoucherUploadDir = 'uploads/payment-vouchers';
-mkdirSync(paymentVoucherUploadDir, { recursive: true });
+const MAX_ATTACHMENT_BYTES = 15 * 1024 * 1024;
+
+/** The subset of multer's file object this handler uses. */
+type UploadedFileInput = { originalname: string; buffer: Buffer; mimetype?: string };
 
 @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 @RequireRole('ADMIN', 'FINANCE')
 @Controller({ path: 'payment-vouchers', version: '1' })
 export class PaymentVouchersController {
-  constructor(private readonly paymentVouchersService: PaymentVouchersService) {}
+  constructor(
+    private readonly paymentVouchersService: PaymentVouchersService,
+    private readonly storage: StorageService,
+  ) {}
 
   @Get()
   @RequirePermissions('accounting:voucher')
@@ -187,21 +192,26 @@ export class PaymentVouchersController {
   @RequirePermissions('accounting:voucher')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: paymentVoucherUploadDir,
-        filename: (_req: unknown, file: { originalname: string }, callback: (error: Error | null, filename: string) => void) => {
-          const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-          callback(null, `${unique}${extname(file.originalname)}`);
-        },
-      }),
+      storage: memoryStorage(),
+      limits: { fileSize: MAX_ATTACHMENT_BYTES },
     }),
   )
-  uploadAttachment(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: any, @Req() req: { user?: RequestUser }) {
+  async uploadAttachment(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: UploadedFileInput | undefined,
+    @Req() req: { user?: RequestUser },
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file was uploaded.');
+    }
+
+    const stored = await this.storage.put('payment-vouchers', file);
+
     return this.paymentVouchersService.addAttachment(
       id,
       {
         fileName: file.originalname,
-        fileUrl: `/uploads/payment-vouchers/${file.filename}`,
+        fileUrl: stored.url,
         mimeType: file.mimetype,
       },
       req.user ?? {},

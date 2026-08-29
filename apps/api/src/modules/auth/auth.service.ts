@@ -98,9 +98,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.isActive) {
-      throw new UnauthorizedException('This login has been disabled. Contact your administrator.');
-    }
+    this.assertUserMayAuthenticate(user);
 
     const roleNames = user.roles.map((entry) => entry.role.name);
     if (!roleNames.length) {
@@ -108,9 +106,6 @@ export class AuthService {
     }
 
     await this.clearLoginAttempts(user.id, ipAddress);
-    if (user.isLocked) {
-      await this.prisma.user.update({ where: { id: user.id }, data: { isLocked: false } });
-    }
 
     // If MFA is enabled, return mfaRequired flag with a pre-auth token
     if (user.mfaEnabled && user.mfaSecret) {
@@ -187,6 +182,8 @@ export class AuthService {
     }
 
     // ── Valid — rotate token ───────────────────────────────────────────────────
+    this.assertUserMayAuthenticate(stored.user);
+
     const roleNames = stored.user.roles.map((entry) => entry.role.name);
 
     // Delete the used token (rotation — old token is now invalid)
@@ -214,6 +211,26 @@ export class AuthService {
     const tokenHash = hashToken(refreshToken);
     await this.prisma.refreshToken.deleteMany({ where: { tokenHash } });
     return { success: true };
+  }
+
+  /**
+   * Gates every path that mints tokens: login, MFA completion and refresh.
+   *
+   * isLocked is set when the system detects a compromised session (refresh-token
+   * reuse) or when an account is retired. Unlike the brute-force window it does
+   * not expire on its own — clearing it is an explicit administrator action, so
+   * that a detected compromise cannot be erased by whoever holds the password.
+   */
+  private assertUserMayAuthenticate(user: { isActive: boolean; isLocked: boolean }) {
+    if (!user.isActive) {
+      throw new UnauthorizedException('This login has been disabled. Contact your administrator.');
+    }
+    if (user.isLocked) {
+      throw new HttpException(
+        'This account is locked after suspicious activity. Contact your administrator to unlock it.',
+        423,
+      );
+    }
   }
 
   private async issueAuthTokens(
@@ -289,9 +306,9 @@ export class AuthService {
     });
 
     if (attempts >= MAX_FAILED_ATTEMPTS) {
-      if (userId) {
-        await this.prisma.user.updateMany({ where: { id: userId }, data: { isLocked: true } });
-      }
+      // Deliberately does not set user.isLocked. This lockout expires with the
+      // attempt window; isLocked means "an administrator must intervene" and is
+      // reserved for detected session compromise.
       throw new HttpException('Account temporarily locked. Try again in 15 minutes.', 423);
     }
   }
@@ -446,7 +463,7 @@ export class AuthService {
     });
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
-    if (!user.isActive) throw new UnauthorizedException('This login has been disabled.');
+    this.assertUserMayAuthenticate(user);
     if (!user.mfaEnabled || !user.mfaSecret) {
       throw new UnauthorizedException('MFA is not enabled for this account.');
     }
