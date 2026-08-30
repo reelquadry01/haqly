@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 export type GatewayResult = {
   providerName: string;
   providerReference: string;
-  providerStatus: 'PROCESSING' | 'PAID' | 'FAILED';
+  providerStatus: 'PROCESSING' | 'PAID' | 'FAILED' | 'REVERSED';
   providerMessage: string;
   rawResponseJson?: Record<string, unknown>;
 };
@@ -81,10 +81,13 @@ export class PaymentGatewayService {
   }
 
   async checkPaymentStatus(reference: string) {
+    const providerName = reference.split('-')[0] ?? 'UNKNOWN';
     return {
+      providerName,
       providerReference: reference,
-      providerStatus: 'PROCESSING',
-      providerMessage: 'Payment status refresh is integration-ready but not yet connected to a live provider.',
+      providerStatus: 'PROCESSING' as const,
+      providerMessage: `Status check for ${providerName} is not yet connected to a live provider. Current status remains PROCESSING.`,
+      rawResponseJson: { mode: 'status-stub', providerReference: reference },
     };
   }
 
@@ -93,10 +96,13 @@ export class PaymentGatewayService {
   }
 
   async reversePayment(reference: string) {
+    const providerName = reference.split('-')[0] ?? 'UNKNOWN';
     return {
+      providerName,
       providerReference: reference,
-      providerStatus: 'REVERSED',
-      providerMessage: 'Reverse payment is integration-ready and must be connected to a live provider policy before use.',
+      providerStatus: 'REVERSED' as const,
+      providerMessage: `Reversal recorded for ${providerName}. Connect a live provider to execute the actual reversal with the bank.`,
+      rawResponseJson: { mode: 'reversal-stub', providerReference: reference },
     };
   }
 }

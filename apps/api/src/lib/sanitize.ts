@@ -11,6 +11,13 @@ export function sanitizeUser<T extends Partial<User> & Record<string, unknown>>(
 
   const {
     passwordHash: _passwordHash,
+    // The TOTP shared secret is a credential, not profile data. Anyone who reads
+    // it can mint valid codes indefinitely, so it must never leave the server —
+    // /auth/mfa/setup returns a freshly generated secret on its own dedicated
+    // response, which is the only time the client is meant to see one.
+    mfaSecret: _mfaSecret,
+    mfaBackupCodes: _mfaBackupCodes,
+    passwordResetToken: _passwordResetToken,
     sessions: _sessions,
     refreshTokens: _refreshTokens,
     loginAttempts: _loginAttempts,

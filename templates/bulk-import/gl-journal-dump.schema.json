@@ -1,0 +1,105 @@
+﻿{
+    "dataset":  "gl-journal-dump",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "journalNumber",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Journal number used to group lines",
+                        "mapsTo":  "GLJournalHeader.journalNumber"
+                    },
+                    {
+                        "name":  "postingDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "ISO date",
+                        "mapsTo":  "GLJournalHeader.postingDate / journalDate"
+                    },
+                    {
+                        "name":  "branchCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Branch code",
+                        "mapsTo":  "GLJournalHeader.branchId -\u003e Branch.code"
+                    },
+                    {
+                        "name":  "accountCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "GL account code",
+                        "mapsTo":  "GLJournalLine.accountId -\u003e Account.code"
+                    },
+                    {
+                        "name":  "debit",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Debit amount",
+                        "mapsTo":  "GLJournalLine.debitAmount"
+                    },
+                    {
+                        "name":  "credit",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Credit amount",
+                        "mapsTo":  "GLJournalLine.creditAmount"
+                    },
+                    {
+                        "name":  "currencyCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Currency code, defaults to NGN",
+                        "mapsTo":  "GLJournalHeader.currencyCode / GLJournalLine.transactionCurrencyCode"
+                    },
+                    {
+                        "name":  "departmentCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Department name or code supported by importer",
+                        "mapsTo":  "GLJournalLine.departmentId"
+                    },
+                    {
+                        "name":  "costCenterCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Cost center code",
+                        "mapsTo":  "GLJournalLine.costCenterId -\u003e CostCenter.code"
+                    },
+                    {
+                        "name":  "projectCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Project code",
+                        "mapsTo":  "GLJournalLine.projectId -\u003e Project.code"
+                    },
+                    {
+                        "name":  "reference",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Reference number",
+                        "mapsTo":  "GLJournalHeader.referenceNumber / GLJournalLine.reference1"
+                    },
+                    {
+                        "name":  "sourceDocument",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Source document reference",
+                        "mapsTo":  "GLJournalHeader.externalReference / GLJournalLine.reference2"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Line or header narration",
+                        "mapsTo":  "GLJournalHeader.narration / GLJournalLine.lineNarration"
+                    }
+                ]
+}

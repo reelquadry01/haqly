@@ -255,6 +255,20 @@ enum FinancialStatementCategory {
   DIVIDEND
 }
 
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  TERMINATED
+}
+
+enum PayrollRunStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  POSTED
+  CANCELLED
+}
+
 /// System
 model User {
   id            Int            @id @default(autoincrement())
@@ -412,6 +426,9 @@ model Company {
   updatedAt                 DateTime                     @updatedAt
   currency                  Currency?                    @relation(fields: [currencyId], references: [id])
   TaxConfig                 TaxConfig[]
+  employees                 Employee[]
+  payrollRuns               PayrollRun[]
+  integrations              Integration[]
 }
 
 model Branch {
@@ -436,6 +453,7 @@ model Branch {
   paymentTemplates           APPaymentTemplate[]
   customerReceipts           CustomerReceiptHeader[]
   bankAccounts               BankAccount[]
+  employees                  Employee[]
 }
 
 model Department {
@@ -452,6 +470,7 @@ model Department {
   recurringTemplateLines    GLRecurringJournalTemplateLine[]
   paymentVoucherHeaders     APPaymentVoucherHeader[]
   paymentVoucherLines       APPaymentVoucherLine[]
+  employees                 Employee[]
 }
 
 model FiscalYear {
@@ -1739,4 +1758,81 @@ model ApprovalRule {
   updatedAt   DateTime @updatedAt
 
   @@index([companyId], name: "idx_approval_rule_company")
+}
+
+/// Payroll & HR
+model Employee {
+  id           Int              @id @default(autoincrement())
+  companyId    Int
+  employeeNo   String
+  firstName    String
+  lastName     String
+  email        String?
+  jobTitle     String?
+  departmentId Int?
+  branchId     Int?
+  grossSalary  Decimal          @db.Decimal(18, 2)
+  currency     String           @default("NGN")
+  startDate    DateTime
+  endDate      DateTime?
+  status       EmployeeStatus   @default(ACTIVE)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  company      Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  department   Department?      @relation(fields: [departmentId], references: [id])
+  branch       Branch?          @relation(fields: [branchId], references: [id])
+  payrollLines PayrollRunLine[]
+
+  @@unique([companyId, employeeNo])
+  @@index([companyId], name: "idx_employee_company")
+}
+
+model PayrollRun {
+  id         Int              @id @default(autoincrement())
+  companyId  Int
+  period     String
+  payDate    DateTime
+  status     PayrollRunStatus @default(DRAFT)
+  note       String?
+  createdBy  Int?
+  approvedBy Int?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  company    Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  lines      PayrollRunLine[]
+
+  @@unique([companyId, period])
+  @@index([companyId], name: "idx_payroll_run_company")
+}
+
+model PayrollRunLine {
+  id              Int        @id @default(autoincrement())
+  runId           Int
+  employeeId      Int
+  grossPay        Decimal    @db.Decimal(18, 2)
+  taxDeduction    Decimal    @default(0) @db.Decimal(18, 2)
+  otherDeductions Decimal    @default(0) @db.Decimal(18, 2)
+  netPay          Decimal    @db.Decimal(18, 2)
+  run             PayrollRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  employee        Employee   @relation(fields: [employeeId], references: [id])
+
+  @@unique([runId, employeeId])
+  @@index([runId], name: "idx_payroll_line_run")
+}
+
+/// Integrations
+model Integration {
+  id           Int       @id @default(autoincrement())
+  companyId    Int
+  provider     String
+  label        String?
+  config       Json?
+  isActive     Boolean   @default(true)
+  lastSyncedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, provider])
+  @@index([companyId], name: "idx_integration_company")
 }

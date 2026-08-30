@@ -122,15 +122,19 @@ export class AuthController {
   }
 
 
-  // ─── MFA: Verify login code — public endpoint (called before full auth) ──────
+  // ─── MFA: Verify login code — public endpoint — issues full tokens on success ─
   @Public()
   @Post('mfa/verify-login')
   @HttpCode(200)
-  async mfaVerifyLogin(@Body() body: { email: string; token: string }) {
-    const valid = await this.auth.mfaVerifyLoginByEmail(body.email, body.token);
-    if (!valid) {
-      throw new UnauthorizedException('Invalid authenticator code. Please try again.');
+  async mfaVerifyLogin(
+    @Body() body: { email: string; token: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.auth.mfaVerifyLoginAndIssueTokens(body.email, body.token);
+    if (result.refreshToken) {
+      res.cookie('refreshToken', result.refreshToken, refreshCookieOptions);
     }
-    return { success: true };
+    const { refreshToken, ...payload } = result;
+    return payload;
   }
 }

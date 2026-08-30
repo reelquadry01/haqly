@@ -15,7 +15,8 @@
     "web:build": "npm --workspace apps/web run build",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed": "node scripts/seed.cjs || true",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "seed": "node scripts/seed.cjs",
     "company:tools": "node scripts/company-tools.cjs"
   },
   "dependencies": {

@@ -52,7 +52,7 @@ export type DataTableAdvancedFilter<T> =
       getValue: (row: T) => string | Date | null | undefined;
     };
 
-export function DataTable<T extends { id: string }>({
+export function DataTable<T extends { id: string | number }>({
   title,
   rows,
   columns,
@@ -83,7 +83,7 @@ export function DataTable<T extends { id: string }>({
 }) {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<string>("all");
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Array<string | number>>([]);
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [savedViewsOpen, setSavedViewsOpen] = useState(false);
@@ -294,7 +294,7 @@ export function DataTable<T extends { id: string }>({
     setSelectedIds(visibleRows.map((row) => row.id));
   }
 
-  function toggleOne(id: string) {
+  function toggleOne(id: string | number) {
     setSelectedIds((current) => (current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id]));
   }
 

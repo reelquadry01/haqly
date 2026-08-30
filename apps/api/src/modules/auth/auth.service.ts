@@ -1,4 +1,4 @@
-import { authenticator, totp } from 'otplib';
+import { authenticator } from 'otplib';
 import crypto from 'crypto';
 import {
   ConflictException,
@@ -98,9 +98,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.isActive) {
-      throw new UnauthorizedException('This login has been disabled. Contact your administrator.');
-    }
+    this.assertUserMayAuthenticate(user);
 
     const roleNames = user.roles.map((entry) => entry.role.name);
     if (!roleNames.length) {
@@ -108,9 +106,6 @@ export class AuthService {
     }
 
     await this.clearLoginAttempts(user.id, ipAddress);
-    if (user.isLocked) {
-      await this.prisma.user.update({ where: { id: user.id }, data: { isLocked: false } });
-    }
 
     // If MFA is enabled, return mfaRequired flag with a pre-auth token
     if (user.mfaEnabled && user.mfaSecret) {
@@ -187,6 +182,8 @@ export class AuthService {
     }
 
     // ── Valid — rotate token ───────────────────────────────────────────────────
+    this.assertUserMayAuthenticate(stored.user);
+
     const roleNames = stored.user.roles.map((entry) => entry.role.name);
 
     // Delete the used token (rotation — old token is now invalid)
@@ -197,7 +194,7 @@ export class AuthService {
       stored.user.id,
       stored.user.email,
       roleNames,
-      stored.familyId, // preserve family for reuse detection
+      stored.familyId ?? undefined, // preserve family for reuse detection
     );
 
     return {
@@ -214,6 +211,26 @@ export class AuthService {
     const tokenHash = hashToken(refreshToken);
     await this.prisma.refreshToken.deleteMany({ where: { tokenHash } });
     return { success: true };
+  }
+
+  /**
+   * Gates every path that mints tokens: login, MFA completion and refresh.
+   *
+   * isLocked is set when the system detects a compromised session (refresh-token
+   * reuse) or when an account is retired. Unlike the brute-force window it does
+   * not expire on its own — clearing it is an explicit administrator action, so
+   * that a detected compromise cannot be erased by whoever holds the password.
+   */
+  private assertUserMayAuthenticate(user: { isActive: boolean; isLocked: boolean }) {
+    if (!user.isActive) {
+      throw new UnauthorizedException('This login has been disabled. Contact your administrator.');
+    }
+    if (user.isLocked) {
+      throw new HttpException(
+        'This account is locked after suspicious activity. Contact your administrator to unlock it.',
+        423,
+      );
+    }
   }
 
   private async issueAuthTokens(
@@ -263,9 +280,11 @@ export class AuthService {
   }
 
   // Revokes ALL refresh tokens in a token family (called on theft detection)
-  private async revokeTokenFamily(familyId: string, userId: number): Promise<void> {
+  private async revokeTokenFamily(familyId: string | null, userId: number): Promise<void> {
+    // Tokens issued before families were introduced have no familyId; revoke the
+    // whole user rather than silently deleting every family-less token.
     await this.prisma.refreshToken.deleteMany({
-      where: { familyId },
+      where: familyId ? { familyId } : { userId },
     });
     // Lock the user account to force re-authentication
     await this.prisma.user.update({
@@ -287,9 +306,9 @@ export class AuthService {
     });
 
     if (attempts >= MAX_FAILED_ATTEMPTS) {
-      if (userId) {
-        await this.prisma.user.updateMany({ where: { id: userId }, data: { isLocked: true } });
-      }
+      // Deliberately does not set user.isLocked. This lockout expires with the
+      // attempt window; isLocked means "an administrator must intervene" and is
+      // reserved for detected session compromise.
       throw new HttpException('Account temporarily locked. Try again in 15 minutes.', 423);
     }
   }
@@ -336,9 +355,22 @@ export class AuthService {
       return 'ceo';
     }
 
-    return 'admin';
+    return 'viewer';
   }
 
+
+  /**
+   * Checks a TOTP code against a stored secret. Returns false rather than throwing
+   * so callers can decide how to report a bad code.
+   */
+  private verifyTotp(secret: string | null | undefined, token: string): boolean {
+    if (!secret || !token?.trim()) return false;
+    try {
+      return authenticator.check(token.trim(), secret);
+    } catch {
+      return false;
+    }
+  }
 
   // ─── MFA: Generate setup (returns secret + otpauth URI for QR code) ──────────
   async mfaSetup(userId: number): Promise<{ secret: string; otpauthUrl: string; issuer: string }> {
@@ -347,7 +379,6 @@ export class AuthService {
     if (user.mfaEnabled) throw new Error('MFA is already enabled. Disable it first before setting up again.');
 
     // Generate a new TOTP secret
-    authenticator.options = { encoding: 'base32' };
     const secret = authenticator.generateSecret();
 
     // Store the secret temporarily (not yet enabled — enabled only after first verify)
@@ -367,7 +398,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.mfaSecret) throw new UnauthorizedException('MFA setup not initiated. Call /auth/mfa/setup first.');
 
-    const isValid = (() => { try { return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; } } })();
+    const isValid = this.verifyTotp(user.mfaSecret, token);
     if (!isValid) throw new UnauthorizedException('Invalid verification code. Please try again.');
 
     await this.prisma.user.update({
@@ -383,7 +414,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.mfaSecret || !user.mfaEnabled) return true; // MFA not enabled = pass through
 
-    return (() => { try { return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; } } })();
+    return this.verifyTotp(user.mfaSecret, token);
   }
 
   // ─── MFA: Disable ────────────────────────────────────────────────────────────
@@ -397,7 +428,7 @@ export class AuthService {
     if (!passwordOk) throw new UnauthorizedException('Incorrect password');
 
     // Verify current TOTP
-    const totpOk = user.mfaSecret ? (() => { try { return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; } } })() : false;
+    const totpOk = user.mfaSecret ? this.verifyTotp(user.mfaSecret, token) : false;
     if (!totpOk) throw new UnauthorizedException('Invalid authenticator code');
 
     await this.prisma.user.update({
@@ -421,10 +452,32 @@ export class AuthService {
   async mfaVerifyLoginByEmail(email: string, token: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     if (!user?.mfaSecret || !user.mfaEnabled) return true;
-    try {
-      return authenticator.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any);
-    } catch {
-      try { return totp.verify({ token: token, secret: user.mfaSecret!, encoding: "base32" } as any); } catch { return false; }
+    return this.verifyTotp(user.mfaSecret, token);
+  }
+
+  // ─── MFA: Verify TOTP and issue full auth tokens ─────────────────────────────
+  async mfaVerifyLoginAndIssueTokens(email: string, token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      include: { roles: { include: { role: true } } },
+    });
+
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+    this.assertUserMayAuthenticate(user);
+    if (!user.mfaEnabled || !user.mfaSecret) {
+      throw new UnauthorizedException('MFA is not enabled for this account.');
     }
+
+    const valid = this.verifyTotp(user.mfaSecret, token);
+
+    if (!valid) throw new UnauthorizedException('Invalid authenticator code. Please try again.');
+
+    const roleNames = user.roles.map((entry) => entry.role.name);
+    const auth = await this.issueAuthTokens(user.id, user.email, roleNames);
+
+    return {
+      user: sanitizeUser(user),
+      ...auth,
+    };
   }
 }

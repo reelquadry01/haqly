@@ -1,10 +1,21 @@
 import { z } from 'zod';
 
+const requiresSsl = (value: string) =>
+  process.env.NODE_ENV === 'production' ? value.includes('sslmode=require') : true;
+
 const envSchema = z.object({
   DATABASE_URL: z
     .string()
     .min(1, 'DATABASE_URL is required')
-    .refine((value) => value.includes('sslmode=require'), 'DATABASE_URL must include sslmode=require for Neon TLS connections.'),
+    .refine(requiresSsl, 'DATABASE_URL must include sslmode=require in production.'),
+  // Prisma reads DIRECT_URL for migrations, bypassing the connection pooler.
+  // The running API never uses it, so it stays optional — but a typo here only
+  // surfaces at `prisma migrate deploy`, so validate the shape when it is set.
+  DIRECT_URL: z
+    .string()
+    .min(1)
+    .refine(requiresSsl, 'DIRECT_URL must include sslmode=require in production.')
+    .optional(),
   ACCESS_TOKEN_SECRET: z.string().min(32, 'ACCESS_TOKEN_SECRET must be at least 32 characters long.'),
   REFRESH_TOKEN_SECRET: z.string().min(32, 'REFRESH_TOKEN_SECRET must be at least 32 characters long.'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),

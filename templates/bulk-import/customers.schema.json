@@ -1,0 +1,70 @@
+﻿{
+    "dataset":  "customers",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Customer.companyId"
+                    },
+                    {
+                        "name":  "name",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Customer name",
+                        "mapsTo":  "Customer.name"
+                    },
+                    {
+                        "name":  "email",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Customer email",
+                        "mapsTo":  "Customer.email"
+                    },
+                    {
+                        "name":  "phone",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Customer phone",
+                        "mapsTo":  "Customer.phone"
+                    },
+                    {
+                        "name":  "line1",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Address line 1",
+                        "mapsTo":  "Address.line1"
+                    },
+                    {
+                        "name":  "city",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "City",
+                        "mapsTo":  "Address.city"
+                    },
+                    {
+                        "name":  "state",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "State",
+                        "mapsTo":  "Address.state"
+                    },
+                    {
+                        "name":  "country",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Country",
+                        "mapsTo":  "Address.country"
+                    },
+                    {
+                        "name":  "postalCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Postal code",
+                        "mapsTo":  "Address.postalCode"
+                    }
+                ]
+}

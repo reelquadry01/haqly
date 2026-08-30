@@ -1,0 +1,119 @@
+﻿{
+    "dataset":  "fixed-assets",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "asOfDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Opening balance date",
+                        "mapsTo":  "Header.asOfDate"
+                    },
+                    {
+                        "name":  "assetCode",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Unique asset code",
+                        "mapsTo":  "Asset.assetCode/code"
+                    },
+                    {
+                        "name":  "assetName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Asset name",
+                        "mapsTo":  "Asset.name"
+                    },
+                    {
+                        "name":  "category",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Asset category name",
+                        "mapsTo":  "Asset.categoryId -\u003e AssetCategory.name"
+                    },
+                    {
+                        "name":  "acquisitionDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Acquisition date",
+                        "mapsTo":  "Asset.acquisitionDate"
+                    },
+                    {
+                        "name":  "costPrice",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Original cost",
+                        "mapsTo":  "Asset.costPrice"
+                    },
+                    {
+                        "name":  "accumulatedDepreciation",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Accumulated depreciation",
+                        "mapsTo":  "Imported depreciation balance"
+                    },
+                    {
+                        "name":  "netBookValue",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Net book value",
+                        "mapsTo":  "Asset.netBookValue"
+                    },
+                    {
+                        "name":  "depreciationMethod",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "STRAIGHT_LINE or DECLINING_BALANCE",
+                        "mapsTo":  "Asset.depreciationMethod"
+                    },
+                    {
+                        "name":  "usefulLifeYears",
+                        "type":  "decimal",
+                        "required":  false,
+                        "description":  "Useful life in years",
+                        "mapsTo":  "Asset useful life"
+                    },
+                    {
+                        "name":  "assetAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Asset GL account code",
+                        "mapsTo":  "Account.code"
+                    },
+                    {
+                        "name":  "depreciationAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Accumulated depreciation GL account code",
+                        "mapsTo":  "Account.code"
+                    },
+                    {
+                        "name":  "location",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Location or branch name/code",
+                        "mapsTo":  "Asset location/branch resolver"
+                    },
+                    {
+                        "name":  "serialNumber",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Serial number",
+                        "mapsTo":  "Asset.serialNumber"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Narration",
+                        "mapsTo":  "Asset.description"
+                    }
+                ]
+}

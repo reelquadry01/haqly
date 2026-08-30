@@ -1,0 +1,70 @@
+﻿{
+    "dataset":  "supplier-payments",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Header.companyId"
+                    },
+                    {
+                        "name":  "supplierName",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Supplier name",
+                        "mapsTo":  "Supplier.name"
+                    },
+                    {
+                        "name":  "paymentReference",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Payment reference",
+                        "mapsTo":  "APPaymentVoucherHeader.reference/paymentReference"
+                    },
+                    {
+                        "name":  "paymentDate",
+                        "type":  "date",
+                        "required":  true,
+                        "description":  "Payment date",
+                        "mapsTo":  "APPaymentVoucherHeader.paymentDate"
+                    },
+                    {
+                        "name":  "amount",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Payment amount",
+                        "mapsTo":  "APPaymentVoucherHeader.amount"
+                    },
+                    {
+                        "name":  "billReference",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Bill reference",
+                        "mapsTo":  "PurchaseBill.reference"
+                    },
+                    {
+                        "name":  "paymentMethod",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Payment method",
+                        "mapsTo":  "Header.paymentMethod"
+                    },
+                    {
+                        "name":  "bankAccountCode",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Bank or cash account code",
+                        "mapsTo":  "BankAccount / Account resolver"
+                    },
+                    {
+                        "name":  "narration",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Narration",
+                        "mapsTo":  "Header.narration"
+                    }
+                ]
+}

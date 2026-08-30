@@ -1,0 +1,49 @@
+﻿{
+    "dataset":  "products",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "companyId",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Numeric company ID",
+                        "mapsTo":  "Product.companyId"
+                    },
+                    {
+                        "name":  "sku",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Unique product SKU",
+                        "mapsTo":  "Product.sku"
+                    },
+                    {
+                        "name":  "name",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Product name",
+                        "mapsTo":  "Product.name"
+                    },
+                    {
+                        "name":  "category",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Product category name",
+                        "mapsTo":  "ProductCategory.name"
+                    },
+                    {
+                        "name":  "uom",
+                        "type":  "string",
+                        "required":  false,
+                        "description":  "Unit of measure",
+                        "mapsTo":  "UnitOfMeasure.name/code"
+                    },
+                    {
+                        "name":  "isActive",
+                        "type":  "boolean",
+                        "required":  false,
+                        "description":  "TRUE or FALSE",
+                        "mapsTo":  "Product.isActive"
+                    }
+                ]
+}

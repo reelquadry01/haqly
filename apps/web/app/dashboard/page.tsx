@@ -64,8 +64,8 @@ const roleSummaryMap: Record<AppRole, string> = {
   cfo: "Live cash, approvals, commercial activity, and period controls in one executive workspace.",
   accountant: "Stay close to journals, exceptions, open periods, and documents that still need finance attention.",
   procurement: "Track supplier readiness, committed spend, and inventory-linked purchasing from one operational view.",
-  inventory: "Follow warehouse movement, item readiness, and downstream stock impact without static placeholder data.",
-  hr: "Keep payroll readiness and finance dependencies visible while HR master tables are still being wired live.",
+  inventory: "Follow warehouse movement, item readiness, and downstream stock impact from one operational view.",
+  hr: "Keep payroll readiness, employee records, and finance dependencies visible from one HR workspace.",
   admin: "Monitor access, periods, controls, and cross-module readiness from a single administration console.",
   ceo: "See live commercial, procurement, and finance movement without a dashboard full of made-up numbers.",
 };
@@ -459,7 +459,7 @@ export default function DashboardPage() {
           value: formatCompactNumber(activeUsers),
           delta: `${dashboardData.users.length} total profiles`,
           trend: activeUsers > 0 ? "up" : "neutral",
-          detail: "System access footprint while HR master tables are being wired",
+          detail: "System access footprint across all registered users",
         },
         {
           label: "Open periods",
@@ -473,7 +473,7 @@ export default function DashboardPage() {
           value: formatCompactNumber(dashboardData.taxConfigs.length),
           delta: `${dashboardData.customers.length} customers`,
           trend: dashboardData.taxConfigs.length > 0 ? "up" : "neutral",
-          detail: "Compliance setup now visible without fake HR placeholder records",
+          detail: "Tax configurations mapped to customers and GL accounts",
         },
       ],
       admin: [
@@ -770,7 +770,7 @@ export default function DashboardPage() {
               Open quick actions
             </button>
           }
-          summary={`${summary}. Live records drive this workspace now, so the dashboard no longer relies on hardcoded role data.`}
+          summary={summary}
           secondaryGroups={[
             {
               label: "Actions",
@@ -907,7 +907,7 @@ export default function DashboardPage() {
         ) : (
           <EmptyState
             title="No live footprint yet"
-            body="The dashboard will replace static placeholders with counts here as soon as records are created in the source modules."
+            body="Create records in the source modules and activity will appear here automatically."
             tone={roleToneMap[role] === "admin" ? "neutral" : roleToneMap[role]}
           />
         )}

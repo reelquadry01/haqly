@@ -419,6 +419,6 @@ export function buildCrmWorkflow(input: {
       { id: "crm-rel-invoices", label: "Linked invoices", value: String(input.invoiceCount), detail: "Downstream sales activity" },
     ],
     assumptionNote:
-      "Leads, opportunities, and quotations are still lightweight placeholders in the current product, so the strongest live CRM handoff today is approved customer -> invoice/statement rather than a full opportunity-to-order chain.",
+      "The strongest live CRM handoff today is approved customer → sales invoice → statement. Full leads, opportunities, and quotation pipeline is on the roadmap.",
   };
 }

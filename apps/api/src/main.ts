@@ -1,5 +1,9 @@
+// Load .env before any other modules (env.ts validates at import time)
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('dotenv').config();
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -13,9 +17,22 @@ import { env } from './config/env';
 import { logger } from './lib/logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   });
+
+  // Behind a PaaS load balancer every request arrives from the proxy's address,
+  // so without this the per-IP rate limits and the failed-login counter would
+  // treat the entire user base as a single client — ten sign-in attempts across
+  // the whole company would lock everyone out. TRUST_PROXY is the number of
+  // proxy hops in front of the app (1 for Render/Railway/Fly/Heroku); it is
+  // deliberately a hop count rather than `true`, because trusting the full
+  // X-Forwarded-For chain would let a caller spoof its own IP and slip the
+  // rate limiter.
+  const trustProxyHops = Number(process.env.TRUST_PROXY ?? (env.NODE_ENV === 'production' ? 1 : 0));
+  if (trustProxyHops > 0) {
+    app.set('trust proxy', trustProxyHops);
+  }
 
   app.use(
     pinoHttp({

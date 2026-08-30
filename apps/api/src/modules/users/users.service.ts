@@ -115,6 +115,31 @@ export class UsersService {
     };
   }
 
+  /**
+   * Clears a security lock. Locks are set when refresh-token reuse is detected,
+   * and they no longer clear themselves on a successful login, so this is the
+   * deliberate way back in once an administrator has reviewed what happened.
+   */
+  async unlock(id: number) {
+    await this.get(id);
+
+    // Any session that existed before the lock is suspect, so start clean.
+    await this.prisma.refreshToken.deleteMany({ where: { userId: id } });
+    await this.prisma.loginAttempt.deleteMany({ where: { userId: id } });
+
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { isLocked: false },
+      include: { roles: { include: { role: true } } },
+    });
+
+    return {
+      ...sanitizeUser(user),
+      roles: user.roles.map((r) => r.role.name),
+      message: 'Account unlocked. All prior sessions were revoked; the user must log in again.',
+    };
+  }
+
   async remove(id: number) {
     await this.get(id);
 

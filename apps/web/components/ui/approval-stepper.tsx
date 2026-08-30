@@ -1,3 +1,5 @@
+"use client";
+
 import type { ApprovalStep as ApprovalStepType } from "../../lib/erp";
 import { StatusBadge } from "./status-badge";
 

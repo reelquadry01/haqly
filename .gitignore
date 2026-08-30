@@ -10,10 +10,12 @@ dist
 .turbo
 .next
 .cache
+out
 
 # Env
 .env
 .env.*
+!.env.example
 
 # Prisma
 prisma/dev.db
@@ -25,15 +27,21 @@ Thumbs.db
 
 # Security backup folders
 _security_backup_*/
+backups/
 
 # Deployment scripts
 apply-*.ps1
+*.ps1
 
 # Dev logs
 *.log
 
-*.ps1
+# Editor / misc
 *.bak
+.vscode/
+.idea/
+
+# Local one-off scripts
 scripts/create-company.cjs
 scripts/list-companies.cjs
 scripts/check-users.cjs

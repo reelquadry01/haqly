@@ -1,0 +1,35 @@
+﻿{
+    "dataset":  "asset-categories",
+    "fileType":  "csv",
+    "generatedAt":  "2026-03-16T14:43:40",
+    "columns":  [
+                    {
+                        "name":  "name",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "Asset category name",
+                        "mapsTo":  "AssetCategory.name"
+                    },
+                    {
+                        "name":  "usefulLifeMonths",
+                        "type":  "integer",
+                        "required":  true,
+                        "description":  "Useful life in months",
+                        "mapsTo":  "AssetCategory.usefulLifeMonths"
+                    },
+                    {
+                        "name":  "residualRate",
+                        "type":  "decimal",
+                        "required":  true,
+                        "description":  "Residual rate as number",
+                        "mapsTo":  "AssetCategory.residualRate"
+                    },
+                    {
+                        "name":  "depreciationMethod",
+                        "type":  "string",
+                        "required":  true,
+                        "description":  "STRAIGHT_LINE, DECLINING_BALANCE, or UNITS_OF_PRODUCTION",
+                        "mapsTo":  "AssetCategory.depreciationMethod"
+                    }
+                ]
+}

@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TerminusModule } from '@nestjs/terminus';
 import { PrismaModule } from './prisma/prisma.module';
+import { StorageModule } from './storage/storage.module';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation';
 
@@ -46,6 +47,7 @@ import { GlobalErrorFilter } from './middleware/errorHandler';
     }),
     TerminusModule,
     PrismaModule,
+    StorageModule,
     PostingModule,
     HealthModule,
     AuthModule,
