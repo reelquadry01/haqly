@@ -34,13 +34,13 @@ const PERMISSIONS = [
 const BASE_ACCOUNTS = [
   // Assets
   { code: '1000', name: 'Cash and Cash Equivalents',      type: 'ASSET',     description: 'Petty cash, bank balances' },
-  { code: '1100', name: 'Accounts Receivable',             type: 'ASSET',     description: 'Amounts owed by customers' },
+  { code: '1100', name: 'Accounts Receivable',             type: 'ASSET',     description: 'Amounts owed by customers', isControlAccount: true, controlSource: 'SALES' },
   { code: '1200', name: 'Inventory',                       type: 'ASSET',     description: 'Stock on hand' },
   { code: '1300', name: 'Prepaid Expenses',                type: 'ASSET',     description: 'Advance payments and prepayments' },
   { code: '1500', name: 'Property Plant and Equipment',    type: 'ASSET',     description: 'Fixed assets at cost' },
   { code: '1510', name: 'Accumulated Depreciation',        type: 'ASSET',     description: 'Contra asset — accumulated depreciation' },
   // Liabilities
-  { code: '2000', name: 'Accounts Payable',                type: 'LIABILITY', description: 'Amounts owed to suppliers' },
+  { code: '2000', name: 'Accounts Payable',                type: 'LIABILITY', description: 'Amounts owed to suppliers', isControlAccount: true, controlSource: 'PROCUREMENT' },
   { code: '2100', name: 'Accrued Liabilities',             type: 'LIABILITY', description: 'Accrued expenses not yet paid' },
   { code: '2200', name: 'Tax Payable',                     type: 'LIABILITY', description: 'VAT and withholding tax payable' },
   { code: '2300', name: 'Loans Payable',                   type: 'LIABILITY', description: 'Short and long term borrowings' },
@@ -61,6 +61,51 @@ const BASE_ACCOUNTS = [
   { code: '5400', name: 'Depreciation Expense',            type: 'EXPENSE',   description: 'Periodic depreciation charges' },
   { code: '5500', name: 'Interest Expense',                type: 'EXPENSE',   description: 'Finance costs on borrowings' },
   { code: '5600', name: 'Tax Expense',                     type: 'EXPENSE',   description: 'Income tax and levies' },
+];
+
+
+// Posting rules map a business event onto the accounts its journal hits. Without
+// them the posting engine has nowhere to post, so invoices, bills, depreciation
+// runs and loan repayments all fail. These are conventional defaults — review
+// them against your own chart of accounts before going live.
+const POSTING_RULES = [
+  {
+    module: 'SALES', transactionType: 'INVOICE', transactionSubtype: 'STANDARD',
+    debit: '1100', credit: '4000',
+    template: 'Sales invoice {{sourceDocumentNumber}}',
+  },
+  {
+    module: 'SALES', transactionType: 'INVOICE', transactionSubtype: 'TAXED',
+    debit: '1100', credit: '4000', tax: '2200',
+    template: 'Sales invoice {{sourceDocumentNumber}} (taxed)',
+  },
+  {
+    module: 'PROCUREMENT', transactionType: 'PURCHASE_BILL', transactionSubtype: 'STANDARD',
+    debit: '1200', credit: '2000',
+    template: 'Purchase bill {{sourceDocumentNumber}}',
+  },
+  {
+    module: 'PROCUREMENT', transactionType: 'PURCHASE_BILL', transactionSubtype: 'TAXED',
+    debit: '1200', credit: '2000', tax: '2200',
+    template: 'Purchase bill {{sourceDocumentNumber}} (taxed)',
+  },
+  {
+    module: 'FIXED_ASSETS', transactionType: 'DEPRECIATION', transactionSubtype: null,
+    debit: '5400', credit: '1510',
+    template: 'Depreciation run {{sourceDocumentNumber}}',
+  },
+  {
+    // Interest lands on the tax account slot and fees on the rounding slot —
+    // that is how the LOAN_REPAYMENT pattern reads them.
+    module: 'TREASURY', transactionType: 'LOAN_REPAYMENT', transactionSubtype: null,
+    debit: '2300', credit: '1000', tax: '5500', rounding: '5300',
+    template: 'Loan repayment {{sourceDocumentNumber}}',
+  },
+  {
+    module: 'TREASURY', transactionType: 'LOAN_DISBURSEMENT', transactionSubtype: null,
+    debit: '1000', credit: '2300',
+    template: 'Loan drawdown {{sourceDocumentNumber}}',
+  },
 ];
 
 async function main() {
@@ -152,8 +197,60 @@ async function main() {
   for (const account of BASE_ACCOUNTS) {
     await prisma.account.upsert({
       where: { code: account.code },
-      update: { name: account.name, type: account.type, description: account.description },
-      create: { code: account.code, name: account.name, type: account.type, description: account.description },
+      update: {
+        name: account.name,
+        type: account.type,
+        description: account.description,
+        isControlAccount: account.isControlAccount ?? false,
+        controlSource: account.controlSource ?? null,
+      },
+      create: {
+        code: account.code,
+        name: account.name,
+        type: account.type,
+        description: account.description,
+        isControlAccount: account.isControlAccount ?? false,
+        controlSource: account.controlSource ?? null,
+      },
+    });
+  }
+
+
+  console.log('Seeding posting rules...');
+  const accountsByCode = new Map(
+    (await prisma.account.findMany({ select: { id: true, code: true } })).map((a) => [a.code, a.id]),
+  );
+  const accountId = (code) => {
+    const id = accountsByCode.get(code);
+    if (!id) throw new Error(`Posting rule references account ${code}, which is not in the chart of accounts.`);
+    return id;
+  };
+
+  for (const rule of POSTING_RULES) {
+    const existing = await prisma.postingRule.findFirst({
+      where: {
+        module: rule.module,
+        transactionType: rule.transactionType,
+        transactionSubtype: rule.transactionSubtype,
+      },
+    });
+
+    // Never overwrite a rule someone has tuned; these are only a starting point.
+    if (existing) continue;
+
+    await prisma.postingRule.create({
+      data: {
+        module: rule.module,
+        transactionType: rule.transactionType,
+        transactionSubtype: rule.transactionSubtype,
+        debitAccountId: accountId(rule.debit),
+        creditAccountId: accountId(rule.credit),
+        taxAccountId: rule.tax ? accountId(rule.tax) : null,
+        roundingAccountId: rule.rounding ? accountId(rule.rounding) : null,
+        postingDescriptionTemplate: rule.template,
+        effectiveStartDate: new Date('2000-01-01'),
+        status: 'ACTIVE',
+      },
     });
   }
 

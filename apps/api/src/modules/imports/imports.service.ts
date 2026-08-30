@@ -637,10 +637,13 @@ export class ImportsService {
 
     const company = await this.ensureCompanyExists(dto.companyId);
     const branch = await this.requirePrimaryBranch(company.id);
+    // SALES is what the bootstrap seed sets, because the posting engine compares
+    // controlSource against the posting module; the rest are older conventions.
     const receivableAccount = await this.requireControlAccount('AR', [
       'AR',
       'RECEIVABLE',
       'ACCOUNTS_RECEIVABLE',
+      'SALES',
     ]);
 
     for (const [index, row] of dto.rows.entries()) {
@@ -732,6 +735,7 @@ export class ImportsService {
       'AP',
       'PAYABLE',
       'ACCOUNTS_PAYABLE',
+      'PROCUREMENT',
     ]);
 
     for (const [index, row] of dto.rows.entries()) {

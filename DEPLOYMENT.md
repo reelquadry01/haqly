@@ -40,8 +40,23 @@ SEED_ADMIN_PASSWORD="a-long-random-password" \
 NODE_ENV=production npm run seed
 ```
 
-This also loads the permission set, the SuperAdmin role, and a base chart of
-accounts. It creates no companies or sample data.
+This also loads the permission set, the SuperAdmin role, a base chart of
+accounts, and the posting rules. It creates no companies or sample data.
+
+**Review the posting rules before going live.** They map each business event onto
+the accounts its journal hits, and without them invoices, bills, depreciation
+runs and loan repayments have nowhere to post and will fail. The seeded set is a
+conventional default against the base chart of accounts:
+
+| Event | Debit | Credit |
+| --- | --- | --- |
+| Sales invoice | 1100 Accounts Receivable | 4000 Sales Revenue (+ 2200 Tax Payable) |
+| Purchase bill | 1200 Inventory | 2000 Accounts Payable (+ 2200 Tax Payable) |
+| Depreciation | 5400 Depreciation Expense | 1510 Accumulated Depreciation |
+| Loan drawdown | 1000 Cash | 2300 Loans Payable |
+| Loan repayment | 2300 Loans Payable, 5500 Interest, 5300 Fees | 1000 Cash |
+
+Re-running the seed never overwrites a rule you have edited.
 
 Two things worth knowing:
 
@@ -123,6 +138,23 @@ just a restart.
    transactional data. The opening-balance importers need them to resolve
    references, and supplier payments additionally need an **open accounting
    period** covering the payment date.
+
+## Depreciation and loan repayments
+
+Both post to the general ledger, and both do it inside the same transaction that
+writes the underlying record — so a depreciation run or a loan payment can never
+sit in its own register without a matching journal. If the posting cannot happen
+(no open accounting period, no posting rule for the event) the whole operation
+rolls back rather than half-completing.
+
+A depreciation run charges one period, refuses to charge the same period twice,
+stops at an asset's residual value, and reports every asset it skipped and why
+rather than passing over them silently. Assets on `UNITS_OF_PRODUCTION` are
+reported as skipped, since a date-driven run has no usage figures to work from.
+
+Loan schedules are generated for `ANNUITY` and `INTEREST_ONLY` terms. `BALLOON`
+needs a residual amount and `CUSTOM` is defined by hand, so neither is generated
+— enter those installments yourself rather than relying on invented figures.
 
 ## Account locking
 

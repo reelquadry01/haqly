@@ -14,6 +14,11 @@ export class CreateDepPolicyDto {
 }
 
 export class RunDepreciationDto {
+  /** Scopes the run to one company. Omit to depreciate every asset on file. */
+  @IsOptional()
+  @IsNumber()
+  legalEntityId?: number;
+
   @IsDateString()
   periodStart!: string;
 
